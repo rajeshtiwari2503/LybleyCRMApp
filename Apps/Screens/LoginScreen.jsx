@@ -8,7 +8,7 @@ export default function LoginScreen() {
             {/* <Image source={require('../../assets/icon.png')}
                 className="w-full h-[400px] object-cover"
             /> */}
-            <View className="h-[400px] bg-black" >g</View>
+            {/* <View className="h-[400px] bg-black" >g</View> */}
             <View className="p-8 bg-white mt-[-20px] rounded-t-3xl shadow-md">
                 <Text className="text-[30px] font-bold"> Community Marketplace</Text>
                 <Text className="text-[18px] font-bold mt-6 mb-6"> Unlock Your Career Potential with JobApp

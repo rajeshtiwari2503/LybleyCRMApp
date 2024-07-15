@@ -13,7 +13,7 @@ export default function App() {
       
       <StatusBar style="auto" />
       {/* <LoginScreen /> */}
-     {login ? ""
+     {login ? <LoginScreen /> 
      
      : <View>      
             <View className="h-[400px] bg-yellow-400" ></View>
