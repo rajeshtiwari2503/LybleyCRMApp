@@ -1,121 +1,153 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation, useRouter } from 'expo-router'
 import { Controller, useForm } from 'react-hook-form';
 import { Colors } from '@/constants/Colors'
+import http_request from "../../../http_request"
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
 export default function SignIn() {
-const navigation=useNavigation()
-const router=useRouter()
-useEffect(()=>{
-    navigation.setOptions({headerShown:false})
-})
-const { control, handleSubmit, formState: { errors } } = useForm(); // Destructure control and handleSubmit from useForm
-const [loading, setLoading] = useState(false);
-const [rememberMe, setRememberMe] = useState(false);
+    const navigation = useNavigation()
+    const router = useRouter()
+    useEffect(() => {
+        navigation.setOptions({ headerShown: false })
+    })
+    const { control, handleSubmit, formState: { errors } } = useForm(); // Destructure control and handleSubmit from useForm
+    const [loading, setLoading] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
 
-const saveUserData = async ( ) => {
-  try {
-      // await AsyncStorage.setItem('userData', JSON.stringify(userData));
-      console.log('User data saved successfully');
-  } catch (error) {
-      console.error('Error saving user data:', error);
-      // Handle error (e.g., show error message)
-  }
-};
+    const saveUserData = async () => {
+        try {
+            // await AsyncStorage.setItem('userData', JSON.stringify(userData));
+            console.log('User data saved successfully');
+        } catch (error) {
+            console.error('Error saving user data:', error);
+            // Handle error (e.g., show error message)
+        }
+    };
 
-const onSubmit = async ( ) => {
-   
-};
+    const onSubmit = async (data) => {
+       
+        Login(data);
+    };
+    const Login = async (reqdata) => {
+        try {
+            setLoading(true);
+            let response = await http_request.post('/login', reqdata);
+            let { data } = response;
+            console.log("data", data);
+            setLoading(false);
 
-const handleForgetPassword = () => {
-  // Implement your logic for handling forgot password
-  // const email = getValues('email'); // Note: getValues is not defined here, adjust according to your useForm setup
-  const email = ''; // Placeholder, adjust as per your logic
-  if (!email) {
-      // Toast.show({ type: 'info', text1: 'Please enter your email' });
-      return;
-  }
-  // navigation.navigate("ForgotPassword", { email });
-};
-  return (
-    <View style={styles.container}>
+            Toast.show({ type: 'success', text1: data.msg });
+            await AsyncStorage.setItem('user', JSON.stringify(data));
 
-    <View style={styles.formContainer}>
-        <Text style={styles.title}>Sign in to your account</Text>
-        <View style={styles.logoContainer}>
+              if (data?.user?.verification === "VERIFIED") {
+                setLoading(false);
+                router.push('/home');
+              } else {
+                setLoading(false);
+                router.push('/home');
+              }
+           
+        } catch (err) {
+            setLoading(false);
+            Toast.show({ type: 'error', text: err?.response?.data?.msg });
+            console.log(err);
+        }
+    };
+    const handleForgetPassword = () => {
+        // Implement your logic for handling forgot password
+        // const email = getValues('email'); // Note: getValues is not defined here, adjust according to your useForm setup
+        const email = ''; // Placeholder, adjust as per your logic
+        if (!email) {
+            // Toast.show({ type: 'info', text1: 'Please enter your email' });
+            return;
+        }
+        // router.push("ForgotPassword", { email });
+    };
+    return (
+        <>
+            <Toast />
 
-            <Image
-                source={require('../../../assets/images/Logo.png')} // Replace with your logo path
-                style={styles.logo}
-            />
-        </View>
-        <Controller
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Email address</Text>
-                    <TextInput
-                        style={[styles.input, errors.email && styles.inputError]}
-                        onBlur={onBlur}
-                        onChangeText={onChange}
-                        value={value}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
+            <View style={styles.container}>
+
+                <View style={styles.formContainer}>
+                    <Text style={styles.title}>Sign in to your account</Text>
+                    <View style={styles.logoContainer}>
+
+                        <Image
+                            source={require('../../../assets/images/Logo.png')} // Replace with your logo path
+                            style={styles.logo}
+                        />
+                    </View>
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.label}>Email address</Text>
+                                <TextInput
+                                    style={[styles.input, errors.email && styles.inputError]}
+                                    onBlur={onBlur}
+                                    onChangeText={onChange}
+                                    value={value}
+                                    keyboardType="email-address"
+                                    autoCapitalize="none"
+                                />
+                                {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
+                            </View>
+                        )}
+                        name="email"
+                        rules={{ required: 'Email is required', pattern: { value: /^\S+@\S+$/i, message: 'Invalid email address' } }}
+                        defaultValue=""
                     />
-                    {/* {errors.email && <Text style={styles.error}>{errors.email.message}</Text>} */}
-                </View>
-            )}
-            name="email"
-            rules={{ required: 'Email is required', pattern: { value: /^\S+@\S+$/i, message: 'Invalid email address' } }}
-            defaultValue=""
-        />
 
-        <Controller
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Password</Text>
-                    <TextInput
-                        style={[styles.input, errors.password && styles.inputError]}
-                        onBlur={onBlur}
-                        onChangeText={onChange}
-                        value={value}
-                        secureTextEntry
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.label}>Password</Text>
+                                <TextInput
+                                    style={[styles.input, errors.password && styles.inputError]}
+                                    onBlur={onBlur}
+                                    onChangeText={onChange}
+                                    value={value}
+                                    secureTextEntry
+                                />
+                                {errors.password && <Text style={styles.error}>{errors.password.message}</Text>}
+                            </View>
+                        )}
+                        name="password"
+                        rules={{ required: 'Password is required', minLength: { value: 8, message: 'Password must be at least 8 characters long' } }}
+                        defaultValue=""
                     />
-                    {/* {errors.password && <Text style={styles.error}>{errors.password.message}</Text>} */}
+
+                    <View style={styles.rememberMeContainer}>
+                        <TouchableOpacity onPress={() => setRememberMe(!rememberMe)} style={styles.rememberMeCheckbox}>
+                            <View style={[styles.checkbox, rememberMe && styles.checkedCheckbox]}>
+                                {rememberMe && <Text style={styles.checkmark}>✓</Text>}
+                            </View>
+                        </TouchableOpacity>
+                        <Text>Remember me</Text>
+                    </View>
+
+                    <TouchableOpacity onPress={handleSubmit(onSubmit)} disabled={loading} style={styles.submitButton}>
+                        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitButtonText}>Sign in</Text>}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={handleForgetPassword} style={styles.forgotPasswordLink}>
+                        <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => router.push("auth/sign-up")}
+                        style={styles.signUpLink}>
+                        <Text>Not a member? <Text style={styles.signUpLinkText}>Sign Up</Text></Text>
+                    </TouchableOpacity>
                 </View>
-            )}
-            name="password"
-            rules={{ required: 'Password is required', minLength: { value: 8, message: 'Password must be at least 8 characters long' } }}
-            defaultValue=""
-        />
-
-        <View style={styles.rememberMeContainer}>
-            <TouchableOpacity onPress={() => setRememberMe(!rememberMe)} style={styles.rememberMeCheckbox}>
-                <View style={[styles.checkbox, rememberMe && styles.checkedCheckbox]}>
-                    {rememberMe && <Text style={styles.checkmark}>✓</Text>}
-                </View>
-            </TouchableOpacity>
-            <Text>Remember me</Text>
-        </View>
-
-        <TouchableOpacity onPress={handleSubmit(onSubmit)} disabled={loading} style={styles.submitButton}>
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitButtonText}>Sign in</Text>}
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleForgetPassword} style={styles.forgotPasswordLink}>
-            <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-         onPress={() => router.push("auth/sign-up")} 
-         style={styles.signUpLink}>
-            <Text>Not a member? <Text style={styles.signUpLinkText}>Sign Up</Text></Text>
-        </TouchableOpacity>
-    </View>
-</View>
- );
+            </View>
+        </>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -136,11 +168,11 @@ const styles = StyleSheet.create({
         // elevation: 5, // Elevation for Android shadow
         // margin: "10px"
     },
- 
+
 
     title: {
         fontSize: 24,
-        fontFamily:"outfit-bold",
+        fontFamily: "outfit-bold",
         textAlign: 'center',
         marginBottom: 20,
 
@@ -159,13 +191,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center', // Center horizontally
         alignItems: 'center', // Center vertically
         marginBottom: 20,
-      },
-      logo: {
+    },
+    logo: {
         width: '100%', // Take full width of parent container
-        height: 100, // Set height as per your requirement
+        height: 50, // Set height as per your requirement
         borderRadius: 4, // Apply border radius
-        resizeMode: "cover",  
-      },
+        resizeMode: "cover",
+    },
     formContainer: {
         width: '100%',
         maxWidth: 400,
@@ -240,7 +272,7 @@ const styles = StyleSheet.create({
     },
     submitButtonText: {
         color: Colors.WHITE,
-        fontFamily:"outfit-bold",
+        fontFamily: "outfit-bold",
 
         fontSize: 18,
     },
@@ -258,4 +290,3 @@ const styles = StyleSheet.create({
         color: Colors.PRIMARY,
     },
 });
-  
