@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "admincrm",
-    "slug": "admincrm",
+    "name": "lybley_crm",
+    "slug": "lybley_crm",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
