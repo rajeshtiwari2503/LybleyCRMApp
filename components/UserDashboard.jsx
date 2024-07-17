@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 
 import { BarChart, PieChart } from 'react-native-chart-kit';
 import { useNavigation } from '@react-navigation/native';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { Colors } from '@/constants/Colors'
 // import RecentServicesList from '../complaint/RecentServices';
 
 const UserDashboard = (props) => {
@@ -12,7 +14,7 @@ const UserDashboard = (props) => {
 
     const [complaint, setComplaint] = useState([]);
 
-
+const notificationCount=10;
 
 
     const filterData = userData?.role === "ADMIN" ? dashData
@@ -46,9 +48,16 @@ const UserDashboard = (props) => {
         <ScrollView>
             <View style={styles.container}>
                 {/* Replace with your React Native components and styling */}
-                <View style={styles.gridContainer}>
-                    <View style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                        <Text style={{fontSize:25,fontFamily:"outfit-medium" }}>Dashboard</Text>
+                <View style={styles.headerContent}>
+                    <MaterialIcons name="person" size={24} color="black" style={styles.icon} />
+                    <Text style={styles.title}>Dashboard</Text>
+                    <View style={styles.iconContainer}>
+                        <FontAwesome name="bell" size={24} color="black" style={styles.icon} />
+                        {notificationCount > 0 && (
+                            <View style={styles.notificationBadge}>
+                                <Text style={styles.notificationText}>{notificationCount}</Text>
+                            </View>
+                        )}
                     </View>
                 </View>
 
@@ -117,10 +126,10 @@ const UserDashboard = (props) => {
                         <Text>More than Five Days Service</Text>
                     </View>
 
-                    <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                    <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.addButton, { backgroundColor: '#FFD700' }]}>
                         <Text style={styles.buttonText}>Add Service Request</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("/product")} style={[styles.button, { backgroundColor: '#90EE90' }]}>
+                    <TouchableOpacity onPress={() => navigation.navigate("/product")} style={[styles.addButton, { backgroundColor: '#90EE90' }]}>
                         <Text style={styles.buttonText}>Add Product</Text>
                     </TouchableOpacity>
                 </View>
@@ -189,14 +198,54 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 10,
         backgroundColor: '#fff',
+        marginTop:25,
+        borderRadius:30
     },
     gridContainer: {
         // flexDirection: 'row',
         // justifyContent: 'space-between',
-        
-        marginTop : 20,
-        marginBottom : 10,
+
+        marginTop: 20,
+        marginBottom: 10,
     },
+    headerContent: {
+        marginTop: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: "space-between"
+    },
+    title: {
+        fontSize: 25,
+        fontFamily: 'outfit-medium',
+        marginHorizontal: 10,
+    },
+    icon: {
+        marginHorizontal: 10,
+        padding: 5,
+        backgroundColor: Colors.GRAY,
+        borderRadius: 50,
+        marginBottom: 10
+    },
+    iconContainer: {
+        position: 'relative',
+        paddingHorizontal: 10,
+      },
+      notificationBadge: {
+        position: 'absolute',
+        right: 10,
+        top: -1,
+        backgroundColor: 'red',
+        borderRadius: 10,
+        width: 20,
+        height: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      notificationText: {
+        color: 'white',
+        fontSize: 12,
+        fontWeight: 'bold',
+      },
     summaryContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -212,9 +261,16 @@ const styles = StyleSheet.create({
         width: '45%',
     },
     button: {
-        width: 80,
-        height: 80,
+        width: 50,
+        height: 50,
         borderRadius: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    addButton: {
+        width: 140,
+        height: 50,
+        borderRadius: 15,
         justifyContent: 'center',
         alignItems: 'center',
     },
