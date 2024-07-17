@@ -17,15 +17,7 @@ export default function SignIn() {
     const [loading, setLoading] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
 
-    const saveUserData = async () => {
-        try {
-            // await AsyncStorage.setItem('userData', JSON.stringify(userData));
-            console.log('User data saved successfully');
-        } catch (error) {
-            console.error('Error saving user data:', error);
-            // Handle error (e.g., show error message)
-        }
-    };
+    
 
     const onSubmit = async (data) => {
        
@@ -36,10 +28,10 @@ export default function SignIn() {
             setLoading(true);
             let response = await http_request.post('/login', reqdata);
             let { data } = response;
-            console.log("data", data);
+            // console.log("data", data);
             setLoading(false);
 
-            Toast.show({ type: 'success', text1: data.msg });
+            Toast.show({ type: 'success', text1:" data.msg" });
             await AsyncStorage.setItem('user', JSON.stringify(data));
 
               if (data?.user?.verification === "VERIFIED") {
@@ -52,7 +44,7 @@ export default function SignIn() {
            
         } catch (err) {
             setLoading(false);
-            Toast.show({ type: 'error', text: err?.response?.data?.msg });
+            Toast.show({ type: 'error', text1: err?.response?.data?.msg });
             console.log(err);
         }
     };
@@ -77,7 +69,7 @@ export default function SignIn() {
                     <View style={styles.logoContainer}>
 
                         <Image
-                            source={require('../../../assets/images/Logo.png')} // Replace with your logo path
+                            source={require('../../../assets/images/Logo.png')}  
                             style={styles.logo}
                         />
                     </View>
@@ -181,20 +173,20 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 400,
         backgroundColor: Colors.WHITE,
-        padding: 20,
+        padding: 10,
         borderRadius: 10,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 5,
+        // elevation: 5,
         justifyContent: 'center', // Center horizontally
         alignItems: 'center', // Center vertically
         marginBottom: 20,
     },
     logo: {
-        width: '100%', // Take full width of parent container
-        height: 50, // Set height as per your requirement
+        width: '30%', // Take full width of parent container
+        height: 70, // Set height as per your requirement
         borderRadius: 4, // Apply border radius
         resizeMode: "cover",
     },
