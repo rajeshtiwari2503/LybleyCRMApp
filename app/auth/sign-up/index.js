@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigation, useRouter } from 'expo-router';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image, Picker } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { Colors } from '@/constants/Colors';
 import Toast from 'react-native-toast-message';
+import { Picker } from '@react-native-picker/picker';
+
 import http_request from "../../../http_request";
 
 export default function SignUp() {
@@ -50,7 +52,7 @@ export default function SignUp() {
                     />
                 </View>
 
-                <View style={styles.inputContainer}>
+                {/* <View style={styles.inputContainer}>
                     <Text style={styles.label}>User Type</Text>
                     <Picker
                         selectedValue={userType}
@@ -61,7 +63,7 @@ export default function SignUp() {
                         <Picker.Item label="Service Center" value="serviceCenter" />
                         <Picker.Item label="Technician" value="technician" />
                     </Picker>
-                </View>
+                </View> */}
 
                 {/* Common Fields */}
                 <View style={styles.inputContainer}>
@@ -245,11 +247,11 @@ export default function SignUp() {
                                 )}
                             />
                             {errors.technicianId && <Text style={styles.errorText}>{errors.technicianId.message}</Text>}
-                                  </View>
-                                  
-                              </>
-                          )}
-                            <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.button}>
+                        </View>
+
+                    </>
+                )}
+                <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.button}>
                     <Text style={styles.buttonText}>Sign up</Text>
                 </TouchableOpacity>
 
@@ -261,7 +263,8 @@ export default function SignUp() {
                 </Text>
             </View>
         </ScrollView>
-    )}
+    )
+}
 
 
 const styles = StyleSheet.create({
@@ -287,14 +290,14 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
-        elevation: 5,
+        // elevation: 5,
         justifyContent: 'center', // Center horizontally
         alignItems: 'center', // Center vertically
         marginBottom: 20,
     },
     logo: {
-        width: '100%', // Take full width of parent container
-        height: 50, // Set height as per your requirement
+        width: '30%', // Take full width of parent container
+        height: 70, // Set height as per your requirement
         borderRadius: 4, // Apply border radius
         resizeMode: "cover",
     },
