@@ -69,8 +69,10 @@ const Dashboard = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 10,
+    backgroundColor: '#000000',
+    paddingBottom:10,
+    paddingTop:10
+    // padding: 10,
   },
 });
 
