@@ -1,27 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-
-const sampleComplaints = [
-    { id: '1', title: 'Leaking Refrigerator', status: 'Open', date: '2024-07-01', category: 'Pending' },
-    { id: '2', title: 'Washing Machine not spinning', status: 'In Progress', date: '2024-07-02', category: 'Assigned' },
-    { id: '3', title: 'Air Conditioner not cooling', status: 'Closed', date: '2024-07-03', category: 'Closed' },
-    { id: '4', title: 'Microwave not heating', status: 'Open', date: '2024-07-04', category: 'Pending' },
-    { id: '5', title: 'TV screen cracked', status: 'In Progress', date: '2024-07-05', category: 'Assigned' },
-    { id: '6', title: 'Oven not working', status: 'Closed', date: '2024-07-06', category: 'Closed' },
-];
+import http_request from "../../http_request"; // Assuming this is your HTTP request module
+ 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+ 
 
 export default function ViewComplaints() {
     const router = useRouter();
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const [sampleComplaints, setComplaint] = useState([]);
 
+
+    useEffect(() => {
+        getAllComplaint();
+      }, [ ]);
+ 
+    const getAllComplaint = async () => {
+        try {
+            const storedValue = await AsyncStorage.getItem('user');
+              const user = JSON.parse(storedValue);
+              
+          let response = await http_request.get("/getAllComplaint");  
+          let { data } = response;
+          const filteredData = user?.user.role === "ADMIN" ? data
+          : user?.user.role === "BRAND" ? data.filter((item) => item?.brandId === user?.user?._id)
+            : user?.user.role === "USER" ? data.filter((item) => item?.userId === user?.user?._id)
+              : user?.user.role === "SERVICE" ? data.filter((item) => item?.assignServiceCenterId ===  user?.user?._id)
+                : user?.user.role === "TECHNICIAN" ? data.filter((item) => item?.technicianId ===  user?.user?._id)
+                  : user?.user.role === "DEALER" ? data.filter((item) => item?.dealerId ===   user?.user?._id)
+                    : []
+          setComplaint(filteredData)
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
     // Function to filter complaints based on selected category
     const filterComplaints = (category) => {
         if (category === 'All') {
             return sampleComplaints;
         } else {
-            return sampleComplaints.filter(complaint => complaint.category === category);
+            return sampleComplaints.filter(complaint => complaint.status === category);
         }
     };
 
@@ -35,7 +56,7 @@ export default function ViewComplaints() {
             onPress={() => router.push({ pathname: 'complaint-details', params: { complaintId: item.id } })}
         >
             <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle}>{item.title}</Text>
+                <Text style={styles.cardTitle}>{item.productName}</Text>
                 <Text style={styles.cardStatus}>{item.status}</Text>
             </View>
             <Text style={styles.cardDate}>{item.date}</Text>
@@ -53,20 +74,20 @@ export default function ViewComplaints() {
                     <Text style={styles.buttonText}>All</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={[styles.categoryButton, selectedCategory === 'Pending' && styles.selectedButton]}
-                    onPress={() => handleCategoryPress('Pending')}
+                    style={[styles.categoryButton, selectedCategory === 'PENDING' && styles.selectedButton]}
+                    onPress={() => handleCategoryPress('PENDING')}
                 >
                     <Text style={styles.buttonText}>Pending</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={[styles.categoryButton, selectedCategory === 'Assigned' && styles.selectedButton]}
-                    onPress={() => handleCategoryPress('Assigned')}
+                    style={[styles.categoryButton, selectedCategory === 'ASSIGN' && styles.selectedButton]}
+                    onPress={() => handleCategoryPress('ASSIGN')}
                 >
                     <Text style={styles.buttonText}>Assigned</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={[styles.categoryButton, selectedCategory === 'Closed' && styles.selectedButton]}
-                    onPress={() => handleCategoryPress('Closed')}
+                    style={[styles.categoryButton, selectedCategory === 'COMPLETED' && styles.selectedButton]}
+                    onPress={() => handleCategoryPress('COMPLETED')}
                 >
                     <Text style={styles.buttonText}>Closed</Text>
                 </TouchableOpacity>
@@ -84,7 +105,7 @@ export default function ViewComplaints() {
 
 const styles = StyleSheet.create({
     container: {
-        // flex: 1,
+        flex: 1,
         backgroundColor: Colors.WHITE,
         paddingLeft: 20,
         paddingRight: 20,
