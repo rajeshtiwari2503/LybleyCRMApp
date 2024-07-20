@@ -12,6 +12,7 @@ const Dashboard = () => {
   const navigation = useNavigation();
   const [value, setValue] = useState(null);
   const [dashData, setDashData] = useState(null);
+  const [complaints, setComplaint] = useState([]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -52,15 +53,37 @@ const Dashboard = () => {
     };
 
     fetchDashboardData();
-  }, []);
-
+    getAllComplaint();
+      }, [ ]);
+ 
+    const getAllComplaint = async () => {
+        try {
+            const storedValue = await AsyncStorage.getItem('user');
+              const user = JSON.parse(storedValue);
+              
+          let response = await http_request.get("/getAllComplaint");  
+          let { data } = response;
+          const filteredData = user?.user.role === "ADMIN" ? data
+          : user?.user.role === "BRAND" ? data.filter((item) => item?.brandId === user?.user?._id)
+            : user?.user.role === "USER" ? data.filter((item) => item?.userId === user?.user?._id)
+              : user?.user.role === "SERVICE" ? data.filter((item) => item?.assignServiceCenterId ===  user?.user?._id)
+                : user?.user.role === "TECHNICIAN" ? data.filter((item) => item?.technicianId ===  user?.user?._id)
+                  : user?.user.role === "DEALER" ? data.filter((item) => item?.dealerId ===   user?.user?._id)
+                    : []
+          setComplaint(filteredData)
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+ 
   return (
   
       <View style={styles.container}>
     
-        {value?.user?.role === "USER" && <UserDashboard dashData={dashData} userData={value?.user} />}
-        {value?.user?.role === "TECHNICIAN" && <TechnicianDashboard dashData={dashData} userData={value?.user} />}
-        {value?.user?.role === "DEALER" && <DealerDashboard dashData={dashData} userData={value?.user} />}
+        {value?.user?.role === "USER" && <UserDashboard dashData={dashData}complaints={complaints} userData={value?.user} />}
+        {value?.user?.role === "TECHNICIAN" && <TechnicianDashboard dashData={dashData}complaints={complaints} userData={value?.user} />}
+        {value?.user?.role === "DEALER" && <DealerDashboard dashData={dashData} complaints={complaints}userData={value?.user} />}
       </View>
   
   );
