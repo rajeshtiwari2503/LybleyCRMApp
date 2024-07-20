@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React  from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
 import { BarChart, PieChart } from 'react-native-chart-kit';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors'
+import RecentServicesList from './RecentServices';
 // import RecentServicesList from '../complaint/RecentServices';
 
 const UserDashboard = (props) => {
     const navigation = useNavigation();
     const userData = props?.userData;
     const dashData = props?.dashData;
+    const complaint = props?.complaints;
 
-    const [complaint, setComplaint] = useState([]);
+  
 
 const notificationCount=10;
 
@@ -187,9 +189,10 @@ const notificationCount=10;
                     </View>
                 </ScrollView>
 
-                {/* <RecentServicesList data={filterData} userData={userData} /> */}
+                <RecentServicesList data={filterData} userData={userData} />
             </View>
         </ScrollView>
+       
     );
 };
 
