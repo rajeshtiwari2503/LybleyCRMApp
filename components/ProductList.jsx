@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Modal,   ActivityIndicator, Button, Alert, ScrollView, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, ScrollView, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http_request from '../http_request';
 import Toast from 'react-native-toast-message';
 import AddProduct from './AddProduct';
+import { Colors } from '@/constants/Colors';
+import Modal from 'react-native-modal';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const ProductList = (props) => {
-  const navigation = useNavigation();
 
   const categories = props?.categories;
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -65,7 +67,7 @@ const ProductList = (props) => {
 
   const deleteData = async () => {
     try {
-      let response = await http_request.delete(`/deleteProduct/${cateId}`);
+      let response = await http_request.deleteData(`/deleteProduct/${cateId}`);
       let { data } = response;
       setConfirmBoxView(false);
       props?.RefreshData(data);
@@ -80,60 +82,86 @@ const ProductList = (props) => {
     setIsWarranty(true);
   };
 
+
+
+  const renderItem = ({ item ,index}) => (
+    <View key={index} style={styles.row}>
+      <Text style={{ width: 50 }}>{item.i}</Text>
+      <Text style={[{ paddingLeft: 13, width: 120 }]}>{item.productName}</Text>
+      <Text style={styles.cell}>{item.productDescription}</Text>
+      <Text style={styles.cell}>{item.categoryName}</Text>
+      <Text style={styles.cell}>{item.productBrand}</Text>
+      <Text style={styles.cell}>{item.serialNo}</Text>
+      <Text style={styles.cell}>{item.modelNo}</Text>
+      <Text style={styles.cell}>{item.status}</Text>
+      <Text style={styles.cell}>{new Date(item.updatedAt).toLocaleString()}</Text>
+      <View style={styles.actions}>
+        <TouchableOpacity onPress={() => handleWarranty(item.warrantyStatus)} style={{ marginRight: 10 }}>
+          <MaterialIcons name="preview" size={24} color="#4CAF50" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleAdd(item)} style={{ marginRight: 10 }}>
+          <FontAwesome5 name="edit" size={20} color="#FFA500" />
+        </TouchableOpacity>
+        {/* {userData?.user?.role === "ADMIN" && ( */}
+        <TouchableOpacity onPress={() => handleDelete(item._id)}>
+          <MaterialIcons name="delete" size={24} color="#FF0000" />
+        </TouchableOpacity>
+        {/* )}  */}
+      </View>
+    </View>
+  );
   return (
-    <View style={{ flex: 1, padding: 20 }}>
+    <View style={styles.container}>
       <Toast ref={(ref) => Toast.setRef(ref)} />
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Product Information</Text>
         <TouchableOpacity onPress={() => handleAdd(null)} style={{ backgroundColor: '#0284c7', padding: 10, borderRadius: 5 }}>
           <Text style={{ color: 'white' }}>Add Product</Text>
         </TouchableOpacity>
       </View>
-      {!data.length ? (
+      {data.length === 0 ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color="#0000ff" />
         </View>
       ) : (
-        <FlatList
-          data={sortedData}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
-              <Text>{item.productName}</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <TouchableOpacity onPress={() => navigation.navigate('ServiceRequest', { id: item._id })} style={{ marginRight: 10 }}>
-                  <Text style={{ color: 'blue' }}>Request Service</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleWarranty(item.warrantyStatus)} style={{ marginRight: 10 }}>
-                  <Text style={{ color: 'blue' }}>View Warranty</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleAdd(item)} style={{ marginRight: 10 }}>
-                  <Text style={{ color: 'green' }}>Edit</Text>
-                </TouchableOpacity>
-                {userData?.user?.role === "ADMIN" && (
-                  <TouchableOpacity onPress={() => handleDelete(item._id)}>
-                    <Text style={{ color: 'red' }}>Delete</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
+
+        <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
+          <View>
+            <View style={styles.header}>
+              <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
+              <Text style={[styles.headerCell, { width: 120 }]}>Product </Text>
+              <Text style={[styles.headerCell, { width: 120 }]}>Description </Text>
+              <Text style={[styles.headerCell, { width: 120 }]}>Category </Text>
+              <Text style={[styles.headerCell, { width: 120 }]}>Brand </Text>
+              <Text style={[styles.headerCell, { width: 120 }]}>Serial No. </Text>
+              <Text style={[styles.headerCell, { width: 120 }]}>Modal No. </Text>
+              <Text style={[styles.headerCell, { textAlign: "center", paddingRight: 20 }]}>Status</Text>
+              <Text style={styles.headerCell}>Updated At</Text>
+              <Text style={[styles.headerCell, { textAlign: 'right' }]}>Actions</Text>
+
             </View>
-          )}
-        />
+            <FlatList
+              data={filterData}
+              keyExtractor={item => item?._id}
+              renderItem={renderItem}
+              contentContainerStyle={styles.listContainer}
+            />
+          </View>
+        </ScrollView>
       )}
 
-      <Modal visible={editModalOpen} onRequestClose={handleEditModalClose}>
-       
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContainer}>
-      <View style={{ flex: 1, padding: 20 }}>
+      <Modal isVisible={editModalOpen} onBackdropPress={handleEditModalClose}>
 
-          <TouchableOpacity onPress={handleEditModalClose} style={{ alignSelf: 'flex-end' }}>
-            <Text style={{ color: 'red' }}>Close</Text>
-          </TouchableOpacity>
+        <View style={styles.modalContent}>
+          <ScrollView style={styles.scrollView}>
+            <Text style={styles.headerModal}> Add Ptoduct </Text>
+            <View >
+              <AddProduct categories={categories} userData={userData} brands={props?.brands} existingProduct={editData} RefreshData={props?.RefreshData} onClose={handleEditModalClose} />
 
-          <AddProduct categories={categories} userData={userData} brands={props?.brands} existingProduct={editData} RefreshData={props?.RefreshData} onClose={handleEditModalClose} />
-         
+            </View>
+
+          </ScrollView>
         </View>
-        </ScrollView>
       </Modal>
 
       {confirmBoxView && (
@@ -147,12 +175,20 @@ const ProductList = (props) => {
         )
       )}
 
-      <Modal visible={isWarranty} onRequestClose={handleWarrantyClose}>
-        <View style={{ flex: 1, padding: 20, backgroundColor: warranty ? 'green' : 'red' }}>
-          <TouchableOpacity onPress={handleWarrantyClose} style={{ alignSelf: 'flex-end' }}>
-            <Text style={{ color: 'white' }}>Close</Text>
-          </TouchableOpacity>
-          <Text style={{ color: 'white', fontSize: 18 }}>{warranty ? "Your product is under Warranty" : "Your product is not under Warranty"}</Text>
+      <Modal isVisible={isWarranty} onBackdropPress={handleWarrantyClose}>
+
+        <View style={styles.modalContent}>
+          <ScrollView style={styles.scrollView}>
+            <Text style={styles.headerModal}>Ptoduct Warranty</Text>
+            <View style={{ marginTop: "50%" }}>
+              <Text style={{ color: warranty ? 'green' : "red", fontWeight: "bold", fontSize: 18, textAlign: "center" }}>{warranty ? "Your product is under Warranty" : "Your product is not under Warranty"}</Text>
+            </View>
+            <View style={{ marginTop: "50%" }}>
+              <TouchableOpacity style={styles.closeButton} onPress={handleWarrantyClose}>
+                <Text style={styles.closeButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
         </View>
       </Modal>
     </View>
@@ -160,13 +196,153 @@ const ProductList = (props) => {
 };
 
 const styles = StyleSheet.create({
-    scrollContainer: {
-        flexDirection: 'col',
-        marginHorizontal: 10,
-        marginBottom: 10,
-    },
-});
+  container: {
+    flex: 1,
+    backgroundColor: Colors.WHITE,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 10,
+    // marginTop:25,
+    borderRadius:30
+},
+  header: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
 
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    backgroundColor: '#f8f8f8',
+  },
+  headerModal: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  listContainer: {
+    paddingBottom: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    backgroundColor: '#f8f8f8',
+  },
+  headerCell: {
+    flex: 1,
+    fontWeight: 'bold',
+    textAlign: 'left',
+    width: 110,
+  },
+  row: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    alignItems: "center",
+    borderBottomColor: '#ddd',
+  },
+  cell: {
+    flex: 1,
+    textAlign: 'left',
+    width: 120,
+  },
+  statusCell: {
+    flex: 1,
+    textAlign: 'center',
+    backgroundColor: Colors.PRIMARY,
+    color: "white",
+    // marginLeft:20,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    // paddingLeft:20,
+    paddingTop: 7,
+    paddingBottom: 7,
+    marginRight: 10,
+    borderRadius: 10,
+    width: 120,
+  },
+  actions: {
+    flexDirection: 'row',
+    width: 100,
+    alignItems: 'center',
+    justifyContent: "flex-end"
+  },
+  viewButton: {
+    color: 'blue',
+    paddingRight: 10,
+    textAlign: "right"
+  },
+  scrollContainer: {
+    flexDirection: 'column',
+
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    justifyContent: 'center',
+    height: '70%',
+  },
+  scrollView: {
+    flex: 1,
+  },
+
+  input: {
+    height: 40,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 4,
+    marginBottom: 16,
+    paddingHorizontal: 8,
+  },
+  pickerContainer: {
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 4,
+    marginBottom: 16,
+    height: 40,
+    justifyContent: 'center',
+  },
+  picker: {
+    height: 40,
+  },
+  saveButton: {
+    backgroundColor: Colors.PRIMARY,
+    paddingVertical: 12,
+    borderRadius: 15,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  saveButtonDisabled: {
+    backgroundColor: Colors.PRIMARY,
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  closeButton: {
+    backgroundColor: '#f44336',
+    paddingVertical: 12,
+    borderRadius: 15,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 8,
+  },
+
+});
 
 export default ProductList;
 

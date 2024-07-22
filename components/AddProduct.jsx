@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button,  StyleSheet, ActivityIndicator  } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import http_request from '../http_request';
 import Toast from 'react-native-toast-message';
 import { Picker } from '@react-native-picker/picker';
+import { Colors } from '@/constants/Colors';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-const AddProduct = ({ existingProduct, RefreshData, onClose, userData, categories, brands }) => {
+export default function AddProduct ({ existingProduct, RefreshData, onClose, userData, categories, brands })   {
     const [loading, setLoading] = useState(false);
     const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm();
     const [selectedYear, setSelectedYear] = useState("Life Time");
+    const [date, setDate] = useState(new Date());
+    const [show, setShow] = useState(false);
+   
+    const handleConfirm = (event, selectedDate) => {
+      const currentDate = selectedDate || date;
+      setShow(false);
+      setDate(currentDate);
+    };
 
     const calculateWarrantyStatus = (purchaseDate, selectedYear) => {
         if (!purchaseDate) return false;
@@ -43,10 +53,10 @@ const AddProduct = ({ existingProduct, RefreshData, onClose, userData, categorie
             const endpoint = existingProduct?._id ? `/editProduct/${existingProduct._id}` : '/addProduct';
             const response = existingProduct?._id ? await http_request.patch(endpoint, reqData) : await http_request.post(endpoint, reqData);
             const { data: responseData } = response.data;
-            Toast.show({ type: 'success', text1: responseData.message });
-            setLoading(false);
             RefreshData(responseData);
+            setLoading(false);
             onClose(true);
+            Toast.show({ type: 'success', text1: responseData.message });
         } catch (err) {
             setLoading(false);
             Toast.show({ type: 'error', text1: err.message });
@@ -94,7 +104,7 @@ const AddProduct = ({ existingProduct, RefreshData, onClose, userData, categorie
                 control={control}
                 name="productName"
                 rules={{ required: 'Product Name is required', minLength: { value: 3, message: 'Product Name must be at least 3 characters long' } }}
-                render={({ field: { onChange,   value } }) => (
+                render={({ field: { onChange, value } }) => (
                     <>
                         <Text style={styles.label}>Product Name</Text>
                         <TextInput
@@ -112,7 +122,7 @@ const AddProduct = ({ existingProduct, RefreshData, onClose, userData, categorie
                 control={control}
                 name="productDescription"
                 rules={{ required: 'Product Description is required', minLength: { value: 3, message: 'Product Description must be at least 3 characters long' } }}
-                render={({ field: { onChange,   value } }) => (
+                render={({ field: { onChange, value } }) => (
                     <>
                         <Text style={styles.label}>Product Description</Text>
                         <TextInput
@@ -133,18 +143,21 @@ const AddProduct = ({ existingProduct, RefreshData, onClose, userData, categorie
                 render={({ field: { onChange, value } }) => (
                     <>
                         <Text style={styles.label}>Category</Text>
-                        <Picker
-                            selectedValue={value}
-                            style={styles.picker}
-                            onValueChange={(itemValue) => onChange(itemValue)}
-                        >
-                            <Picker.Item label="Select a Category" value="" />
-                            {categories?.map((category) => (
-                                <Picker.Item key={category._id} label={category.categoryName} value={category._id} />
-                            ))}
-                        </Picker>
+                        <View style={styles.pickerContainer}>
+                            <Picker
+                                selectedValue={value}
+                                style={styles.picker}
+                                onValueChange={(itemValue) => onChange(itemValue)}
+                            >
+                                <Picker.Item label="Select a Category" value="" />
+                                {categories?.map((category) => (
+                                    <Picker.Item key={category._id} label={category.categoryName} value={category._id} />
+                                ))}
+                            </Picker>
+                        </View>
                         {errors.categoryId && <Text style={styles.errorText}>{errors.categoryId.message}</Text>}
                     </>
+
                 )}
             />
 
@@ -152,7 +165,7 @@ const AddProduct = ({ existingProduct, RefreshData, onClose, userData, categorie
                 control={control}
                 name="productBrand"
                 rules={{ required: 'Product Brand is required', minLength: { value: 3, message: 'Product Brand must be at least 3 characters long' } }}
-                render={({ field: { onChange,   value } }) => (
+                render={({ field: { onChange, value } }) => (
                     <>
                         <Text style={styles.label}>Brand</Text>
                         <TextInput
@@ -174,19 +187,21 @@ const AddProduct = ({ existingProduct, RefreshData, onClose, userData, categorie
                 render={({ field: { onChange, value } }) => (
                     <>
                         <Text style={styles.label}>Brand</Text>
-                        <Picker
-                            selectedValue={value}
-                            style={styles.picker}
-                            onValueChange={(itemValue) => {
-                                onChange(itemValue);
-                                handleChangeBrand(itemValue);
-                            }}
-                        >
-                            <Picker.Item label="Select a Brand" value="" />
-                            {brands?.map((brand) => (
-                                <Picker.Item key={brand._id} label={brand.brandName} value={brand._id} />
-                            ))}
-                        </Picker>
+                        <View style={styles.pickerContainer}>
+                            <Picker
+                                selectedValue={value}
+                                style={styles.picker}
+                                onValueChange={(itemValue) => {
+                                    onChange(itemValue);
+                                    handleChangeBrand(itemValue);
+                                }}
+                            >
+                                <Picker.Item label="Select a Brand" value="" />
+                                {brands?.map((brand) => (
+                                    <Picker.Item key={brand._id} label={brand.brandName} value={brand._id} />
+                                ))}
+                            </Picker>
+                        </View>
                     </>
                 )}
             />
@@ -194,7 +209,7 @@ const AddProduct = ({ existingProduct, RefreshData, onClose, userData, categorie
             <Controller
                 control={control}
                 name="serialNo"
-                render={({ field: { onChange,   value } }) => (
+                render={({ field: { onChange, value } }) => (
                     <>
                         <Text style={styles.label}>Serial No</Text>
                         <TextInput
@@ -210,7 +225,7 @@ const AddProduct = ({ existingProduct, RefreshData, onClose, userData, categorie
             <Controller
                 control={control}
                 name="modelNo"
-                render={({ field: { onChange,   value } }) => (
+                render={({ field: { onChange, value } }) => (
                     <>
                         <Text style={styles.label}>Model No</Text>
                         <TextInput
@@ -223,62 +238,85 @@ const AddProduct = ({ existingProduct, RefreshData, onClose, userData, categorie
                 )}
             />
 
-            {(userData?.user?.role === "USER" && existingProduct) && (
-                <>
-                    <Controller
-                        control={control}
-                        name="selectedYear"
-                        render={({ field: { onChange, value } }) => (
-                            <>
-                                <Text style={styles.label}>Select Year</Text>
-                                <Picker
-                                    selectedValue={value}
-                                    style={styles.picker}
-                                    onValueChange={(itemValue) => {
-                                        onChange(itemValue);
-                                        handleYearChange(itemValue);
-                                    }}
-                                >
-                                    {warrantyYears.map((year) => (
-                                        <Picker.Item key={year} label={year} value={year} />
-                                    ))}
-                                </Picker>
-                            </>
-                        )}
-                    />
 
-                    <Controller
-                        control={control}
-                        name="purchaseDate"
-                        render={({ field: { onChange, value } }) => (
-                            <>
-                                <Text style={styles.label}>Purchase Date</Text>
-                                <TextInput
-                                    style={styles.input}
-                                    // onBlur={onBlur}
-                                    onChangeText={onChange}
-                                    value={value}
-                                />
-                            </>
-                        )}
-                    />
-                </>
+            <Controller
+                control={control}
+                name="selectedYear"
+                render={({ field: { onChange, value } }) => (
+                    <>
+                        <Text style={styles.label}>Select Year</Text>
+                        <View style={styles.pickerContainer}>
+                            <Picker
+                                selectedValue={value}
+                                style={styles.picker}
+                                onValueChange={(itemValue) => {
+                                    onChange(itemValue);
+                                    handleYearChange(itemValue);
+                                }}
+                            >
+                                {warrantyYears.map((year) => (
+                                    <Picker.Item key={year} label={year} value={year} />
+                                ))}
+                            </Picker>
+                        </View>
+                    </>
+                )}
+            />
+            <View style={{ marginBottom: 20 }}>
+            <Controller
+        control={control}
+        name="purchaseDate"
+        defaultValue={date.toISOString().split('T')[0]}
+        render={({ field: { onChange, value } }) => (
+          <>
+            <Text style={styles.label}>Purchase Date</Text>
+            <TouchableOpacity onPress={() => setShow(true)} style={styles.dateInput}>
+              <Text>{value || "Select Date"}</Text>
+            </TouchableOpacity>
+            {show && (
+              <DateTimePicker
+                value={date}
+                mode="date"
+                display="default"
+                onChange={(event, selectedDate) => {
+                  setShow(false);
+                  const formattedDate = selectedDate.toISOString().split('T')[0];
+                  onChange(formattedDate);
+                }}
+              />
             )}
+          </>
+        )}
+      />
+            </View>
 
-            <Button title="Submit" onPress={handleSubmit(onSubmit)} disabled={loading} />
-            {loading && <ActivityIndicator size="large" color="#0000ff" />}
-          
+            <TouchableOpacity
+                style={[styles.saveButton, loading && styles.saveButtonDisabled]}
+                disabled={loading}
+                onPress={handleSubmit(onSubmit)}
+            >
+                {loading ? (
+                    <ActivityIndicator size="small" color="#ffffff" />
+                ) : (
+                    <Text style={styles.saveButtonText}>Save</Text>
+                )}
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <Text style={styles.closeButtonText}>Cancel</Text>
+            </TouchableOpacity>
         </View>
-      
+
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
+        // padding: 20,
+        marginBottom: 20
     },
-   
+
     label: {
         fontSize: 16,
         marginBottom: 5,
@@ -291,9 +329,17 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         paddingHorizontal: 10,
     },
+    pickerContainer: {
+        // borderColor: '#ddd',
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 4,
+        marginBottom: 16,
+        height: 40,
+        justifyContent: 'center',
+    },
     picker: {
-        height: 50,
-        marginBottom: 15,
+        height: 40,
     },
     errorText: {
         color: 'red',
@@ -302,6 +348,42 @@ const styles = StyleSheet.create({
     errorInput: {
         borderColor: 'red',
     },
+    dateInput: {
+        height: 40,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        justifyContent: 'center',
+        paddingLeft: 10,
+    },
+    saveButton: {
+        backgroundColor: Colors.PRIMARY,
+        paddingVertical: 12,
+        borderRadius: 15,
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    saveButtonDisabled: {
+        backgroundColor: Colors.PRIMARY,
+    },
+    saveButtonText: {
+        color: '#fff',
+        fontSize: 16,
+    },
+    closeButton: {
+        backgroundColor: '#f44336',
+        paddingVertical: 12,
+        borderRadius: 15,
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    closeButtonText: {
+        color: '#fff',
+        fontSize: 16,
+    },
+    errorText: {
+        color: 'red',
+        marginBottom: 8,
+    },
 });
 
-export default AddProduct;
+ 

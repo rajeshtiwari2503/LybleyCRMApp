@@ -19,8 +19,8 @@ const RecentServicesList = (props) => {
     router.push("ComplaintDetails", { id });
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.row}>
+  const renderItem = ({ item,index }) => (
+    <View  key={index}style={styles.row}>
       <Text style={{width:50}}>{item.i}</Text>
       <Text  style={[  {paddingLeft:13,width:120}]}>{item.productName}</Text>
       <Text style={styles.statusCell}>{item.status}</Text>
@@ -52,7 +52,8 @@ const RecentServicesList = (props) => {
             </View>
             <FlatList
               data={data}
-              keyExtractor={(item) => item.i.toString()}
+              keyExtractor={item => item?._id}
+              // keyExtractor={(item) => item.i.toString()}
               renderItem={renderItem}
             />
           </View>
