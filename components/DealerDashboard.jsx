@@ -33,6 +33,7 @@ const notificationCount=10;
         { name: "Pending", population: dashData?.complaints?.pending || 0, color: "yellow", legendFontColor: "#7F7F7F", legendFontSize: 15 },
         { name: "Complete", population: dashData?.complaints?.complete || 0, color: "green", legendFontColor: "#7F7F7F", legendFontSize: 15 },
         { name: "PartPending", population: dashData?.complaints?.partPending || 0, color: "purple", legendFontColor: "#7F7F7F", legendFontSize: 15 },
+        { name: "InProgress", population: dashData?.complaints?.inProgress || 0, color: "purple", legendFontColor: "#7F7F7F", legendFontSize: 15 },
     ];
 
     // Example bar chart data
@@ -42,6 +43,7 @@ const notificationCount=10;
         { label: "Pending", data: dashData?.complaints?.pending || 0 },
         { label: "Complete", data: dashData?.complaints?.complete || 0 },
         { label: "PartPending", data: dashData?.complaints?.partPending || 0 },
+        { label: "InProgress", data: dashData?.complaints?.inProgress || 0 },
     ];
 
     return (
@@ -134,12 +136,6 @@ const notificationCount=10;
                         <Text>Wallet</Text>
                     </View>
 
-                    <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.addButton, { backgroundColor: '#FFD700' }]}>
-                        <Text style={styles.buttonText}>Add Service Request</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("/product")} style={[styles.addButton, { backgroundColor: '#90EE90' }]}>
-                        <Text style={styles.buttonText}>Add Product</Text>
-                    </TouchableOpacity>
                 </View>
 
 

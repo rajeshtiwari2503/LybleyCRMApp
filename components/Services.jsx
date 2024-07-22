@@ -51,8 +51,8 @@ export default function ViewComplaints() {
         setSelectedCategory(category);
     };
 
-    const renderItem = ({ item }) => (
-        <View key={item.i} style={styles.row}>
+    const renderItem = ({ item,index }) => (
+        <View key={ index} style={styles.row}>
             <Text style={{ width: 50 }}>{item.i}</Text>
             <Text style={[{ paddingLeft: 13, width: 120 }]}>{item.productName}</Text>
             <Text style={styles.statusCell}>{item.status}</Text>
@@ -68,6 +68,7 @@ export default function ViewComplaints() {
     return (
         <View style={styles.container}>
             <View style={{ backgroundColor: Colors.GRAY, borderRadius: 10 }}>
+                
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.buttonContainer}>
                     <TouchableOpacity
                         style={[styles.categoryButton, selectedCategory === 'All' && styles.selectedButton]}
@@ -106,7 +107,7 @@ export default function ViewComplaints() {
                     </View>
                     <FlatList
                         data={filterComplaints(selectedCategory)}
-                        keyExtractor={item => item.id}
+                        keyExtractor={item => item?._id}
                         renderItem={renderItem}
                         contentContainerStyle={styles.listContainer}
                     />
