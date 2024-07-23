@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import http_request from '../http_request';
-import Toast from 'react-native-toast-message';
 import FeedbackList from './FeedbackList';
- 
 
 const UserFeedbacks = () => {
   const [feedbacks, setFeedbacks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Loading state
   const [refresh, setRefresh] = useState("");
 
   useEffect(() => {
@@ -15,16 +14,14 @@ const UserFeedbacks = () => {
 
   const getAllFeedback = async () => {
     try {
+      setIsLoading(true); // Set loading to true before fetching data
       let response = await http_request.get("/getAllFeedback");
       let { data } = response;
       setFeedbacks(data);
     } catch (err) {
       console.log(err);
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Failed to fetch feedback',
-      });
+    } finally {
+      setIsLoading(false); // Set loading to false after data is fetched
     }
   };
 
@@ -35,27 +32,28 @@ const UserFeedbacks = () => {
   };
 
   return (
-   <>
-    <Toast ref={(ref) => Toast.setRef(ref)} />
+    <>
       <View style={styles.container}>
-        <ScrollView>
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#0000ff" /> // Show loading indicator
+        ) : (
           <FeedbackList data={data} RefreshData={RefreshData} />
-        </ScrollView>
+        )}
       </View>
-      </>
+    </>
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
-      flex: 1,
-      padding: 10,
-      backgroundColor: '#fff',
-      marginTop:25,
-      borderRadius:30
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#fff',
+    marginTop: 25,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-})
+});
 
 export default UserFeedbacks;
-
