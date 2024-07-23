@@ -112,7 +112,7 @@ const ProductList = (props) => {
   );
   return (
     <View style={styles.container}>
-      <Toast ref={(ref) => Toast.setRef(ref)} />
+      <Toast  />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Product Information</Text>
         <TouchableOpacity onPress={() => handleAdd(null)} style={{ backgroundColor: '#0284c7', padding: 10, borderRadius: 5 }}>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import http_request from "../http_request"; // Assuming this is your HTTP request module
@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ViewComplaints() {
     const router = useRouter();
+    const [loading, setloading] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [sampleComplaints, setComplaint] = useState([]);
 
@@ -19,6 +20,7 @@ export default function ViewComplaints() {
 
     const getAllComplaint = async () => {
         try {
+            setloading(true)
             const storedValue = await AsyncStorage.getItem('user');
             const user = JSON.parse(storedValue);
 
@@ -33,8 +35,10 @@ export default function ViewComplaints() {
                                     : []
             const data1 = filteredData?.map((item, index) => ({ ...item, i: index + 1 }));
             setComplaint(data1)
+            setloading(false)
         }
         catch (err) {
+            setloading(false)
             console.log(err);
         }
     }
@@ -51,8 +55,8 @@ export default function ViewComplaints() {
         setSelectedCategory(category);
     };
 
-    const renderItem = ({ item,index }) => (
-        <View key={ index} style={styles.row}>
+    const renderItem = ({ item, index }) => (
+        <View key={index} style={styles.row}>
             <Text style={{ width: 50 }}>{item.i}</Text>
             <Text style={[{ paddingLeft: 13, width: 120 }]}>{item.productName}</Text>
             <Text style={styles.statusCell}>{item.status}</Text>
@@ -68,7 +72,7 @@ export default function ViewComplaints() {
     return (
         <View style={styles.container}>
             <View style={{ backgroundColor: Colors.GRAY, borderRadius: 10 }}>
-                
+
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.buttonContainer}>
                     <TouchableOpacity
                         style={[styles.categoryButton, selectedCategory === 'All' && styles.selectedButton]}
@@ -96,23 +100,26 @@ export default function ViewComplaints() {
                     </TouchableOpacity>
                 </ScrollView>
             </View>
-            <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
-                <View>
-                    <View style={styles.header}>
-                        <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
-                        <Text style={[styles.headerCell, { width: 120 }]}>Product </Text>
-                        <Text style={[styles.headerCell, { textAlign: "center", paddingRight: 20 }]}>Status</Text>
-                        <Text style={styles.headerCell}>Updated At</Text>
-                        <Text style={[styles.headerCell, { textAlign: 'right' }]}>Actions</Text>
+            {loading ?
+                <ActivityIndicator size="large" color="#0000ff" />
+                : <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
+                    <View>
+                        <View style={styles.header}>
+                            <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
+                            <Text style={[styles.headerCell, { width: 120 }]}>Product </Text>
+                            <Text style={[styles.headerCell, { textAlign: "center", paddingRight: 20 }]}>Status</Text>
+                            <Text style={styles.headerCell}>Updated At</Text>
+                            <Text style={[styles.headerCell, { textAlign: 'right' }]}>Actions</Text>
+                        </View>
+                        <FlatList
+                            data={filterComplaints(selectedCategory)}
+                            keyExtractor={item => item?._id}
+                            renderItem={renderItem}
+                            contentContainerStyle={styles.listContainer}
+                        />
                     </View>
-                    <FlatList
-                        data={filterComplaints(selectedCategory)}
-                        keyExtractor={item => item?._id}
-                        renderItem={renderItem}
-                        contentContainerStyle={styles.listContainer}
-                    />
-                </View>
-            </ScrollView>
+                </ScrollView>
+            }
         </View>
     );
 }
@@ -124,8 +131,8 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
         paddingRight: 20,
         paddingTop: 10,
-        marginTop:25,
-        borderRadius:30
+        marginTop: 25,
+        borderRadius: 30
     },
     buttonContainer: {
         backgroundColor: Colors.GRAY,
