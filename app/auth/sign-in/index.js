@@ -148,11 +148,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 20,
-        padding: 20,
+        backgroundColor:"black",
+            padding: 20,
         borderWidth: 1, // Add border
         borderColor: '#ccc', // Border color
         borderRadius: 10, // Border radius for rounded corners
-        backgroundColor: Colors.WHITE, // Background color
+       
         shadowColor: '#000', // Shadow color
         shadowOffset: { width: 0, height: 2 }, // Shadow offset
         shadowOpacity: 0.25, // Shadow opacity
