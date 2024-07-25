@@ -23,7 +23,7 @@ const RecentServicesList = (props) => {
     <View  key={index}style={styles.row}>
       <Text style={{width:50}}>{item.i}</Text>
       <Text  style={[  {paddingLeft:13,width:120}]}>{item.productName}</Text>
-      <Text style={styles.statusCell}>{item.status}</Text>
+      <Text style={styles.statusCell}>{item?.status==="ASSIGN"?"ASSIGNED":item?.status}</Text>
       <Text style={styles.cell}>{new Date(item.updatedAt).toLocaleString()}</Text>
       <View style={styles.actions}>
         <TouchableOpacity onPress={() => handleDetails(item._id)}>

@@ -38,7 +38,7 @@ export default function Login() {
 const styles = StyleSheet.create({
     root: {
         // flex: 1,
-        backgroundColor: Colors.WHITE,
+        // backgroundColor: Colors.WHITE,
     },
     imageContainer: {
         marginTop:-20,
