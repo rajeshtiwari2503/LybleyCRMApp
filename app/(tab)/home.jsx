@@ -13,6 +13,8 @@ const Dashboard = () => {
   const [value, setValue] = useState(null);
   const [dashData, setDashData] = useState(null);
   const [complaints, setComplaint] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [refresh, setRefresh] = useState("");
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -54,8 +56,27 @@ const Dashboard = () => {
 
     fetchDashboardData();
     getAllComplaint();
-      }, [ ]);
- 
+    getAllNotification()
+      }, [refresh ]);
+      const getAllNotification = async () => {
+        const storedValue = await AsyncStorage.getItem('user');
+        const userType = JSON.parse(storedValue);
+        try {
+    
+          const endPoint = (userType?.user?.role) === "ADMIN" ? `/getAllNotification` : (userType?.user?.role) === "USER" ? `/getNotificationByUserId/${userType?.user?._id}`
+            : (userType?.user?.role) === "BRAND" ? `/getNotificationByBrandId/${userType?.user?._id}`
+              : (userType?.user?.role) === "SERVICE" ? `/getNotificationByServiceCenterId/${userType?.user?._id}`
+                : (userType?.user?.role) === "TECHNICIAN" ? `/getNotificationByTechnicianId/${userType?.user?._id}`
+                  : (userType?.user?.role) === "DEALER" ? `/getNotificationByDealerId/${userType?.user?._id}`
+                    : ""
+          let response = await http_request.get(endPoint)
+          let { data } = response;
+          setNotifications(data)
+        }
+        catch (err) {
+          console.log(err);
+        }
+      }
     const getAllComplaint = async () => {
         try {
             const storedValue = await AsyncStorage.getItem('user');
@@ -77,13 +98,16 @@ const Dashboard = () => {
         }
     }
  
+    const RefreshData=(data)=>{
+      setRefresh(data)
+    }
   return (
   
       <View style={styles.container}>
     
-        {value?.user?.role === "USER" && <UserDashboard dashData={dashData}complaints={complaints} userData={value?.user} />}
-        {value?.user?.role === "TECHNICIAN" && <TechnicianDashboard dashData={dashData}complaints={complaints} userData={value?.user} />}
-        {value?.user?.role === "DEALER" && <DealerDashboard dashData={dashData} complaints={complaints}userData={value?.user} />}
+        {value?.user?.role === "USER" && <UserDashboard dashData={dashData}complaints={complaints} userData={value?.user} notifications={notifications}RefreshData={RefreshData}/>}
+        {value?.user?.role === "TECHNICIAN" && <TechnicianDashboard dashData={dashData}complaints={complaints} userData={value?.user}notifications={notifications} RefreshData={RefreshData}/>}
+        {value?.user?.role === "DEALER" && <DealerDashboard dashData={dashData} complaints={complaints}userData={value?.user} notifications={notifications}RefreshData={RefreshData}/>}
       </View>
   
   );

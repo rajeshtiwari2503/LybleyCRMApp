@@ -120,11 +120,12 @@ export default function SignUp() {
         },
         tabButton: {
             paddingVertical: 10,
-            paddingHorizontal: 16,
+            paddingHorizontal: 8,
+            marginLeft:16,
             borderRadius: 10,
             backgroundColor: Colors.LIGHT_GRAY, // Replace with your color
             marginHorizontal: 5,
-            justifyContent:  "space-between",
+            justifyContent:  "center",
             alignItems: 'center',
         },
         selectedTab: {

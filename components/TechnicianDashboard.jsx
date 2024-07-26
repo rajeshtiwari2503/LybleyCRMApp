@@ -6,10 +6,12 @@ import { useNavigation } from '@react-navigation/native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors'
 import http_request from '../http_request';
-// import RecentServicesList from '../complaint/RecentServices';
+import { useRouter } from 'expo-router';
+import NotificationModal from './Notification';
+import RecentServicesList from './RecentServices';
 
 const TechnicianDashboard = (props) => {
-    const navigation = useNavigation();
+    const router = useRouter();
     const userData = props?.userData; // Technician's user data
     const dashData = props?.dashData; // Dashboard data for counts and summaries
     const [complaint, setComplaint] = useState([]); // State to hold complaint data
@@ -32,6 +34,9 @@ const TechnicianDashboard = (props) => {
       getAllComplaint();
     }, [refresh]);
   
+
+   
+
     // Function to calculate TAT in hours from created and updated timestamps
     const calculateTAT = (createdAt, updatedAt) => {
       const created = new Date(createdAt);
@@ -100,7 +105,27 @@ const TechnicianDashboard = (props) => {
       }
     };
   
-    const notificationCount=10;
+    const notifications = props?.notifications;
+    const RefreshData = props?.RefreshData
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const showNotification = () => {
+        setModalVisible(true);
+    };
+
+    const hideNotification = () => {
+        setModalVisible(false);
+    };
+    const unreadNoti = userData?.role === "ADMIN" ? notifications?.filter((item) => item?.adminStatus === "UNREAD")
+    : userData?.role === "BRAND" ? notifications?.filter((item) => item?.brandStatus === "UNREAD")
+      : userData?.role === "SERVICE" ? notifications?.filter((item) => item?.serviceCenterStatus === "UNREAD")
+        : userData?.role === "TECHNICIAN" ? notifications?.filter((item) => item?.technicianStatus === "UNREAD")
+          : userData?.role === "USER" ? notifications?.filter((item) => item?.userStatus === "UNREAD")
+            : userData?.role === "DEALER" ? notifications?.filter((item) => item?.userStatus === "UNREAD")
+              : ""
+
+    const notificationCount = unreadNoti?.length;
+
     // Filter complaints based on user role for displaying in the list
     const filterData = userData?.role === "ADMIN" ? complaint
       : userData?.role === "BRAND" ? complaint.filter((item) => item?.brandId === userData._id)
@@ -114,9 +139,9 @@ const TechnicianDashboard = (props) => {
     const data = filterData?.map((item, index) => ({ ...item, i: index + 1 }));
   
     // Function to trigger data refresh
-    const RefreshData = (data) => {
-      setRefresh(data);
-    };
+    // const RefreshData = (data) => {
+    //   setRefresh(data);
+    // };
 
     const pieChartData = [
         { name: "AllComplaints", population: dashData?.complaints?.allComplaints || 0, color: "rgba(131, 167, 234, 1)", legendFontColor: "#7F7F7F", legendFontSize: 15 },
@@ -142,28 +167,32 @@ const TechnicianDashboard = (props) => {
             <View style={styles.container}>
                 {/* Replace with your React Native components and styling */}
                 <View style={styles.headerContent}>
-                    <MaterialIcons name="person" size={24} color="black" style={styles.icon} />
+                    <TouchableOpacity onPress={() => router.push("profile")}  >
+                        <MaterialIcons name="person" size={24} color="black" style={styles.icon} />
+                    </TouchableOpacity>
                     <Text style={styles.title}>Dashboard</Text>
                     <View style={styles.iconContainer}>
-                        <FontAwesome name="bell" size={24} color="black" style={styles.icon} />
-                        {notificationCount > 0 && (
-                            <View style={styles.notificationBadge}>
-                                <Text style={styles.notificationText}>{notificationCount}</Text>
-                            </View>
-                        )}
+                        <TouchableOpacity onPress={showNotification}  >
+                            <FontAwesome name="bell" size={24} color="black" style={styles.icon} />
+                            {notificationCount > 0 && (
+                                <View style={styles.notificationBadge}>
+                                    <Text style={styles.notificationText}>{notificationCount}</Text>
+                                </View>
+                            )}
+                        </TouchableOpacity>
                     </View>
                 </View>
 
                 <View style={styles.summaryContainer}>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.allComplaints} /> */}
                             <Text>{dashData?.complaints?.allComplaints}</Text>
                         </TouchableOpacity>
                         <Text>Total Service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FF6347' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FF6347' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.complete} /> */}
                             <Text>{dashData?.complaints?.complete}</Text>
 
@@ -171,7 +200,7 @@ const TechnicianDashboard = (props) => {
                         <Text>Completed</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FF6347' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FF6347' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.assign} /> */}
                             <Text>{dashData?.complaints?.assign}</Text>
 
@@ -179,7 +208,7 @@ const TechnicianDashboard = (props) => {
                         <Text>Assigned</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#90EE90' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#90EE90' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.pending} /> */}
                             <Text>{dashData?.complaints?.pending}</Text>
 
@@ -187,7 +216,7 @@ const TechnicianDashboard = (props) => {
                         <Text>Pending</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#90EE90' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#90EE90' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.pending} /> */}
                             <Text>{dashData?.complaints?.inProgress}</Text>
 
@@ -195,7 +224,7 @@ const TechnicianDashboard = (props) => {
                         <Text>In Progress</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.zeroToOneDays} /> */}
                             <Text>{dashData?.complaints?.zeroToOneDays}</Text>
 
@@ -203,7 +232,7 @@ const TechnicianDashboard = (props) => {
                         <Text>0-1 days service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.twoToFiveDays} /> */}
                             <Text>{dashData?.complaints?.twoToFiveDays}</Text>
 
@@ -211,7 +240,7 @@ const TechnicianDashboard = (props) => {
                         <Text>2-5 days service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.moreThanFiveDays} /> */}
                             <Text>{dashData?.complaints?.moreThanFiveDays}</Text>
 
@@ -219,7 +248,7 @@ const TechnicianDashboard = (props) => {
                         <Text>More than Five Days Service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.moreThanFiveDays} /> */}
                             <Text>{averageClosingTime}</Text>
 
@@ -227,7 +256,7 @@ const TechnicianDashboard = (props) => {
                         <Text>CT</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.moreThanFiveDays} /> */}
                             <Text>{averageResponseTime}</Text>
 
@@ -235,7 +264,7 @@ const TechnicianDashboard = (props) => {
                         <Text>RT</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.moreThanFiveDays} /> */}
                             <Text>{averageTAT}</Text>
 
@@ -243,7 +272,7 @@ const TechnicianDashboard = (props) => {
                         <Text>TAT</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.moreThanFiveDays} /> */}
                             <Text>{dashData?.complaints?.moreThanFiveDays}</Text>
 
@@ -307,7 +336,15 @@ const TechnicianDashboard = (props) => {
                     </View>
                 </ScrollView>
 
-                {/* <RecentServicesList data={filterData} userData={userData} /> */}
+                <RecentServicesList data={filterData} userData={userData} />
+                <NotificationModal
+                    visible={modalVisible}
+                    notifications={notifications}
+                    value={userData}
+                    RefreshData={RefreshData}
+                    message="This is a notification message!"
+                    onClose={hideNotification}
+                />
             </View>
         </ScrollView>
     );

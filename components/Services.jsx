@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ServiceDetails from './ServiceDetails';
 import { MaterialIcons } from '@expo/vector-icons';
 import UpdateServiceStatus from './UpdateServiceStatus';
+import ServiceRequestForm from './CreateServiceRequest';
 
 const getStatusStyle = (status) => {
     switch (status) {
@@ -36,6 +37,7 @@ export default function ViewComplaints() {
     const [sampleComplaints, setComplaint] = useState([]);
     const [isModalVisible, setModalVisible] = useState(false);
     const [updateModalVisible, setUpdateModalVisible] = useState(false);
+    const [createModalVisible, setCreateModalVisible] = useState(false);
 
     useEffect(() => {
         getAllComplaint();
@@ -87,7 +89,9 @@ export default function ViewComplaints() {
         setSelectedService(item);
         setUpdateModalVisible(true);
     }
-
+    const handleCreateService = ( ) => {
+        setCreateModalVisible(true);
+    }
     const RefreshData = (data) => {
         setRefresh(data);
     }
@@ -142,7 +146,11 @@ export default function ViewComplaints() {
                         <Text style={styles.buttonText}>Closed</Text>
                     </TouchableOpacity>
                 </ScrollView>
+
             </View>
+            <TouchableOpacity style={styles.button} onPress={handleCreateService}>
+            <Text style={styles.buttonText}>Create Service Request</Text>
+        </TouchableOpacity>
             {loading ?
                 <ActivityIndicator size="large" color="#0000ff" />
                 : <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
@@ -174,7 +182,15 @@ export default function ViewComplaints() {
                 service={selectedService}
                 RefreshData={RefreshData}
             />
+            <ServiceRequestForm
+                isVisible={createModalVisible}
+                onClose={() => setCreateModalVisible(false)}
+                // user={user}
+                // onSave={handleSave}
+                RefreshData={RefreshData}
+            />
         </View>
+
     );
 }
 
@@ -280,5 +296,24 @@ const styles = StyleSheet.create({
     },
     defaultStatus: {
         backgroundColor: "#28A745", // Default background color
+    },
+    button: {
+        marginLeft: 20,
+        backgroundColor: Colors.PRIMARY, // Blue background color
+        paddingVertical: 12, // Vertical padding
+        paddingHorizontal: 20, // Horizontal padding
+        borderRadius: 5, // Rounded corners
+        alignItems: 'center', // Center text horizontally
+        elevation: 3, // Shadow for Android
+        shadowColor: '#000', // Shadow color for iOS
+        shadowOffset: { width: 0, height: 2 }, // Shadow offset for iOS
+        shadowOpacity: 0.2, // Shadow opacity for iOS
+        shadowRadius: 3,
+        margin:20 // Shadow radius for iOS
+    },
+    buttonText: {
+        color: '#FFF', // White text color
+        fontSize: 16, // Font size
+        fontWeight: 'bold', // Bold text
     }
 });
