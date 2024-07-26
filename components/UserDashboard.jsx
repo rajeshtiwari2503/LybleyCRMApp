@@ -1,4 +1,4 @@
-import React  from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
 import { BarChart, PieChart } from 'react-native-chart-kit';
@@ -6,17 +6,37 @@ import { useNavigation } from '@react-navigation/native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors'
 import RecentServicesList from './RecentServices';
+import { useRouter } from 'expo-router';
+import NotificationModal from './Notification';
+
 // import RecentServicesList from '../complaint/RecentServices';
 
 const UserDashboard = (props) => {
-    const navigation = useNavigation();
+    const router = useRouter();
     const userData = props?.userData;
     const dashData = props?.dashData;
     const complaint = props?.complaints;
+    const notifications = props?.notifications;
+    const RefreshData = props?.RefreshData
+    const [modalVisible, setModalVisible] = useState(false);
 
-  
+    const showNotification = () => {
+        setModalVisible(true);
+    };
 
-const notificationCount=10;
+    const hideNotification = () => {
+        setModalVisible(false);
+    };
+    const unreadNoti = userData?.role === "ADMIN" ? notifications?.filter((item) => item?.adminStatus === "UNREAD")
+    : userData?.role === "BRAND" ? notifications?.filter((item) => item?.brandStatus === "UNREAD")
+      : userData?.role === "SERVICE" ? notifications?.filter((item) => item?.serviceCenterStatus === "UNREAD")
+        : userData?.role === "TECHNICIAN" ? notifications?.filter((item) => item?.technicianStatus === "UNREAD")
+          : userData?.role === "USER" ? notifications?.filter((item) => item?.userStatus === "UNREAD")
+            : userData?.role === "DEALER" ? notifications?.filter((item) => item?.userStatus === "UNREAD")
+              : ""
+
+    const notificationCount = unreadNoti?.length;
+
 
 
     const filterData = userData?.role === "ADMIN" ? dashData
@@ -51,28 +71,32 @@ const notificationCount=10;
             <View style={styles.container}>
                 {/* Replace with your React Native components and styling */}
                 <View style={styles.headerContent}>
-                    <MaterialIcons name="person" size={24} color="black" style={styles.icon} />
+                    <TouchableOpacity onPress={() => router.push("profile")}  >
+                        <MaterialIcons name="person" size={24} color="black" style={styles.icon} />
+                    </TouchableOpacity>
                     <Text style={styles.title}>Dashboard</Text>
                     <View style={styles.iconContainer}>
-                        <FontAwesome name="bell" size={24} color="black" style={styles.icon} />
-                        {notificationCount > 0 && (
-                            <View style={styles.notificationBadge}>
-                                <Text style={styles.notificationText}>{notificationCount}</Text>
-                            </View>
-                        )}
+                        <TouchableOpacity onPress={showNotification}  >
+                            <FontAwesome name="bell" size={24} color="black" style={styles.icon} />
+                            {notificationCount > 0 && (
+                                <View style={styles.notificationBadge}>
+                                    <Text style={styles.notificationText}>{notificationCount}</Text>
+                                </View>
+                            )}
+                        </TouchableOpacity>
                     </View>
                 </View>
 
                 <View style={styles.summaryContainer}>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.allComplaints} /> */}
                             <Text>{dashData?.complaints?.allComplaints}</Text>
                         </TouchableOpacity>
                         <Text>Total Service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FF6347' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FF6347' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.complete} /> */}
                             <Text>{dashData?.complaints?.complete}</Text>
 
@@ -80,7 +104,7 @@ const notificationCount=10;
                         <Text>Completed</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FF6347' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FF6347' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.assign} /> */}
                             <Text>{dashData?.complaints?.assign}</Text>
 
@@ -88,7 +112,7 @@ const notificationCount=10;
                         <Text>Assigned</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#90EE90' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#90EE90' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.pending} /> */}
                             <Text>{dashData?.complaints?.pending}</Text>
 
@@ -96,7 +120,7 @@ const notificationCount=10;
                         <Text>Pending</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#90EE90' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#90EE90' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.pending} /> */}
                             <Text>{dashData?.complaints?.inProgress}</Text>
 
@@ -104,7 +128,7 @@ const notificationCount=10;
                         <Text>In Progress</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.zeroToOneDays} /> */}
                             <Text>{dashData?.complaints?.zeroToOneDays}</Text>
 
@@ -112,7 +136,7 @@ const notificationCount=10;
                         <Text>0-1 days service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.twoToFiveDays} /> */}
                             <Text>{dashData?.complaints?.twoToFiveDays}</Text>
 
@@ -120,7 +144,7 @@ const notificationCount=10;
                         <Text>2-5 days service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.moreThanFiveDays} /> */}
                             <Text>{dashData?.complaints?.moreThanFiveDays}</Text>
 
@@ -128,10 +152,10 @@ const notificationCount=10;
                         <Text>More than Five Days Service</Text>
                     </View>
 
-                    <TouchableOpacity onPress={() => navigation.navigate("/complaint/create")} style={[styles.addButton, { backgroundColor: '#FFD700' }]}>
+                    <TouchableOpacity onPress={() => router.push("services")} style={[styles.addButton, { backgroundColor: '#FFD700' }]}>
                         <Text style={styles.buttonText}>Add Service Request</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate("/product")} style={[styles.addButton, { backgroundColor: '#90EE90' }]}>
+                    <TouchableOpacity onPress={() => router.push("product")} style={[styles.addButton, { backgroundColor: '#90EE90' }]}>
                         <Text style={styles.buttonText}>Add Product</Text>
                     </TouchableOpacity>
                 </View>
@@ -190,9 +214,17 @@ const notificationCount=10;
                 </ScrollView>
 
                 <RecentServicesList data={filterData} userData={userData} />
+                <NotificationModal
+                    visible={modalVisible}
+                    notifications={notifications}
+                    value={userData}
+                    RefreshData={RefreshData}
+                    message="This is a notification message!"
+                    onClose={hideNotification}
+                />
             </View>
         </ScrollView>
-       
+
     );
 };
 
@@ -201,8 +233,8 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 10,
         backgroundColor: '#fff',
-        marginTop:25,
-        borderRadius:30
+        marginTop: 25,
+        borderRadius: 30
     },
     gridContainer: {
         // flexDirection: 'row',
@@ -232,8 +264,8 @@ const styles = StyleSheet.create({
     iconContainer: {
         position: 'relative',
         paddingHorizontal: 10,
-      },
-      notificationBadge: {
+    },
+    notificationBadge: {
         position: 'absolute',
         right: 10,
         top: -1,
@@ -243,12 +275,12 @@ const styles = StyleSheet.create({
         height: 20,
         justifyContent: 'center',
         alignItems: 'center',
-      },
-      notificationText: {
+    },
+    notificationText: {
         color: 'white',
         fontSize: 12,
         fontWeight: 'bold',
-      },
+    },
     summaryContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
