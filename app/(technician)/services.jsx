@@ -1,13 +1,13 @@
-import { View, Text,StyleSheet } from 'react-native'
+import { View,  StyleSheet } from 'react-native'
 import React from 'react'
-// import Products from '../../components/Products';
-import DealerReport from '../../components/Report';
+import ViewComplaints from '../../components/Services';
+ 
  
 
-export default function Product() {
+export default function Service() {
   return (
     <View style={styles.container}>
-      <DealerReport />
+      <ViewComplaints  />
     </View>
   )
 }
