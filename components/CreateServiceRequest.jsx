@@ -12,7 +12,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors'
 
 const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
-    const { control, handleSubmit, formState: { errors }, getValues, setValue } = useForm();
+    const { control, handleSubmit, formState: { errors }, getValues,reset, setValue } = useForm();
     const [image, setImage] = useState(null);
     
     const [issueImages, setIssueImages] = useState([]);
@@ -40,9 +40,11 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
         }
     }
     const RegiterComplaint = async (reqdata) => {
+     
 
         try {
             setLoading(true)
+          
             const formData = new FormData();
 
             for (const key in reqdata) {
@@ -51,28 +53,29 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                 }
             }
             const issueImages = image;
-            // console.log("dhhh",issueImages);
-            if (issueImages) {
-                formData.append('issueImages', issueImages);
-            }
-            const fileUri = image.replace('file://', '');
         
-            formData.append('issueImages', {
-                uri: fileUri,
-                type: 'image/jpeg', // Adjust according to the image type
-                name: 'image.jpg', // Name of the file
-            });
+            console.log(reqdata);
+            if (image) {
+                const fileUri = image.replace('file://', '');
+                formData.append('issueImages', {
+                  uri: fileUri,
+                  type: 'image/jpeg',
+                  name: 'image.jpg',
+                });
+              }
             let response = await http_request.post('/createComplaint', formData)
             const { data } = response
+            console.log(response);
             // ToastMessage(data)
             setLoading(false)
             onClose()
+            reset()
             // router.push("/complaint/allComplaint")
         }
         catch (err) {
             setLoading(false)
-            ToastMessage(err.response.data)
-
+            console.log("gsfgfg",err.response.data || err);
+            reset()
             console.log(err);
         }
 
@@ -124,13 +127,14 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
             });
 
             // Log the entire result object to understand its structure
-            console.log('Document Picker Result:', result);
+            // console.log('Document Picker Result:', result);
 
             if (!result.canceled) {
                 // Check if assets are present and handle them
                 if (result.assets && result.assets.length > 0) {
                     const imageUris = result.assets.map(asset => asset.uri);
                     setImage(result.assets[0].uri);
+                    // console.log("result.assets[0].uri",result.assets[0].uri);
                     setIssueImages(prevImages => [...prevImages, ...imageUris]);
                 } else {
                     console.log('No images selected.');
@@ -195,7 +199,7 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                     <Text style={styles.label}>Select Product</Text>
                     <Controller
                         control={control}
-                        name="selectedProduct"
+                        name="productName"
                         render={({ field: { onChange, value } }) => (
                             <Picker
                                 selectedValue={products.find(product => product._id === getValues('productId'))?._id || ''}
@@ -209,7 +213,7 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                             </Picker>
                         )}
                     />
-                    {errors.selectedProduct && <Text style={styles.errorText}>{errors.selectedProduct.message}</Text>}
+                    {errors.productName && <Text style={styles.errorText}>{errors.productName.message}</Text>}
 
                     <Text style={styles.label}>Product Category</Text>
                     <Controller
