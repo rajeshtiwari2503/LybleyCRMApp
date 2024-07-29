@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
+import WalletPage from '../../components/Wallet';
  
 
 export default function Wallet() {
   return (
     <View style={styles.container}>
-      <Text>ram</Text>
+     <WalletPage />
     </View>
   )
 }

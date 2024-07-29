@@ -1,22 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { Colors } from '@/constants/Colors'
+import ServiceDetails from './ServiceDetails';
+import { Colors } from '@/constants/Colors';
 
 const ReportServicesList = (props) => {
-    const router = useRouter();
-    //   console.log(props);
-    //   const data11 = props?.data;
-    //   const sortedData1 = data11 
-    //   const data1 =     sortedData1 ;
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [selectedService, setSelectedService] = useState('');
     const data = props?.data;
-    const sortData = data?.map((item, index) => ({ ...item, i: index + 1 }));
+    const sortData = data?.map((item, index) => ({ ...item, i: index + 1 })) || [];
 
-    //   console.log(data);
-    const handleDetails = (id) => {
-        router.push("ComplaintDetails", { id });
-    };
+    // console.log("sortData", sortData);
+    const handleDetails = (item) => {
+        setSelectedService(item);
+        setModalVisible(true);
+    }
 
     const renderItem = ({ item, index }) => (
         <View key={index} style={styles.row}>
@@ -25,7 +23,7 @@ const ReportServicesList = (props) => {
             <Text style={styles.statusCell}>{item?.status === "ASSIGN" ? "ASSIGNED" : item?.status}</Text>
             <Text style={styles.cell}>{new Date(item.updatedAt).toLocaleString()}</Text>
             <View style={styles.actions}>
-                <TouchableOpacity onPress={() => handleDetails(item._id)}>
+                <TouchableOpacity onPress={() => handleDetails(item)}>
                     <Ionicons name="eye" size={24} color="green" />
                 </TouchableOpacity>
             </View>
@@ -34,36 +32,40 @@ const ReportServicesList = (props) => {
 
     return (
         <View style={styles.container}>
-
-            {!sortData?.length > 0 ? (
+            {!data ? (
                 <View>
-                    <View>
-                        <Text style={styles.title}>Filteres Services</Text>
-                    </View>
-
+                    <Text style={styles.title}>Filtered Services</Text>
                     <View style={styles.loader}>
                         <ActivityIndicator size="large" color="#0000ff" />
                     </View>
+                </View>
+            ) : sortData.length === 0 ? (
+                <View style={styles.loader}>
+                    <Text>No data available</Text>
                 </View>
             ) : (
                 <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
                     <View>
                         <View style={styles.header}>
                             <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
-                            <Text style={[styles.headerCell, { width: 120 }]}>Product </Text>
+                            <Text style={[styles.headerCell, { width: 120 }]}>Product</Text>
                             <Text style={[styles.headerCell, { textAlign: "center", paddingRight: 20 }]}>Status</Text>
                             <Text style={styles.headerCell}>Updated At</Text>
                             <Text style={[styles.headerCell, { textAlign: 'right' }]}>Actions</Text>
                         </View>
                         <FlatList
                             data={sortData}
-                            keyExtractor={item => item?._id}
-                            // keyExtractor={(item) => item.i.toString()}
+                            keyExtractor={(item) => item._id.toString()}
                             renderItem={renderItem}
                         />
                     </View>
                 </ScrollView>
             )}
+             <ServiceDetails
+                isVisible={isModalVisible}
+                onClose={() => setModalVisible(false)}
+                service={selectedService}
+            />
         </View>
     );
 };
@@ -87,7 +89,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         paddingVertical: 10,
         paddingHorizontal: 15,
-
         borderBottomWidth: 1,
         borderBottomColor: '#ddd',
         backgroundColor: '#f8f8f8',
@@ -116,11 +117,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         backgroundColor: Colors.PRIMARY,
         color: "white",
-        // marginLeft:20,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        // paddingLeft:20,
         paddingTop: 7,
         paddingBottom: 7,
         marginRight: 10,
@@ -140,7 +136,6 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
         flexDirection: 'column',
-
     },
 });
 

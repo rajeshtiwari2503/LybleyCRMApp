@@ -43,8 +43,9 @@ const DealerReport = ({ userData }) => {
                 const complaintDate = new Date(complaint.createdAt);
                 return complaintDate >= new Date(startDate) && complaintDate <= new Date(endDate);
             });
+            setFilteredData(filtered)
         }
-        setFilteredData(filtered)
+       
         setFilteredComplaints(filtered);
     };
 
@@ -116,18 +117,10 @@ const DealerReport = ({ userData }) => {
                 
             </View>
 
-            <View style={styles.complaintsContainer}>
-                {loading ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
-                ) : filteredComplaints.length > 0 ? (
-                    <ReportServicesList data={filteredData} />
-                    // <Text>{filteredComplaints.length}</Text>
-                     
-                ) : (
-                    <Text>No complaints found</Text>
-                )}
-            </View>
              
+                    <ReportServicesList data={filteredData} />               
+             
+            
         </ScrollView>
     );
 };

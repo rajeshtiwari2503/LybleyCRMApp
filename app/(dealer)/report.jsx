@@ -13,7 +13,7 @@ export default function Report() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#000000',
+    backgroundColor: '#000000',
     paddingBottom:10,
     paddingTop:10
     // padding: 10,

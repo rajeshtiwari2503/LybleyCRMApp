@@ -1,14 +1,14 @@
 import { View,  StyleSheet } from 'react-native'
 import React from 'react'
-// import ViewComplaints from '../../components/Services';
-import DealerReport from '../../components/Report';
+import ViewComplaints from '../../components/Services';
+// import DealerReport from '../../components/Report';
  
  
 
 export default function Service() {
   return (
     <View style={styles.container}>
-    <DealerReport />
+    <ViewComplaints />
     </View>
   )
 }
