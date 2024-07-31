@@ -67,6 +67,7 @@ const UserDashboard = (props) => {
     ];
 
     return (
+        
         <ScrollView>
             <View style={styles.container}>
                 {/* Replace with your React Native components and styling */}
@@ -232,8 +233,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 10,
+       
         backgroundColor: '#fff',
-        marginTop: 25,
+        // marginTop: 25,
         borderRadius: 30
     },
     gridContainer: {

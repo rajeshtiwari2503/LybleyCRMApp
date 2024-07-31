@@ -1,23 +1,27 @@
- import React from 'react';
+ import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/Colors'
+import ServiceDetails from './ServiceDetails';
 
 const RecentServicesList = (props) => {
   const router = useRouter();
-
+  const [selectedService, setSelectedService] = useState('');
+  const [isModalVisible, setModalVisible] = useState(false);
   const userData = props?.userData;
   const data11 = props?.data;
+ 
   const sortedData1 = data11.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-  const data1 = userData?.role === "USER" ? sortedData1?.filter((item) => item?.status === "ASSIGN" || item?.status === "PENDING") : sortedData1;
+  // const data1 = userData?.role === "USER" ? sortedData1?.filter((item) => item?.status === "ASSIGN" || item?.status === "PENDING") : sortedData1;
 
-  const sortData = data1?.map((item, index) => ({ ...item, i: index + 1 }));
+  const sortData = sortedData1?.map((item, index) => ({ ...item, i: index + 1 }));
   const data = sortData;
-
-  const handleDetails = (id) => {
-    router.push("ComplaintDetails", { id });
-  };
+  // console.log(sortData,"sortData");
+  const handleDetails = (item) => {
+    setSelectedService(item);
+    setModalVisible(true);
+}
 
   const renderItem = ({ item,index }) => (
     <View  key={index}style={styles.row}>
@@ -26,7 +30,7 @@ const RecentServicesList = (props) => {
       <Text style={styles.statusCell}>{item?.status==="ASSIGN"?"ASSIGNED":item?.status}</Text>
       <Text style={styles.cell}>{new Date(item.updatedAt).toLocaleString()}</Text>
       <View style={styles.actions}>
-        <TouchableOpacity onPress={() => handleDetails(item._id)}>
+        <TouchableOpacity onPress={() => handleDetails(item)}>
         <Ionicons name="eye" size={24} color="green" />
         </TouchableOpacity>
       </View>
@@ -59,6 +63,11 @@ const RecentServicesList = (props) => {
           </View>
         </ScrollView>
       )}
+       <ServiceDetails
+                isVisible={isModalVisible}
+                onClose={() => setModalVisible(false)}
+                service={selectedService}
+            />
     </View>
   );
 };

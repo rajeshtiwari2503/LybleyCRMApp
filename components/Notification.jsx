@@ -22,7 +22,7 @@ const NotificationModal = ({ notifications, RefreshData, value, visible, onClose
     };
 
     const handleNextPage = () => {
-        if ((currentPage + 1) * notificationsPerPage < notifications.length) {
+        if ((currentPage + 1) * notificationsPerPage < notifications?.length) {
             setCurrentPage(currentPage + 1);
         }
     };
@@ -63,12 +63,12 @@ const NotificationModal = ({ notifications, RefreshData, value, visible, onClose
                 </TouchableOpacity>
 
                 {(
-                    (value?.role === "USER" && item.userStatus === "UNREAD") ||
-                    (value?.role === "TECHNICIAN" && item.technicianStatus === "UNREAD") ||
-                    (value?.role === "DEALER" && item.dealerStatus === "UNREAD")
+                    (value?.role === "USER" && item?.userStatus === "UNREAD") ||
+                    (value?.role === "TECHNICIAN" && item?.technicianStatus === "UNREAD") ||
+                    (value?.role === "DEALER" && item?.dealerStatus === "UNREAD")
                 ) && (
                         <TouchableOpacity
-                            onPress={() => handleReadMark(item._id)}
+                            onPress={() => handleReadMark(item?._id)}
                             style={styles.buttonRead}
                         >
                             <Text style={styles.buttonReadText}>Mark as Read</Text>
@@ -104,7 +104,7 @@ const NotificationModal = ({ notifications, RefreshData, value, visible, onClose
                 <FlatList
                     data={currentNotifications}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item._id}
+                    keyExtractor={(item) => item?._id}
                     contentContainerStyle={styles.list}
                 />
             ) : (
@@ -122,9 +122,9 @@ const NotificationModal = ({ notifications, RefreshData, value, visible, onClose
                     onPress={handleNextPage}
                     style={[
                         styles.button,
-                        (currentPage + 1) * notificationsPerPage >= notifications.length && styles.buttonDisabled
+                        (currentPage + 1) * notificationsPerPage >= notifications?.length && styles.buttonDisabled
                     ]}
-                    disabled={(currentPage + 1) * notificationsPerPage >= notifications.length}
+                    disabled={(currentPage + 1) * notificationsPerPage >= notifications?.length}
                 >
                     <Text style={styles.buttonText}>Next</Text>
                 </TouchableOpacity>

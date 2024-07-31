@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
-import Supports from '../../components/Supports';
+import Products from "../components/Products"
 
-export default function Support() {
+
+export default function ProductScreen() {
   return (
     <View style={styles.container}>
-       <Supports />
+      <Products />
     </View>
   )
 }
@@ -13,8 +14,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000000',
-    paddingBottom:10,
-    paddingTop:10
-    // padding: 10,
+    paddingBottom: 5,
+    paddingTop: 5,
   },
 });

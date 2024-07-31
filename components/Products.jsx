@@ -54,9 +54,10 @@ const Products = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-        padding: 10,
+        // padding: 10,
         backgroundColor: '#fff',
-        marginTop:25,
+        marginTop:5,
+         marginBottom:5,
         borderRadius:30
   },
 });

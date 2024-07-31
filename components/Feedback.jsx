@@ -2,13 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import http_request from '../http_request';
 import FeedbackList from './FeedbackList';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import TechFeedbacks from './TechFeedback';
 
 const UserFeedbacks = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [refresh, setRefresh] = useState("");
+  const [value, setValue] = useState(null);
 
   useEffect(() => {
+    const getStoredValue = async () => {
+      try {
+        const storedValue = await AsyncStorage.getItem("user");
+        if (storedValue) {
+          setValue(JSON.parse(storedValue));
+        }
+      } catch (err) {
+        console.error('Failed to retrieve stored value', err);
+      }
+    };
+    getStoredValue()
     getAllFeedback();
   }, [refresh]);
 
@@ -33,13 +47,18 @@ const UserFeedbacks = () => {
 
   return (
     <>
-      <View style={styles.container}>
-        {isLoading ? (
-          <ActivityIndicator size="large" color="#0000ff" /> // Show loading indicator
-        ) : (
-          <FeedbackList data={data} RefreshData={RefreshData} />
-        )}
-      </View>
+    <View style={styles.container}>
+  {isLoading ? (
+    <ActivityIndicator size="large" color="#0000ff" />  
+  ) : (
+    value?.user?.role === "TECHNICIAN" ? (
+      <TechFeedbacks data={data} RefreshData={RefreshData} />
+    ) : (
+      <FeedbackList data={data} RefreshData={RefreshData} />
+    )
+  )}
+</View>
+
     </>
   );
 };
@@ -47,9 +66,11 @@ const UserFeedbacks = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    // padding: 10,
     backgroundColor: '#fff',
-    marginTop: 25,
+    marginTop: 5,
+ 
+    marginBottom:5,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center'

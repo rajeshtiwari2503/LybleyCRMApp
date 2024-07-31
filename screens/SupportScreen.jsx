@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
- 
+import Supports from "../components/Supports"
 
-export default function Wallet() {
+
+export default function SupportScreen() {
   return (
     <View style={styles.container}>
-      <Text>ram</Text>
+      <Supports />
     </View>
   )
 }
@@ -13,8 +14,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000000',
-    paddingBottom:10,
-    paddingTop:10
-    // padding: 10,
+    paddingBottom: 5,
+    paddingTop: 5,
   },
 });

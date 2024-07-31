@@ -1,9 +1,16 @@
-import React  from 'react';
-import { View, Text, FlatList,  StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Rating } from 'react-native-ratings';
+import Modal from 'react-native-modal';
 
 const FeedbackPage = ({ data }) => {
-   
+  const [selectedFeedback, setSelectedFeedback] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleViewDetails = (item) => {
+    setSelectedFeedback(item);
+    setModalVisible(true);
+  };
 
   const renderFeedbackItem = ({ item }) => (
     <View style={styles.itemContainer}>
@@ -11,72 +18,97 @@ const FeedbackPage = ({ data }) => {
         <Text style={styles.indexText}>{item?.i}</Text>
       </View>
       <Text style={styles.itemText}>Ticket Number: {item.ticketNumber}</Text>
-      <Text style={styles.itemText}>Service Date: {item.serviceDate}</Text>
       <Text style={styles.itemText}>Customer: {item.customerName}</Text>
-      <Text style={styles.itemText}>Issues Faced: {item.issuesFaced}</Text>
-      <Text style={styles.itemText}>Comments: {item.comments}</Text>
-      <Text style={styles.itemText}>Future Service Interest: {item.futureServiceInterest}</Text>
-      <View style={styles.row}>
-        <Text style={styles.itemText}>Overall Satisfaction:</Text>
-        <Rating
-          imageSize={20}
-          readonly
-          startingValue={item.overallSatisfaction}
-          style={styles.rating}
-        />
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.itemText}>Service Quality:</Text>
-        <Rating
-          imageSize={20}
-          readonly
-          startingValue={item.serviceQuality}
-          style={styles.rating}
-        />
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.itemText}>Timeliness:</Text>
-        <Rating
-          imageSize={20}
-          readonly
-          startingValue={item.timeliness}
-          style={styles.rating}
-        />
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.itemText}>Professionalism:</Text>
-        <Rating
-          imageSize={20}
-          readonly
-          startingValue={item.professionalism}
-          style={styles.rating}
-        />
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.itemText}>Recommendation Likelihood:</Text>
-        <Rating
-          imageSize={20}
-          readonly
-          startingValue={item.recommendationLikelihood}
-          style={styles.rating}
-        />
-      </View>
       <Text style={styles.itemText}>Created At: {new Date(item.createdAt).toLocaleString()}</Text>
+      <Text style={styles.itemText}>Service Date: {item.serviceDate}</Text>
+      <TouchableOpacity style={styles.viewButton} onPress={() => handleViewDetails(item)}>
+        <Text style={styles.viewButtonText}>View</Text>
+      </TouchableOpacity>
     </View>
   );
-  
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Feedback List</Text>
-      <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
-        <FlatList
-          data={data}
-          keyExtractor={(item) => item?._id} // Replace with your unique ID field
-          renderItem={renderFeedbackItem}
-          contentContainerStyle={styles.listContainer}
-        />
-      </ScrollView>
+      <FlatList
+        data={data}
+        keyExtractor={(item) => item?._id} // Replace with your unique ID field
+        renderItem={renderFeedbackItem}
+        contentContainerStyle={styles.listContainer}
+      />
+
+      {/* Modal for displaying detailed feedback */}
+      <Modal
+        isVisible={modalVisible}
+        transparent={true}
+        animationType="slide"
+        onBackdropPress={() => setModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContent}>
+            {selectedFeedback && (
+              <ScrollView>
+                <Text style={styles.modalHeader}>Feedback Details</Text>
+                <Text style={styles.modalText}>Ticket Number: {selectedFeedback.ticketNumber}</Text>
+                <Text style={styles.modalText}>Service Date: {selectedFeedback.serviceDate}</Text>
+                <Text style={styles.modalText}>Customer: {selectedFeedback.customerName}</Text>
+                <Text style={styles.modalText}>Issues Faced: {selectedFeedback.issuesFaced}</Text>
+                <Text style={styles.modalText}>Comments: {selectedFeedback.comments}</Text>
+                <Text style={styles.modalText}>Future Service Interest: {selectedFeedback.futureServiceInterest}</Text>
+                <Text style={styles.modalText}>Created At: {new Date(selectedFeedback.createdAt).toLocaleString()}</Text>
+                <View style={styles.row}>
+                  <Text style={styles.modalText}>Overall Satisfaction:</Text>
+                  <Rating
+                    imageSize={20}
+                    readonly
+                    startingValue={selectedFeedback.overallSatisfaction}
+                    style={styles.rating}
+                  />
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.modalText}>Service Quality:</Text>
+                  <Rating
+                    imageSize={20}
+                    readonly
+                    startingValue={selectedFeedback.serviceQuality}
+                    style={styles.rating}
+                  />
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.modalText}>Timeliness:</Text>
+                  <Rating
+                    imageSize={20}
+                    readonly
+                    startingValue={selectedFeedback.timeliness}
+                    style={styles.rating}
+                  />
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.modalText}>Professionalism:</Text>
+                  <Rating
+                    imageSize={20}
+                    readonly
+                    startingValue={selectedFeedback.professionalism}
+                    style={styles.rating}
+                  />
+                </View>
+                <View style={styles.row}>
+                  <Text style={styles.modalText}>Recommendation Likelihood:</Text>
+                  <Rating
+                    imageSize={20}
+                    readonly
+                    startingValue={selectedFeedback.recommendationLikelihood}
+                    style={styles.rating}
+                  />
+                </View>
+              </ScrollView>
+            )}
+            <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -84,25 +116,24 @@ const FeedbackPage = ({ data }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // padding: 20,
-    paddingLeft:10,
+    padding: 10,
     backgroundColor: '#fff',
   },
-  scrollContainer: {
-    flexDirection: 'column',
-
+  listContainer: {
+    paddingBottom: 20,
   },
   itemContainer: {
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
     marginBottom: 10,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
   },
   indexContainer: {
-    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'green',
+    backgroundColor: '#0284c7',
     borderRadius: 100,
     width: 40,
     height: 40,
@@ -130,24 +161,48 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
-    
   },
-  listContainer: {
-    paddingBottom: 20,
+  viewButton: {
+    marginTop: 10,
+    backgroundColor: '#0284c7',
+    padding: 10,
+    borderRadius: 5,
   },
-  itemContainer: {
-    padding: 2,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+  viewButtonText: {
+    color: 'white',
+    textAlign: 'center',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    width: '90%',
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+  },
+  modalHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
     marginBottom: 10,
   },
-  itemText: {
+  modalText: {
     fontSize: 16,
-    marginBottom: 5,
+    marginBottom: 10,
   },
-  rating: {
-    alignSelf: 'flex-start',
-    marginVertical: 5,
+  closeButton: {
+    marginTop: 20,
+    backgroundColor: '#0284c7',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
 });
 
