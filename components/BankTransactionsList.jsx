@@ -110,7 +110,7 @@ const TransactionList = ({ data, RefreshData, wallet, bankDetails, loading, valu
                 <View>
                     {value?.user?.role === "ADMIN" ? null : (
                         <View style={styles.walletContainer}>
-                            {/* {wallet ? ( */}
+                            {wallet ? (
                             <>
                                 <View style={styles.walletInfo}>
                                     <Text style={styles.walletTitle}>Wallet</Text>
@@ -143,9 +143,9 @@ const TransactionList = ({ data, RefreshData, wallet, bankDetails, loading, valu
                                     />
                                 </View>
                             </>
-                            {/* ) : (
+                            ) : (
                                 <Button title="Activate Wallet" onPress={handleWallet} />
-                            )} */}
+                            )}  
                         </View>
                     )}
 

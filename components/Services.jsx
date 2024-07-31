@@ -201,7 +201,8 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
         paddingRight: 20,
         paddingTop: 10,
-        marginTop: 25,
+        marginTop: 5,
+        marginBottom: 5,
         borderRadius: 30
     },
     buttonContainer: {
