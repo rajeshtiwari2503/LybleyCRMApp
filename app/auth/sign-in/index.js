@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ActivityIndicator, SafeAreaView, StatusBar } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation, useRouter } from 'expo-router'
 import { Controller, useForm } from 'react-hook-form';
@@ -17,10 +17,10 @@ export default function SignIn() {
     const [loading, setLoading] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
 
-    
+
 
     const onSubmit = async (data) => {
-       
+
         Login(data);
     };
     const Login = async (reqdata) => {
@@ -31,17 +31,17 @@ export default function SignIn() {
             // console.log("data", data);
             setLoading(false);
 
-            Toast.show({ type: 'success', text1:" data.msg" });
+            Toast.show({ type: 'success', text1: " data.msg" });
             await AsyncStorage.setItem('user', JSON.stringify(data));
 
-              if (data?.user?.verification === "VERIFIED") {
+            if (data?.user?.verification === "VERIFIED") {
                 setLoading(false);
-                router.push('/home');
-              } else {
+                router.push('/');
+            } else {
                 setLoading(false);
-                router.push('/home');
-              }
-           
+                router.push('/');
+            }
+
         } catch (err) {
             setLoading(false);
             Toast.show({ type: 'error', text1: err?.response?.data?.msg });
@@ -60,100 +60,107 @@ export default function SignIn() {
     };
     return (
         <>
+
             <Toast />
+            <SafeAreaView style={styles.containerMain}>
+                <StatusBar barStyle="dark-content"
+                    backgroundColor="#f8f8f8" />
+                <View style={styles.container}>
 
-            <View style={styles.container}>
+                    <View style={styles.formContainer}>
+                        <Text style={styles.title}>Sign in to your account</Text>
+                        <View style={styles.logoContainer}>
 
-                <View style={styles.formContainer}>
-                    <Text style={styles.title}>Sign in to your account</Text>
-                    <View style={styles.logoContainer}>
-
-                        <Image
-                            source={require('../../../assets/images/Logo.png')}  
-                            style={styles.logo}
+                            <Image
+                                source={require('../../../assets/images/Logo.png')}
+                                style={styles.logo}
+                            />
+                        </View>
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <View style={styles.inputContainer}>
+                                    <Text style={styles.label}>Email address</Text>
+                                    <TextInput
+                                        style={[styles.input, errors.email && styles.inputError]}
+                                        onBlur={onBlur}
+                                        onChangeText={onChange}
+                                        value={value}
+                                        keyboardType="email-address"
+                                        autoCapitalize="none"
+                                    />
+                                    {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
+                                </View>
+                            )}
+                            name="email"
+                            rules={{ required: 'Email is required', pattern: { value: /^\S+@\S+$/i, message: 'Invalid email address' } }}
+                            defaultValue=""
                         />
-                    </View>
-                    <Controller
-                        control={control}
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <View style={styles.inputContainer}>
-                                <Text style={styles.label}>Email address</Text>
-                                <TextInput
-                                    style={[styles.input, errors.email && styles.inputError]}
-                                    onBlur={onBlur}
-                                    onChangeText={onChange}
-                                    value={value}
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                />
-                                {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
-                            </View>
-                        )}
-                        name="email"
-                        rules={{ required: 'Email is required', pattern: { value: /^\S+@\S+$/i, message: 'Invalid email address' } }}
-                        defaultValue=""
-                    />
 
-                    <Controller
-                        control={control}
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <View style={styles.inputContainer}>
-                                <Text style={styles.label}>Password</Text>
-                                <TextInput
-                                    style={[styles.input, errors.password && styles.inputError]}
-                                    onBlur={onBlur}
-                                    onChangeText={onChange}
-                                    value={value}
-                                    secureTextEntry
-                                />
-                                {errors.password && <Text style={styles.error}>{errors.password.message}</Text>}
-                            </View>
-                        )}
-                        name="password"
-                        rules={{ required: 'Password is required', minLength: { value: 8, message: 'Password must be at least 8 characters long' } }}
-                        defaultValue=""
-                    />
+                        <Controller
+                            control={control}
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <View style={styles.inputContainer}>
+                                    <Text style={styles.label}>Password</Text>
+                                    <TextInput
+                                        style={[styles.input, errors.password && styles.inputError]}
+                                        onBlur={onBlur}
+                                        onChangeText={onChange}
+                                        value={value}
+                                        secureTextEntry
+                                    />
+                                    {errors.password && <Text style={styles.error}>{errors.password.message}</Text>}
+                                </View>
+                            )}
+                            name="password"
+                            rules={{ required: 'Password is required', minLength: { value: 8, message: 'Password must be at least 8 characters long' } }}
+                            defaultValue=""
+                        />
 
-                    <View style={styles.rememberMeContainer}>
-                        <TouchableOpacity onPress={() => setRememberMe(!rememberMe)} style={styles.rememberMeCheckbox}>
-                            <View style={[styles.checkbox, rememberMe && styles.checkedCheckbox]}>
-                                {rememberMe && <Text style={styles.checkmark}>✓</Text>}
-                            </View>
+                        <View style={styles.rememberMeContainer}>
+                            <TouchableOpacity onPress={() => setRememberMe(!rememberMe)} style={styles.rememberMeCheckbox}>
+                                <View style={[styles.checkbox, rememberMe && styles.checkedCheckbox]}>
+                                    {rememberMe && <Text style={styles.checkmark}>✓</Text>}
+                                </View>
+                            </TouchableOpacity>
+                            <Text>Remember me</Text>
+                        </View>
+
+                        <TouchableOpacity onPress={handleSubmit(onSubmit)} disabled={loading} style={styles.submitButton}>
+                            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitButtonText}>Sign in</Text>}
                         </TouchableOpacity>
-                        <Text>Remember me</Text>
+
+                        <TouchableOpacity onPress={handleForgetPassword} style={styles.forgotPasswordLink}>
+                            <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => router.push("auth/sign-up")}
+                            style={styles.signUpLink}>
+                            <Text>Not a member? <Text style={styles.signUpLinkText}>Sign Up</Text></Text>
+                        </TouchableOpacity>
                     </View>
-
-                    <TouchableOpacity onPress={handleSubmit(onSubmit)} disabled={loading} style={styles.submitButton}>
-                        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitButtonText}>Sign in</Text>}
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={handleForgetPassword} style={styles.forgotPasswordLink}>
-                        <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => router.push("auth/sign-up")}
-                        style={styles.signUpLink}>
-                        <Text>Not a member? <Text style={styles.signUpLinkText}>Sign Up</Text></Text>
-                    </TouchableOpacity>
                 </View>
-            </View>
+            </SafeAreaView>
         </>
     );
 }
 
 const styles = StyleSheet.create({
+    containerMain: {
+        flex: 1,
+    },
     container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 20,
-        backgroundColor:"black",
-            padding: 20,
+        backgroundColor: "black",
+        padding: 20,
         borderWidth: 1, // Add border
         borderColor: '#ccc', // Border color
         borderRadius: 10, // Border radius for rounded corners
-       
+
         shadowColor: '#000', // Shadow color
         shadowOffset: { width: 0, height: 2 }, // Shadow offset
         shadowOpacity: 0.25, // Shadow opacity
@@ -161,7 +168,6 @@ const styles = StyleSheet.create({
         // elevation: 5, // Elevation for Android shadow
         // margin: "10px"
     },
-
 
     title: {
         fontSize: 24,

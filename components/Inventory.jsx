@@ -1,43 +1,44 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, SafeAreaView } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import Skills from './Skills';
-import Performances from './Performance';
+import Stocks from './Stocks';
+import Orders from './Orders';
  
  
-const Skill = ( ) => (
+ 
+const StockTab = ({data}) => (
   <View style={styles.content}>
-   <Skills  />
+   <Stocks  />
   </View>
 );
 
-const Performance = () => (
+const OrderTab = () => (
   <View style={styles.content}>
-  <Performances />
+  <Orders />
   </View>
 );
 
-const SkillandPerformance = ({data}) => {
-  const [selectedTab, setSelectedTab] = useState('skill');
+const Inventory = ( ) => {
+  const [selectedTab, setSelectedTab] = useState('stock');
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.tabContainer}>
         <TouchableOpacity
-          style={[styles.tab, selectedTab === 'skill' && styles.selectedTab]}
-          onPress={() => setSelectedTab('skill')}
+          style={[styles.tab, selectedTab === 'stock' && styles.selectedTab]}
+          onPress={() => setSelectedTab('stock')}
         >
-          <Text style={styles.tabText}>Skills</Text>
+          <Text style={styles.tabText}>Stocks</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.tab, selectedTab === 'performance' && styles.selectedTab]}
-          onPress={() => setSelectedTab('performance')}
+          style={[styles.tab, selectedTab === 'Order' && styles.selectedTab]}
+          onPress={() => setSelectedTab('Order')}
         >
-          <Text style={styles.tabText}>Performance</Text>
+          <Text style={styles.tabText}>Orders</Text>
         </TouchableOpacity>
       </View>
 
-      {selectedTab === 'skill' ? <Skill  /> : <Performance />}
+      {selectedTab === 'stock' ? <StockTab   /> : <OrderTab />}
     </SafeAreaView>
   );
 };
@@ -46,12 +47,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.WHITE,
-        // paddingLeft: 20,
-        // paddingRight: 20,
+        paddingLeft: 20,
+        paddingRight: 20,
         paddingTop: 10,
         width:"100%",
-        marginTop: 5,
-        marginBottom: 5,
+        // marginTop: 25,
         borderRadius: 30
   },
   tabContainer: {
@@ -59,8 +59,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#333', // Dark background for tabs
     borderRadius: 8,
     marginBottom: 10,
-    marginLeft:20,
-   marginRight:20,
     overflow: 'hidden',
   },
   tab: {
@@ -85,6 +83,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SkillandPerformance;
+export default Inventory;
 
  
