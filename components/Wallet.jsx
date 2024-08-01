@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
         paddingRight: 20,
         paddingTop: 10,
-        marginTop: 25,
+        marginBottom: 5,
         borderRadius: 30
   },
   tabContainer: {
