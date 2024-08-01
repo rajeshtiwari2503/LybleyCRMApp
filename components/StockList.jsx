@@ -1,84 +1,92 @@
- 
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Modal, Button, Alert, TextInput, ActivityIndicator } from 'react-native';
-import { IconButton } from 'react-native-paper';
-import { Add, Edit, Delete } from 'react-native-vector-icons/MaterialIcons'; // Adjust icons accordingly
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, ScrollView, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+ 
+import Toast from 'react-native-toast-message';
+ 
+import { Colors } from '@/constants/Colors';
+ 
 
-const StockList = ({ data  }) => {
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editData, setEditData] = useState(null);
-  const [confirmBoxView, setConfirmBoxView] = useState(false);
+const StockList = (props) => {
+
+  
+
   const [userData, setUserData] = useState(null);
-  
-  
+
   useEffect(() => {
     const fetchUserData = async () => {
-        const storedValue = await AsyncStorage.getItem("user");
-        if (storedValue) {
-          setUserData(JSON.parse(storedValue));
-        }
-      };
-      fetchUserData()
+      const storedValue = await AsyncStorage.getItem("user");
+      if (storedValue) {
+        setUserData(JSON.parse(storedValue));
+      }
+    };
+
+    fetchUserData();
   }, []);
 
-   
+  // const filterData = props?.data?.filter((item) => item?.userId === userData?.user?._id);
+  const filterData = props?.data;
+  const data = props?.data;
 
   
-  if (data?.length>0) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-
-  const filteredData = userData?.user?.role === 'ADMIN' || 'BRAND' ? data : data?.filter(item => item?.userId === userData?.user?._id);
-
+ 
+  
+  const renderItem = ({ item ,index}) => (
+    <View key={index} style={styles.row}>
+      <Text style={{ width: 50 }}>{item.i}</Text>
+      <Text style={[{ paddingLeft: 13, width: 120 }]}>{item.productName}</Text>
+      <Text style={styles.cell}>{item.productDescription}</Text>
+      <Text style={styles.cell}>{item.categoryName}</Text>
+      <Text style={styles.cell}>{item.productBrand}</Text>
+      <Text style={styles.cell}>{item.serialNo}</Text>
+      <Text style={styles.cell}>{item.modelNo}</Text>
+      <Text style={styles.cell}>{item.status}</Text>
+      <Text style={styles.cell}>{new Date(item.updatedAt).toLocaleString()}</Text>
+      <View style={styles.actions}>
+         
+      </View>
+    </View>
+  );
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Stock Information</Text>
-        <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
-          <Add size={24} color="white" />
-          <Text style={styles.buttonText}>Add Stock</Text>
-        </TouchableOpacity>
+      <Toast  />
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Stock Information</Text>
+        
       </View>
-
-      {filteredData.length === 0 ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+      {data.length === 0 ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
       ) : (
-        <FlatList
-          data={filteredData}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <View style={styles.row}>
-              <Text style={styles.cell}>{item._id}</Text>
-              <Text style={styles.cell}>{item.sparepartName}</Text>
-              <Text style={styles.cell}>{item.freshStock}</Text>
-              <Text style={styles.cell}>{item.brandName}</Text>
-              <Text style={styles.cell}>{new Date(item.createdAt).toLocaleString()}</Text>
-              <View style={styles.actions}>
-                <IconButton icon="pencil" color="green" size={20} onPress={() => handleEdit(item)} />
-                <IconButton icon="delete" color="red" size={20} onPress={() => handleDelete(item._id)} />
-              </View>
+
+        <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
+          <View>
+            <View style={styles.header}>
+              <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
+              <Text style={[styles.headerCell, { width: 120 }]}>Product </Text>
+              <Text style={[styles.headerCell, { width: 120 }]}>Description </Text>
+              <Text style={[styles.headerCell, { width: 120 }]}>Category </Text>
+              <Text style={[styles.headerCell, { width: 120 }]}>Brand </Text>
+              <Text style={[styles.headerCell, { width: 120 }]}>Serial No. </Text>
+              <Text style={[styles.headerCell, { width: 120 }]}>Modal No. </Text>
+              <Text style={[styles.headerCell, { textAlign: "center", paddingRight: 20 }]}>Status</Text>
+              <Text style={styles.headerCell}>Updated At</Text>
+              <Text style={[styles.headerCell, { textAlign: 'right' }]}>Actions</Text>
+
             </View>
-          )}
-        />
+            <FlatList
+              data={filterData}
+              keyExtractor={item => item?._id}
+              renderItem={renderItem}
+              contentContainerStyle={styles.listContainer}
+            />
+          </View>
+        </ScrollView>
       )}
 
-      <Modal visible={editModalOpen} onRequestClose={handleEditModalClose}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>{editData ? 'Edit Stock' : 'Add Stock'}</Text>
-          {/* Your AddStock component should be adapted to React Native */}
-          {/* <AddStock userData={userData} products={products} data={data} existingStock={editData} RefreshData={RefreshData} onClose={handleEditModalClose} /> */}
-          <Button title="Close" onPress={handleEditModalClose} />
-        </View>
-      </Modal>
-
-      <Modal visible={confirmBoxView} transparent={true}>
-        <View style={styles.confirmBox}>
-          <Text>Are you sure you want to delete this stock?</Text>
-          <Button title="Yes" onPress={deleteData} />
-          <Button title="No" onPress={() => setConfirmBoxView(false)} />
-        </View>
-      </Modal>
+       
+      
     </View>
   );
 };
@@ -86,61 +94,152 @@ const StockList = ({ data  }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-  },
+    backgroundColor: Colors.WHITE,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 10,
+    // marginTop:25,
+    borderRadius:30
+},
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  addButton: {
-    flexDirection: 'row',
-    backgroundColor: '#0284c7',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    marginLeft: 8,
-  },
-  row: {
-    flexDirection: 'row',
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
-    alignItems: 'center',
+    backgroundColor: '#f8f8f8',
   },
-  cell: {
-    flex: 1,
-    textAlign: 'center',
-  },
-  actions: {
-    flexDirection: 'row',
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  modalTitle: {
+  headerModal: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'center',
   },
-  confirmBox: {
+  listContainer: {
+    paddingBottom: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+    backgroundColor: '#f8f8f8',
+  },
+  headerCell: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    fontWeight: 'bold',
+    textAlign: 'left',
+    width: 110,
   },
+  row: {
+    flexDirection: 'row',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderBottomWidth: 1,
+    alignItems: "center",
+    borderBottomColor: '#ddd',
+  },
+  cell: {
+    flex: 1,
+    textAlign: 'left',
+    width: 120,
+  },
+  statusCell: {
+    flex: 1,
+    textAlign: 'center',
+    backgroundColor: Colors.PRIMARY,
+    color: "white",
+    // marginLeft:20,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    // paddingLeft:20,
+    paddingTop: 7,
+    paddingBottom: 7,
+    marginRight: 10,
+    borderRadius: 10,
+    width: 120,
+  },
+  actions: {
+    flexDirection: 'row',
+    width: 100,
+    alignItems: 'center',
+    justifyContent: "flex-end"
+  },
+  viewButton: {
+    color: 'blue',
+    paddingRight: 10,
+    textAlign: "right"
+  },
+  scrollContainer: {
+    flexDirection: 'column',
+
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    justifyContent: 'center',
+    height: '70%',
+  },
+  scrollView: {
+    flex: 1,
+  },
+
+  input: {
+    height: 40,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 4,
+    marginBottom: 16,
+    paddingHorizontal: 8,
+  },
+  pickerContainer: {
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 4,
+    marginBottom: 16,
+    height: 40,
+    justifyContent: 'center',
+  },
+  picker: {
+    height: 40,
+  },
+  saveButton: {
+    backgroundColor: Colors.PRIMARY,
+    paddingVertical: 12,
+    borderRadius: 15,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  saveButtonDisabled: {
+    backgroundColor: Colors.PRIMARY,
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  closeButton: {
+    backgroundColor: '#f44336',
+    paddingVertical: 12,
+    borderRadius: 15,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 8,
+  },
+
 });
 
 export default StockList;
+  
+ 

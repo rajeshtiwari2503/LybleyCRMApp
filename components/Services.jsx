@@ -9,6 +9,7 @@ import ServiceDetails from './ServiceDetails';
 import { MaterialIcons } from '@expo/vector-icons';
 import UpdateServiceStatus from './UpdateServiceStatus';
 import ServiceRequestForm from './CreateServiceRequest';
+import PartOrder from './PartOrder';
 
 const getStatusStyle = (status) => {
     switch (status) {
@@ -33,10 +34,12 @@ export default function ViewComplaints() {
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [refresh, setRefresh] = useState('');
     const [selectedService, setSelectedService] = useState('');
+    const [selectedOrder, setSelectedOrder] = useState('');
     const [userData, setUserData] = useState(null);
     const [sampleComplaints, setComplaint] = useState([]);
     const [isModalVisible, setModalVisible] = useState(false);
     const [updateModalVisible, setUpdateModalVisible] = useState(false);
+    const [orderModalVisible, setOrderModalVisible] = useState(false);
     const [createModalVisible, setCreateModalVisible] = useState(false);
 
     useEffect(() => {
@@ -84,12 +87,15 @@ export default function ViewComplaints() {
         setSelectedService(item);
         setModalVisible(true);
     }
-
+    const handleOrder = (item) => {
+        setSelectedOrder(item);
+        setOrderModalVisible(true);
+    }
     const handleUpdate = (item) => {
         setSelectedService(item);
         setUpdateModalVisible(true);
     }
-    const handleCreateService = ( ) => {
+    const handleCreateService = () => {
         setCreateModalVisible(true);
     }
     const RefreshData = (data) => {
@@ -105,11 +111,17 @@ export default function ViewComplaints() {
             <View style={styles.actions}>
                 {userData?.role === "TECHNICIAN" &&
                     ["ASSIGN", "PART PENDING", "IN PROGRESS", "PENDING"].includes(item?.status) ? (
-                    <TouchableOpacity onPress={() => handleUpdate(item)}>
-                        <MaterialIcons name="system-update-alt" size={24} color="blue" />
-                    </TouchableOpacity>
+                    <>
+                        <TouchableOpacity onPress={() => handleUpdate(item)}>
+                            <MaterialIcons name="system-update-alt" size={24} color="blue" />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleOrder(item)}>
+                        <MaterialIcons name="update" size={24} color="yellow" />
+                        </TouchableOpacity>
+                    </>
                 ) : null
                 }
+
                 <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleDetails(item)}>
                     <Ionicons name="eye" size={24} color="green" />
                 </TouchableOpacity>
@@ -119,8 +131,8 @@ export default function ViewComplaints() {
 
     return (
         <View style={styles.container}>
-            <View style={{ backgroundColor: Colors.GRAY, borderRadius: 10 }}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.buttonContainer}>
+            <View  >
+                <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         style={[styles.categoryButton, selectedCategory === 'All' && styles.selectedButton]}
                         onPress={() => handleCategoryPress('All')}
@@ -145,12 +157,12 @@ export default function ViewComplaints() {
                     >
                         <Text style={styles.buttonText}>Closed</Text>
                     </TouchableOpacity>
-                </ScrollView>
+                </View>
 
             </View>
             <TouchableOpacity style={styles.button} onPress={handleCreateService}>
-            <Text style={styles.buttonText}>Create Service Request</Text>
-        </TouchableOpacity>
+                <Text style={styles.buttonText}>Create Service Request</Text>
+            </TouchableOpacity>
             {loading ?
                 <ActivityIndicator size="large" color="#0000ff" />
                 : <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
@@ -182,6 +194,12 @@ export default function ViewComplaints() {
                 service={selectedService}
                 RefreshData={RefreshData}
             />
+            <PartOrder
+                isVisible={orderModalVisible}
+                onClose={() => setOrderModalVisible(false)}
+                service={selectedOrder}
+                RefreshData={RefreshData}
+            />
             <ServiceRequestForm
                 isVisible={createModalVisible}
                 onClose={() => setCreateModalVisible(false)}
@@ -205,27 +223,44 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         borderRadius: 30
     },
+    tabCont: {
+        flex: 1,
+        backgroundColor: Colors.WHITE,
+        // paddingLeft: 20,
+        // paddingRight: 20,
+        paddingTop: 10,
+        width: "100%",
+        marginTop: 5,
+        marginBottom: 5,
+        borderRadius: 30
+    },
     buttonContainer: {
-        backgroundColor: Colors.GRAY,
         flexDirection: 'row',
-        margin: 5,
+        backgroundColor: '#333', // Dark background for tabs
+        borderRadius: 8,
+        marginBottom: 10,
+        justifyContent: "space-between",
+        //     marginLeft:20,
+        //    marginRight:20,
+        overflow: 'hidden',
     },
     categoryButton: {
+        flex: 1,
         paddingVertical: 10,
-        paddingHorizontal: 10,
-        borderRadius: 5,
-        backgroundColor: Colors.LIGHT_GRAY,
-        marginLeft: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#444',
     },
     selectedButton: {
-        backgroundColor: Colors.PRIMARY,
-        color: Colors.WHITE,
+        backgroundColor: '#0284c7',
         fontFamily: 'outfit',
     },
     buttonText: {
-        fontSize: 16,
+
         fontFamily: 'outfit',
-        color: Colors.BLACK,
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: 'bold'
     },
     listContainer: {
         paddingBottom: 20,
@@ -310,7 +345,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 }, // Shadow offset for iOS
         shadowOpacity: 0.2, // Shadow opacity for iOS
         shadowRadius: 3,
-        margin:20 // Shadow radius for iOS
+        margin: 20 // Shadow radius for iOS
     },
     buttonText: {
         color: '#FFF', // White text color
