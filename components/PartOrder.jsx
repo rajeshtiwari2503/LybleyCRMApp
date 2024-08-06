@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet,  ScrollView, Button, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
+import { Colors } from '@/constants/Colors';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import http_request from "../http_request";
-import Modal from 'react-native-modal';
 
-export default function PartOrder({ isVisible, onClose, RefreshData, service, spareparts }) {
-    
-  const { control, handleSubmit, setValue, formState: { errors }} = useForm();
+export default function PartOrder({ isVisible, onClose, RefreshData, spareparts, service }) {
+
+  const { control, handleSubmit, setValue, formState: { errors } } = useForm();
 
   useEffect(() => {
     if (service) {
@@ -27,10 +28,17 @@ export default function PartOrder({ isVisible, onClose, RefreshData, service, sp
   };
 
   return (
-    <Modal visible={isVisible} transparent={true} animationType="slide">
+    <Modal visible={isVisible} onBackdropPress={onClose} transparent={true} animationType="slide">
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.headerContainer}>
+            <Text style={styles.header}>Update Status</Text>
+            <TouchableOpacity onPress={onClose}>
+              <MaterialIcons name="close" size={24} color={Colors.GRAY} />
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView>
             <View style={styles.formGroup}>
               <Text style={styles.label}>Ticket ID</Text>
               <Controller
@@ -61,12 +69,12 @@ export default function PartOrder({ isVisible, onClose, RefreshData, service, sp
                   >
                     <Picker.Item label="Select Sparepart" value="" />
                     {spareparts?.map(sparepart => (
-                      <Picker.Item key={sparepart.id} label={sparepart.partName} value={sparepart._id} />
+                      <Picker.Item key={sparepart?.id} label={sparepart?.partName} value={sparepart?._id} />
                     ))}
                   </Picker>
                 )}
               />
-              {errors.sparepartName && <Text style={styles.errorText}>{errors.sparepartName.message}</Text>}
+              {errors?.sparepartName && <Text style={styles.errorText}>{errors?.sparepartName?.message}</Text>}
             </View>
 
             <View style={styles.formGroup}>
@@ -247,12 +255,14 @@ export default function PartOrder({ isVisible, onClose, RefreshData, service, sp
               />
               {errors.comments && <Text style={styles.errorText}>{errors.comments.message}</Text>}
             </View>
-
-            <Button title="Submit" onPress={handleSubmit(onSubmit)} color="#007BFF" />
           </ScrollView>
+
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit(onSubmit)}>
+            <Text style={styles.submitButtonText}>Submit</Text>
+          </TouchableOpacity>
         </View>
       </View>
-    </Modal>
+    </Modal >
   );
 }
 
@@ -265,12 +275,16 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: '90%',
+    height: '90%',
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
   },
-  scrollContainer: {
-    flexGrow: 1,
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
   },
   formGroup: {
     marginBottom: 16,
@@ -279,6 +293,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     marginBottom: 8,
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   input: {
     borderWidth: 1,
@@ -299,4 +317,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
   },
+  picker: {
+    height: 50,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 4,
+  },
+  submitButton: {
+    backgroundColor: Colors.PRIMARY,
+    paddingVertical: 12,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  submitButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
 });
+
+

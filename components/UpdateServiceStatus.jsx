@@ -28,7 +28,7 @@ export default function UpdateServiceStatus({ isVisible, onClose, RefreshData, s
   };
 
   return (
-    <Modal visible={isVisible} transparent={true} animationType="slide">
+    <Modal visible={isVisible} onBackdropPress={onClose} transparent={true} animationType="slide">
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <View style={styles.headerContainer}>

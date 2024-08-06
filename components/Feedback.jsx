@@ -28,8 +28,13 @@ const UserFeedbacks = () => {
 
   const getAllFeedback = async () => {
     try {
+      const storedValue = await AsyncStorage.getItem("user");
+     
+        const userDT=JSON.parse(storedValue);
+   
       setIsLoading(true); // Set loading to true before fetching data
-      let response = await http_request.get("/getAllFeedback");
+      const endPoint=userDT?.user?.role==="TECHNICIAN"?`/getFeedbackByTechnicianId/${userDT?.user?._id}`:`/getFeedbackByUserId/${userDT?.user?._id}`
+      let response = await http_request.get(endPoint);
       let { data } = response;
       setFeedbacks(data);
     } catch (err) {
