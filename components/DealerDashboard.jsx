@@ -6,11 +6,12 @@ import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors'
 import NotificationModal from './Notification';
 import RecentServicesList from './RecentServices';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 // import RecentServicesList from '../complaint/RecentServices';
 
 const DealerDashboard = (props) => {
     const router = useRouter();
+    const navigation=useNavigation()
     const userData = props?.userData;
     const dashData = props?.dashData;
 
@@ -73,7 +74,7 @@ const DealerDashboard = (props) => {
             <View style={styles.container}>
                 {/* Replace with your React Native components and styling */}
                 <View style={styles.headerContent}>
-                    <TouchableOpacity onPress={() => router.push("profile")}  >
+                    <TouchableOpacity onPress={() => navigation.navigate("Profile")}  >
                         <MaterialIcons name="person" size={24} color="black" style={styles.icon} />
                     </TouchableOpacity>
                     <Text style={styles.title}>Dashboard</Text>
@@ -91,14 +92,14 @@ const DealerDashboard = (props) => {
 
                 <View style={styles.summaryContainer}>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.allComplaints} /> */}
                             <Text>{dashData?.complaints?.allComplaints}</Text>
                         </TouchableOpacity>
                         <Text>Total Service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FF6347' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FF6347' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.complete} /> */}
                             <Text>{dashData?.complaints?.complete}</Text>
 
@@ -106,7 +107,7 @@ const DealerDashboard = (props) => {
                         <Text>Completed</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FF6347' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FF6347' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.assign} /> */}
                             <Text>{dashData?.complaints?.assign}</Text>
 
@@ -114,7 +115,7 @@ const DealerDashboard = (props) => {
                         <Text>Assigned</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#90EE90' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#90EE90' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.pending} /> */}
                             <Text>{dashData?.complaints?.pending}</Text>
 
@@ -122,7 +123,7 @@ const DealerDashboard = (props) => {
                         <Text>Pending</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#90EE90' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#90EE90' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.pending} /> */}
                             <Text>{dashData?.complaints?.inProgress}</Text>
 
@@ -130,7 +131,7 @@ const DealerDashboard = (props) => {
                         <Text>In Progress</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.zeroToOneDays} /> */}
                             <Text>{dashData?.complaints?.zeroToOneDays}</Text>
 
@@ -138,7 +139,7 @@ const DealerDashboard = (props) => {
                         <Text>0-1 days service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.twoToFiveDays} /> */}
                             <Text>{dashData?.complaints?.twoToFiveDays}</Text>
 
@@ -146,7 +147,7 @@ const DealerDashboard = (props) => {
                         <Text>2-5 days service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.moreThanFiveDays} /> */}
                             <Text>{dashData?.complaints?.moreThanFiveDays}</Text>
 
@@ -154,7 +155,7 @@ const DealerDashboard = (props) => {
                         <Text>More than Five Days Service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.moreThanFiveDays} /> */}
                             <Text>{dashData?.complaints?.moreThanFiveDays}</Text>
 

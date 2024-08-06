@@ -113,10 +113,10 @@ export default function ViewComplaints() {
                     ["ASSIGN", "PART PENDING", "IN PROGRESS", "PENDING"].includes(item?.status) ? (
                     <>
                         <TouchableOpacity onPress={() => handleUpdate(item)}>
-                            <MaterialIcons name="system-update-alt" size={24} color="blue" />
+                            <MaterialIcons name="system-update-alt" size={24} color="green" />
                         </TouchableOpacity>
                         <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleOrder(item)}>
-                        <MaterialIcons name="update" size={24} color="yellow" />
+                        <MaterialIcons name="update" size={24} color="blue" />
                         </TouchableOpacity>
                     </>
                 ) : null

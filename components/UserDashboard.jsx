@@ -13,6 +13,7 @@ import NotificationModal from './Notification';
 
 const UserDashboard = (props) => {
     const router = useRouter();
+    const navigation=useNavigation()
     const userData = props?.userData;
     const dashData = props?.dashData;
     const complaint = props?.complaints;
@@ -72,7 +73,7 @@ const UserDashboard = (props) => {
             <View style={styles.container}>
                 {/* Replace with your React Native components and styling */}
                 <View style={styles.headerContent}>
-                    <TouchableOpacity onPress={() => router.push("profile")}  >
+                    <TouchableOpacity onPress={() => navigation.navigate('Profile')}  >
                         <MaterialIcons name="person" size={24} color="black" style={styles.icon} />
                     </TouchableOpacity>
                     <Text style={styles.title}>Dashboard</Text>
