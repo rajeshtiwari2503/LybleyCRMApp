@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   row: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 5,

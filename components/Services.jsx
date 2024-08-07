@@ -10,6 +10,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import UpdateServiceStatus from './UpdateServiceStatus';
 import ServiceRequestForm from './CreateServiceRequest';
 import PartOrder from './PartOrder';
+import AddFeedback from './AddFeedback';
 
 const getStatusStyle = (status) => {
     switch (status) {
@@ -41,6 +42,7 @@ export default function ViewComplaints() {
     const [updateModalVisible, setUpdateModalVisible] = useState(false);
     const [orderModalVisible, setOrderModalVisible] = useState(false);
     const [createModalVisible, setCreateModalVisible] = useState(false);
+    const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
 
     useEffect(() => {
         getAllComplaint();
@@ -98,10 +100,62 @@ export default function ViewComplaints() {
     const handleCreateService = () => {
         setCreateModalVisible(true);
     }
+    const handleFeedback = (item) => {
+        setSelectedService(item);
+        setFeedbackModalVisible(true);
+    }
     const RefreshData = (data) => {
         setRefresh(data);
     }
+    const amount = 1;
 
+    const userPayment = async (item) => {
+        try {
+           
+            const storedValue = await AsyncStorage.getItem('user');
+            const userData = JSON.parse(storedValue);
+            let response = await http_request.post("/payment", { amount: +amount });
+            let { data } = response;
+            const options = {
+                key: "rzp_live_XyovAK0BmNvrWI", // Enter the Key ID generated from the Dashboard
+                amount: +amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                currency: "INR",
+                name: "Lybley", //your business name
+                description: "Payment for order",
+                image: "/Logo.png",
+                order_id: data.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                handler: async function (orderDetails) {
+                    try {
+
+                        let response = await axios.post("https://lybleycrmserver-production.up.railway.app/paymentVerificationForUser", { response: orderDetails, item, amount });
+                        let { data } = response;
+                        if (data?.status === true) {
+                            ToastMessage(data)
+                            props?.RefreshData(data)
+                        }
+
+                    } catch (err) {
+                        console.log(err);
+                    }
+                },
+                prefill: {
+                    name: userData?.user?.name, //your customer's name
+                    email: userData?.user?.email,
+                    contact: userData?.user?.contact
+                },
+                notes: {
+                    "address": "Razorpay Corporate Office"
+                },
+                theme: {
+                    color: "#3399cc"
+                }
+            };
+            const rzp1 = new window.Razorpay(options);
+            rzp1.open();
+        } catch (err) {
+            console.log(err);
+        }
+    }
     const renderItem = ({ item, index }) => (
         <View key={index} style={styles.row}>
             <Text style={{ width: 50 }}>{item.i}</Text>
@@ -116,9 +170,30 @@ export default function ViewComplaints() {
                             <MaterialIcons name="system-update-alt" size={24} color="green" />
                         </TouchableOpacity>
                         <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleOrder(item)}>
-                        <MaterialIcons name="update" size={24} color="blue" />
+                            <MaterialIcons name="update" size={24} color="blue" />
                         </TouchableOpacity>
                     </>
+                ) : null
+                }
+                {(userData?.role === 'USER'|| userData?.role === 'DEALER') && ["COMPLETED"].includes(item?.status) ? (
+                    // <View style={{display:"flex"}}>
+                    <>
+                        <TouchableOpacity
+                            onPress={() => handleFeedback(item)}
+                            style={styles.feedbackButton}
+                        >
+                            <Text style={styles.feedbackButtonText}>Give Feedback</Text>
+                        </TouchableOpacity>
+                        {item?.payment === 0 && (
+                            <TouchableOpacity
+                                onPress={() => userPayment(item)}
+                                style={styles.payButton}
+                            >
+                                <Text style={styles.payButtonText}>Pay</Text>
+                            </TouchableOpacity>
+                        )}
+                        </>
+                    // </View>
                 ) : null
                 }
 
@@ -203,6 +278,14 @@ export default function ViewComplaints() {
             <ServiceRequestForm
                 isVisible={createModalVisible}
                 onClose={() => setCreateModalVisible(false)}
+                // user={user}
+                // onSave={handleSave}
+                RefreshData={RefreshData}
+            />
+            <AddFeedback
+                isVisible={feedbackModalVisible}
+                onClose={() => setFeedbackModalVisible(false)}
+                complaints={selectedService}
                 // user={user}
                 // onSave={handleSave}
                 RefreshData={RefreshData}
@@ -351,5 +434,27 @@ const styles = StyleSheet.create({
         color: '#FFF', // White text color
         fontSize: 16, // Font size
         fontWeight: 'bold', // Bold text
-    }
+    },
+    feedbackButton: {
+        borderRadius: 8,
+        padding: 10,
+        backgroundColor: '#2e7d32',
+        alignItems: 'center',
+    },
+    feedbackButtonText: {
+        color: 'black',
+        fontWeight: 'bold',
+    },
+    payButton: {
+        borderRadius: 8,
+        marginLeft:5,
+        padding: 10,
+        backgroundColor: '#007BFF',
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    payButtonText: {
+        color: 'black',
+        fontWeight: 'bold',
+    },
 });
