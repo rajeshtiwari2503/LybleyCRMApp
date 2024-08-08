@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, Image, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, Button, Image, TouchableOpacity,Platform, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';
@@ -9,11 +9,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import http_request from "../http_request";
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
+import * as FileSystem from 'expo-file-system';
+import Toast from 'react-native-toast-message';
 
 const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
     const { control, handleSubmit, formState: { errors }, getValues, reset, setValue } = useForm();
     const [image, setImage] = useState(null);
-    const [issueImages, setIssueImages] = useState([]);
+    // const [issueImages, setIssueImages] = useState([]);
     const [products, setProducts] = useState([]);
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -29,6 +31,7 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
             const storedValue = await AsyncStorage.getItem("user");
             if (storedValue) {
                 setUserData(JSON.parse(storedValue));
+                setLocalValue(JSON.parse(storedValue))
             }
             let response = await http_request.get("/getAllProduct");
             let { data } = response;
@@ -47,27 +50,63 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                     formData.append(key, reqData[key]);
                 }
             }
-            if (image) {
-                formData.append('issueImages', {
-                    uri: image,
-                    type: 'image/jpeg',
-                    name: 'image.jpg',
-                });
-            }
-            let response = await http_request.post('/createComplaint', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            // if (image) {
+            //     console.log("dghhghgghg",image);
+                
+            //     formData.append('issueImages', {
+            //         uri: image,
+            //         type: 'image/jpeg',
+            //         name: 'image.jpg',
+            //     });
+            // }
+            // if (image) {
+            //       const fileUri = image.replace('file://', '');
+            //       console.log(fileUri);
+                  
+            //        formData.append('issueImages', {
+            //           uri: fileUri,
+            //           type: 'image/jpeg',
+            //           name: 'image.jpg',
+            //      });
+            //      }
+            // formData.append('issueImages',image )
+            // const fileUri = image.replace('file://', '');
+            // const fileInfo = await FileSystem.getInfoAsync(image);
+            // const { size, mimeType } = fileInfo;
+            
+            // console.log(fileInfo);
+            
+            // formData.append('issueImages', {
+            //   uri:   image.replace('file://', '')  ,
+            //   name: 'photo.jpg',  
+            //   type: mimeType || 'image/jpeg', 
+            // });
+            let response = await http_request.post('/createAppComplaint', reqData
+               
+            );
+               
+         
             const { data } = response;
-            console.log("Complaint created:", data);
+            // console.log("Complaint created:", data);
+            RefreshData(data)
             setLoading(false);
+            Toast.show({ type: 'success', text1: data.msg });
             onClose();
             reset();
-        } catch (err) {
+        } catch (error) {
             setLoading(false);
-            console.error("Error registering complaint:", err.response?.data || err);
-        }
+            Toast.show({ type: 'success', text1:  "Internal Server Error." });
+            if (error.response) {
+              // Server responded with a status other than 2xx
+              console.error('Server Error:', error.response.data);
+            } else if (error.request) {
+              // No response was received
+              console.error('No Response:', error );
+            } else {
+              // Error setting up the request
+              console.error('Request Error:', error );
+            }
+          }
     };
 
     const onSubmit = (data) => {
@@ -90,10 +129,12 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
             setValue('purchaseDate', selectedProduct.purchaseDate);
             setValue('warrantyStatus', selectedProduct.warrantyStatus);
             setValue('warrantyYears', selectedProduct.warrantyYears);
-            setValue('fullName', value.user.name);
-            setValue('phoneNumber', value.user.contact);
-            setValue('emailAddress', value.user.email);
-            setValue('serviceAddress', value.user.address);
+            setValue('userId', value?.user?._id)
+            setValue('userName', value?.user?.name);
+            setValue('fullName', value?.user?.name);
+            setValue('phoneNumber', value?.user?.contact);
+            setValue('emailAddress', value?.user?.email);
+            setValue('serviceAddress', value?.user?.address);
         }
     };
 
@@ -104,19 +145,22 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
     }, [  ])
 
     
-    const selectImages = async () => {
-        try {
-            let result = await DocumentPicker.getDocumentAsync({ type: ['image/*'] });
-            if (!result.canceled && result.assets.length > 0) {
-                setImage(result.assets[0].uri);
-                setIssueImages(prevImages => [...prevImages, result.assets[0].uri]);
-            }
-        } catch (error) {
-            console.error('Error selecting images:', error);
+    const pickDocument = async () => {
+        let result = await DocumentPicker.getDocumentAsync({
+          type: ['image/*'], // You can specify other types here
+        });
+    
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+          const { uri } = result.assets[0];
+          console.log('Picked document URI:', uri);
+    
+          setImage(uri);
+         
+        } else {
+          console.log('Document picking was canceled');
         }
-    };
-
-   
+      };
+      
 
     const onDateChange = (event, selectedDate) => {
         setShowDatePicker(false);
@@ -146,8 +190,8 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
             </View>
             <ScrollView contentContainerStyle={styles.containerScroll}>
 
-
-                {/* <Text style={styles.label}>Product Name</Text>
+{/* 
+                 <Text style={styles.label}>Product Name</Text>
                 <Controller
                     control={control}
                     name="productName"
@@ -161,7 +205,7 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                         />
                     )}
                 />
-                {errors.productName && <Text style={styles.errorText}>{errors.productName.message}</Text>} */}
+                {errors.productName && <Text style={styles.errorText}>{errors.productName.message}</Text>}   */}
 
                 <Text style={styles.label}>Select Product</Text>
                 <Controller
@@ -361,22 +405,15 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                     {errors.detailedDescription && <Text style={styles.errorText}>{errors.detailedDescription.message}</Text>}
                 </View>
 
-                <View style={styles.inputContainer}>
+                {/* <View style={styles.inputContainer}>
                     <Text style={styles.label}>Issue Images</Text>
-                    <Button onPress={selectImages} title="Select Images" />
+                    <Button title="Pick a document" onPress={pickDocument} />
                     <ScrollView contentContainerStyle={styles.imagesContainer}>
-                        {issueImages.length > 0 && issueImages.map((uri, index) => (
-                            <Image
-                                key={index}
-                                source={{ uri }}
-                                style={styles.image}
-                                // onLoad={() => console.log('Image loaded:', uri)}
-                                // onError={(error) => console.error('Error loading image:', error)}
-                            />
-                        ))}
+                    {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+
                     </ScrollView>
-                </View>
-{/* 
+                </View> */}
+
                 <Controller
                     control={control}
                     name="preferredServiceDate"
@@ -429,7 +466,7 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                             )}
                         </View>
                     )}
-                /> */}
+                />
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>Service Location</Text>
                     <Controller

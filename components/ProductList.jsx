@@ -126,6 +126,7 @@ const ProductList = (props) => {
       ) : (
 
         <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
+          {filterData?.length > 0 ?
           <View>
             <View style={styles.header}>
               <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
@@ -147,6 +148,11 @@ const ProductList = (props) => {
               contentContainerStyle={styles.listContainer}
             />
           </View>
+           :
+           <View>
+             <Text style={styles.noFeedback}>You have 0 feedback</Text>
+           </View>
+         }
         </ScrollView>
       )}
 
@@ -222,6 +228,13 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 20,
+  },
+  noFeedback: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: "90%",
+    color: "red",
+    marginBottom: 10,
   },
   header: {
     flexDirection: 'row',

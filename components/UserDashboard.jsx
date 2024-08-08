@@ -91,14 +91,14 @@ const UserDashboard = (props) => {
 
                 <View style={styles.summaryContainer}>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.allComplaints} /> */}
                             <Text>{dashData?.complaints?.allComplaints}</Text>
                         </TouchableOpacity>
                         <Text>Total Service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FF6347' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FF6347' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.complete} /> */}
                             <Text>{dashData?.complaints?.complete}</Text>
 
@@ -106,7 +106,7 @@ const UserDashboard = (props) => {
                         <Text>Completed</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FF6347' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FF6347' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.assign} /> */}
                             <Text>{dashData?.complaints?.assign}</Text>
 
@@ -114,7 +114,7 @@ const UserDashboard = (props) => {
                         <Text>Assigned</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#90EE90' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#90EE90' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.pending} /> */}
                             <Text>{dashData?.complaints?.pending}</Text>
 
@@ -122,7 +122,7 @@ const UserDashboard = (props) => {
                         <Text>Pending</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#90EE90' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#90EE90' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.pending} /> */}
                             <Text>{dashData?.complaints?.inProgress}</Text>
 
@@ -130,7 +130,7 @@ const UserDashboard = (props) => {
                         <Text>In Progress</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.zeroToOneDays} /> */}
                             <Text>{dashData?.complaints?.zeroToOneDays}</Text>
 
@@ -138,7 +138,7 @@ const UserDashboard = (props) => {
                         <Text>0-1 days service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.twoToFiveDays} /> */}
                             <Text>{dashData?.complaints?.twoToFiveDays}</Text>
 
@@ -146,7 +146,7 @@ const UserDashboard = (props) => {
                         <Text>2-5 days service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => router.push("services")} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FFD700' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.moreThanFiveDays} /> */}
                             <Text>{dashData?.complaints?.moreThanFiveDays}</Text>
 
@@ -154,10 +154,10 @@ const UserDashboard = (props) => {
                         <Text>More than Five Days Service</Text>
                     </View>
 
-                    <TouchableOpacity onPress={() => router.push("services")} style={[styles.addButton, { backgroundColor: '#FFD700' }]}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.addButton, { backgroundColor: '#FFD700' }]}>
                         <Text style={styles.buttonText}>Add Service Request</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => router.push("product")} style={[styles.addButton, { backgroundColor: '#90EE90' }]}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Products')} style={[styles.addButton, { backgroundColor: '#90EE90' }]}>
                         <Text style={styles.buttonText}>Add Product</Text>
                     </TouchableOpacity>
                 </View>

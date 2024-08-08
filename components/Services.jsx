@@ -11,6 +11,7 @@ import UpdateServiceStatus from './UpdateServiceStatus';
 import ServiceRequestForm from './CreateServiceRequest';
 import PartOrder from './PartOrder';
 import AddFeedback from './AddFeedback';
+import Toast from 'react-native-toast-message';
 
 const getStatusStyle = (status) => {
     switch (status) {
@@ -18,6 +19,8 @@ const getStatusStyle = (status) => {
             return styles.inProgress;
         case 'PART PENDING':
             return styles.partPending;
+            case 'PENDING':
+            return styles.pending;
         case 'ASSIGN':
             return styles.assign;
         case 'COMPLETED':
@@ -61,7 +64,7 @@ export default function ViewComplaints() {
                     : user?.user.role === "USER" ? data.filter((item) => item?.userId === user?.user?._id)
                         : user?.user.role === "SERVICE" ? data.filter((item) => item?.assignServiceCenterId === user?.user?._id)
                             : user?.user.role === "TECHNICIAN" ? data.filter((item) => item?.technicianId === user?.user?._id)
-                                : user?.user.role === "DEALER" ? data.filter((item) => item?.dealerId === user?.user?._id)
+                                : user?.user.role === "DEALER" ? data.filter((item) => item?.userId === user?.user?._id)
                                     : []
             const data1 = filteredData?.map((item, index) => ({ ...item, i: index + 1 }));
             setComplaint(data1);
@@ -72,6 +75,7 @@ export default function ViewComplaints() {
             console.log(err);
         }
     }
+    // const filteredComplaints = filterComplaints(selectedCategory);
 
     const filterComplaints = (category) => {
         if (category === 'All') {
@@ -111,7 +115,7 @@ export default function ViewComplaints() {
 
     const userPayment = async (item) => {
         try {
-           
+
             const storedValue = await AsyncStorage.getItem('user');
             const userData = JSON.parse(storedValue);
             let response = await http_request.post("/payment", { amount: +amount });
@@ -175,7 +179,8 @@ export default function ViewComplaints() {
                     </>
                 ) : null
                 }
-                {(userData?.role === 'USER'|| userData?.role === 'DEALER') && ["COMPLETED"].includes(item?.status) ? (
+
+                {(userData?.role === 'USER' || userData?.role === 'DEALER') && ["COMPLETED"].includes(item?.status) ? (
                     // <View style={{display:"flex"}}>
                     <>
                         <TouchableOpacity
@@ -184,6 +189,7 @@ export default function ViewComplaints() {
                         >
                             <Text style={styles.feedbackButtonText}>Give Feedback</Text>
                         </TouchableOpacity>
+
                         {item?.payment === 0 && (
                             <TouchableOpacity
                                 onPress={() => userPayment(item)}
@@ -192,7 +198,7 @@ export default function ViewComplaints() {
                                 <Text style={styles.payButtonText}>Pay</Text>
                             </TouchableOpacity>
                         )}
-                        </>
+                    </>
                     // </View>
                 ) : null
                 }
@@ -206,6 +212,7 @@ export default function ViewComplaints() {
 
     return (
         <View style={styles.container}>
+              <Toast  />
             <View  >
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
@@ -235,12 +242,16 @@ export default function ViewComplaints() {
                 </View>
 
             </View>
-            <TouchableOpacity style={styles.button} onPress={handleCreateService}>
-                <Text style={styles.buttonText}>Create Service Request</Text>
-            </TouchableOpacity>
+            {userData?.user?.role === "USER" || "DEALER" ?
+                <TouchableOpacity style={styles.button} onPress={handleCreateService}>
+                    <Text style={styles.buttonText}>Create Service Request</Text>
+                </TouchableOpacity>
+                : null
+            }
             {loading ?
                 <ActivityIndicator size="large" color="#0000ff" />
                 : <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
+                  
                     <View>
                         <View style={styles.header}>
                             <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
@@ -256,6 +267,7 @@ export default function ViewComplaints() {
                             contentContainerStyle={styles.listContainer}
                         />
                     </View>
+                    
                 </ScrollView>
             }
             <ServiceDetails
@@ -348,6 +360,13 @@ const styles = StyleSheet.create({
     listContainer: {
         paddingBottom: 20,
     },
+    noFeedback: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginTop: "90%",
+        color: "red",
+        marginBottom: 10,
+      },
     header: {
         flexDirection: 'row',
         paddingVertical: 10,
@@ -402,7 +421,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#17A2B8", // Change Colors.SECONDARY to your desired color for PART PENDING
     },
     pending: {
-        backgroundColor: "#FFC107", // Change Colors.SECONDARY to your desired color for PART PENDING
+        backgroundColor: "#17A2B8", // Change Colors.SECONDARY to your desired color for PART PENDING
     },
     assign: {
         backgroundColor: "#A9A9A9", // Change Colors.COMPLETED to your desired color for ASSIGN
@@ -447,7 +466,7 @@ const styles = StyleSheet.create({
     },
     payButton: {
         borderRadius: 8,
-        marginLeft:5,
+        marginLeft: 5,
         padding: 10,
         backgroundColor: '#007BFF',
         alignItems: 'center',

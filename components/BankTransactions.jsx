@@ -117,7 +117,7 @@ const BankTransactions = () => {
             {loading ? (
                 <ActivityIndicator size="large" color="#0000ff" />
             ) : (
-                <ScrollView>
+                
                     <TransactionList
                         RefreshData={RefreshData}
                         wallet={wallet}
@@ -126,8 +126,8 @@ const BankTransactions = () => {
                         loading={loading}
                         value={value?.user}
                     />
-                    {/* <Button title="Refresh" onPress={() => RefreshData(Date.now())} /> */}
-                </ScrollView>
+                    
+              
             )}
         </View>
     );
