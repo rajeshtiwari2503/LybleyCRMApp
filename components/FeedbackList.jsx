@@ -30,12 +30,18 @@ const FeedbackPage = ({ data }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Feedback List</Text>
-      <FlatList
-        data={data}
-        keyExtractor={(item) => item?._id} // Replace with your unique ID field
-        renderItem={renderFeedbackItem}
-        contentContainerStyle={styles.listContainer}
-      />
+      {data?.length > 0 ?
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item?._id} // Replace with your unique ID field
+          renderItem={renderFeedbackItem}
+          contentContainerStyle={styles.listContainer}
+        />
+        :
+        <View>
+          <Text style={styles.noFeedback}>You have 0 feedback</Text>
+        </View>
+      }
 
       {/* Modal for displaying detailed feedback */}
       <Modal
@@ -149,7 +155,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   row: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 5,
@@ -160,6 +166,13 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  noFeedback: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: "90%",
+    color: "red",
     marginBottom: 10,
   },
   viewButton: {
