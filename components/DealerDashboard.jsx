@@ -45,7 +45,7 @@ const DealerDashboard = (props) => {
             : userData?.role === "USER" ? complaint.filter((item) => item?.userId === userData._id)
                 : userData?.role === "SERVICE" ? complaint.filter((item) => item?.assignServiceCenterId === userData._id)
                     : userData?.role === "TECHNICIAN" ? complaint.filter((item) => item?.technicianId === userData._id)
-                        : userData?.role === "DEALER" ? complaint.filter((item) => item?.dealerId === userData._id)
+                        : userData?.role === "DEALER" ? complaint.filter((item) => item?.userId === userData._id)
                             : [];
 
     const data = filterData?.map((item, index) => ({ ...item, i: index + 1 }));

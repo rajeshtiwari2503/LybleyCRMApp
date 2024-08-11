@@ -91,9 +91,7 @@ const BankTransactions = () => {
             setLoading(true);
             const storedValue = await AsyncStorage.getItem("user");
             const value1 = JSON.parse(storedValue);
-            const endPoint = value1?.user?.role === "ADMIN"
-                ? `/getAllWalletTransaction`
-                : `/bankDetailByUser/${value1?.user?._id}`;
+            const endPoint = `/getTransactionByCenterId/${value1?.user?._id}`;
             const response = await http_request.get(endPoint);
             let { data } = response;
             setTransactions(data);

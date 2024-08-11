@@ -279,7 +279,8 @@ import {
     StyleSheet,
     ActivityIndicator,
     Alert,
-    Platform
+    Platform,
+    ScrollView
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -332,13 +333,14 @@ const TransactionList = ({ data, RefreshData, wallet, bankDetails, loading, valu
                         name: bankDetails?.accountHolderName,
                         ifsc: bankDetails?.IFSC,
                         account_number: bankDetails?.accountNumber,
+                        bankName: bankDetails?.bankName
                     },
                     contact: {
-                        name: centerInfo?.user?.serviceCenterName,
+                        name: centerInfo?.user?.name,
                         email: centerInfo?.user?.email,
                         contact: centerInfo?.user?.contact,
                         type: "employee",
-                        reference_id: "12345",
+                        reference_id: centerInfo?.user?._id,
                         notes: {
                             notes_key_1: "Tea, Earl Grey, Hot",
                             notes_key_2: "Tea, Earl Grey… decaf.",
@@ -371,6 +373,7 @@ const TransactionList = ({ data, RefreshData, wallet, bankDetails, loading, valu
             Alert.alert("Error", "Please add bank details");
         }
     };
+    console.log(data);
 
     return (
         <View style={styles.container}>
@@ -395,18 +398,33 @@ const TransactionList = ({ data, RefreshData, wallet, bankDetails, loading, valu
                                         <Button title="Withdrawal" onPress={() => { setIsModalOpen(true); setAmount(wallet?.dueAmount); }} />
                                     </View>
                                     <Text style={styles.title}>Bank Transactions List</Text>
-                                    <FlatList
+                                    <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
+                                        <View>
+                                            <View style={styles.header}>
+                                                <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
+                                                <Text style={[styles.headerCell, { width: 120 }]}>  Withdrawal Amount </Text>
+                                                <Text style={[styles.headerCell, { width: 120 }]}>Status </Text>
+                                                <Text style={[styles.headerCell, { width: 120 }]}>Date </Text>
+                                                {/* <Text style={[styles.headerCell, { textAlign: "center", paddingRight: 20 }]}>Status</Text> */}
+                                                 
+
+                                            </View>
+                                            <FlatList
                                         data={data}
-                                        keyExtractor={(item) => item._id.toString()}
+                                        keyExtractor={(item) => item._id}
                                         renderItem={({ item, index }) => (
-                                            <View style={styles.transactionRow}>
+                                            <View  style={styles.row}>
                                                 <Text>{index + 1}</Text>
                                                 <Text>{item.userName}</Text>
-                                                <Text>{item.paidAmount} INR</Text>
+                                                <Text>{item.paidAmount}  INR. </Text>
+                                                <Text>{item.status}  </Text>
                                                 <Text>{new Date(item.createdAt).toLocaleString()}</Text>
                                             </View>
                                         )}
                                     />
+                                        </View>
+                                    </ScrollView>
+                                   
                                 </>
                             ) : (
                                 <Button title="Activate Wallet" onPress={handleWallet} />
@@ -487,6 +505,34 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#00796b',
     },
+    header: {
+        flexDirection: 'row',
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+    
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
+        backgroundColor: '#f8f8f8',
+      },
+      headerCell: {
+        flex: 1,
+        fontWeight: 'bold',
+        textAlign: 'left',
+        width: 110,
+      },
+      row: {
+        flexDirection: 'row',
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderBottomWidth: 1,
+        alignItems: "center",
+        borderBottomColor: '#ddd',
+      },
+      cell: {
+        flex: 1,
+        textAlign: 'left',
+        width: 120,
+      },
     title: {
         fontSize: 22,
         fontWeight: 'bold',
