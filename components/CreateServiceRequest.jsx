@@ -11,6 +11,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import * as FileSystem from 'expo-file-system';
 import Toast from 'react-native-toast-message';
+import axios from 'axios';
 
 const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
     const { control, handleSubmit, formState: { errors }, getValues, reset, setValue } = useForm();
@@ -25,6 +26,10 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
     const [time, setTime] = useState(new Date());
     const [productName, setProductName] = useState("")
     const [value, setLocalValue] = useState('');
+
+    const [pincode, setPincode] = useState('');
+    const [error, setError] = useState('');
+    const [location, setLocation] = useState(null);
 
     const getAllProducts = async () => {
         try {
@@ -43,6 +48,9 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
 
     const registerComplaint = async (reqData) => {
         try {
+            if (location) {
+                // console.log(location,"dhghg");
+                
             setLoading(true);
             const formData = new FormData();
             for (const key in reqData) {
@@ -81,6 +89,8 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
             //   name: 'photo.jpg',  
             //   type: mimeType || 'image/jpeg', 
             // });
+            console.log(reqData);
+            
             let response = await http_request.post('/createAppComplaint', reqData
                
             );
@@ -93,6 +103,12 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
             Toast.show({ type: 'success', text1: data.msg });
             onClose();
             reset();
+        }
+            else {
+                // setError('Please enter a valid pincode.');
+                return;
+        
+              }
         } catch (error) {
             setLoading(false);
             Toast.show({ type: 'success', text1:  "Internal Server Error." });
@@ -109,11 +125,56 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
           }
     };
 
-    const onSubmit = (data) => {
-        registerComplaint(data);
-    };
+    const onSubmit = async (data) => {
+        try {
+        //    console.log(pincode);
+           
+          if (pincode) {
+            const locationResponse = await fetchLocation();  
+      
+            if (!locationResponse) {
+              setError('Failed to fetch location details.');
+              return;
+            }
+      
+          
+            await registerComplaint(data);
+      
+          } else {
+            setError('Please enter a pincode.');
+          }
+        } catch (error) {
+          // Handle unexpected errors
+          setError('An error occurred while submitting the complaint. Please try again.');
+          console.error(error);
+        }
+      };
 
-   
+      const fetchLocation = async () => {
+        try {
+          const response = await axios.get(`https://api.postalpincode.in/pincode/${pincode}`);
+        //   console.log("response",response.data[0].Status);
+          
+          if (response.data && response.data[0].Status === 'Success') {
+             
+              const [details] = response.data;
+              const { District, State } = details.PostOffice[0];
+              console.log("response",District,State);
+              setLocation({ District, State });
+              setValue('pincode', pincode);
+              setValue('state', State);
+              setValue('district', District);
+            return response.data[0].PostOffice[0]; // Return the location details
+          } else {
+            setError('No location found for the provided pincode.');
+            return  ;
+          }
+        } catch (error) {
+          setError('Error fetching location details.');
+          console.error(error);
+          return  ;
+        }
+      };
     const handleProductChange = (selectedProductId) => {
         const selectedProduct = products.find(product => product._id === selectedProductId);
         setProductName("selectedProduct")
@@ -405,14 +466,14 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                     {errors.detailedDescription && <Text style={styles.errorText}>{errors.detailedDescription.message}</Text>}
                 </View>
 
-                {/* <View style={styles.inputContainer}>
+                <View style={styles.inputContainer}>
                     <Text style={styles.label}>Issue Images</Text>
                     <Button title="Pick a document" onPress={pickDocument} />
                     <ScrollView contentContainerStyle={styles.imagesContainer}>
                     {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
 
                     </ScrollView>
-                </View> */}
+                </View>
 
                 <Controller
                     control={control}
@@ -484,7 +545,25 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                     />
                     {errors.serviceLocation && <Text style={styles.errorText}>{errors.serviceLocation.message}</Text>}
                 </View>
-
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Pincode</Text>
+                    <Controller
+                        control={control}
+                        name="pincode"
+                        rules={{ required: 'Pincode is required' }}
+                        render={({ field: { onChange, value } }) => (
+                            <TextInput
+                                style={[styles.input, errors.pincode && styles.errorInput]}
+                                onChangeText={text => {
+                                    setPincode(text);
+                                    onChange(text);
+                                }}
+                                value={value}
+                            />
+                        )}
+                    />
+                    {errors.pincode && <Text style={styles.errorText}>{errors.pincode.message}</Text>}
+                </View>
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>Full Name</Text>
                     <Controller

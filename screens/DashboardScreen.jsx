@@ -28,7 +28,7 @@ const DashboardScreen = () => {
           switch (user?.user?.role) {
 
             case "DEALER":
-              endPoint = `/dashboardDetailsByDealerId/${user?.user?._id}`;
+              endPoint = `/dashboardDetailsByUserId/${user?.user?._id}`;
               break;
 
             case "USER":
@@ -89,7 +89,7 @@ const DashboardScreen = () => {
           : user?.user.role === "USER" ? data.filter((item) => item?.userId === user?.user?._id)
             : user?.user.role === "SERVICE" ? data.filter((item) => item?.assignServiceCenterId === user?.user?._id)
               : user?.user.role === "TECHNICIAN" ? data.filter((item) => item?.technicianId === user?.user?._id)
-                : user?.user.role === "DEALER" ? data.filter((item) => item?.dealerId === user?.user?._id)
+                : user?.user.role === "DEALER" ? data.filter((item) => item?.userId === user?.user?._id)
                   : []
       setComplaint(filteredData)
     }
