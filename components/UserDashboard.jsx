@@ -91,14 +91,14 @@ const UserDashboard = (props) => {
 
                 <View style={styles.summaryContainer}>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#007BFF' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.allComplaints} /> */}
                             <Text>{dashData?.complaints?.allComplaints}</Text>
                         </TouchableOpacity>
                         <Text>Total Service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FF6347' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#DC3545' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.complete} /> */}
                             <Text>{dashData?.complaints?.complete}</Text>
 
@@ -106,7 +106,7 @@ const UserDashboard = (props) => {
                         <Text>Completed</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FF6347' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#DC3545' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.assign} /> */}
                             <Text>{dashData?.complaints?.assign}</Text>
 
@@ -114,7 +114,7 @@ const UserDashboard = (props) => {
                         <Text>Assigned</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#90EE90' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#E3F2FD' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.pending} /> */}
                             <Text>{dashData?.complaints?.pending}</Text>
 
@@ -122,7 +122,7 @@ const UserDashboard = (props) => {
                         <Text>Pending</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#90EE90' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#E3F2FD' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.pending} /> */}
                             <Text>{dashData?.complaints?.inProgress}</Text>
 
@@ -130,7 +130,7 @@ const UserDashboard = (props) => {
                         <Text>In Progress</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#007BFF' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.zeroToOneDays} /> */}
                             <Text>{dashData?.complaints?.zeroToOneDays}</Text>
 
@@ -138,7 +138,7 @@ const UserDashboard = (props) => {
                         <Text>0-1 days service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#007BFF' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.twoToFiveDays} /> */}
                             <Text>{dashData?.complaints?.twoToFiveDays}</Text>
 
@@ -146,7 +146,7 @@ const UserDashboard = (props) => {
                         <Text>2-5 days service</Text>
                     </View>
                     <View style={styles.itemContainer}>
-                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#FFD700' }]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: '#007BFF' }]}>
                             {/* <CountUp start={0} end={dashData?.complaints?.moreThanFiveDays} /> */}
                             <Text>{dashData?.complaints?.moreThanFiveDays}</Text>
 
@@ -154,10 +154,10 @@ const UserDashboard = (props) => {
                         <Text>More than Five Days Service</Text>
                     </View>
 
-                    <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.addButton, { backgroundColor: '#FFD700' }]}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.addButton, { backgroundColor: '#007BFF' }]}>
                         <Text style={styles.buttonText}>Add Service Request</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate('Products')} style={[styles.addButton, { backgroundColor: '#90EE90' }]}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Products')} style={[styles.addButton, { backgroundColor: '#28A745' }]}>
                         <Text style={styles.buttonText}>Add Product</Text>
                     </TouchableOpacity>
                 </View>
@@ -301,7 +301,7 @@ const styles = StyleSheet.create({
     button: {
         width: 50,
         height: 50,
-        borderRadius: 40,
+        borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -325,3 +325,52 @@ const styles = StyleSheet.create({
 });
 
 export default UserDashboard;
+
+
+// import React, { useState, useEffect } from 'react';
+// import { Text, View, Button, Alert } from 'react-native';
+// import * as Location from 'expo-location';
+
+// export default function UserDashboard() {
+//   const [location, setLocation] = useState(null);
+//   const [errorMsg, setErrorMsg] = useState(null);
+
+//   useEffect(() => {
+//     (async () => {
+//       let { status } = await Location.requestForegroundPermissionsAsync();
+//       if (status !== 'granted') {
+//         setErrorMsg('Permission to access location was denied');
+//         return;
+//       }
+
+//       let location = await Location.getCurrentPositionAsync({});
+//       setLocation(location);
+//     })();
+//   }, []);
+
+//   let text = 'Waiting..';
+//   if (errorMsg) {
+//     text = errorMsg;
+//   } else if (location) {
+//     text = `Latitude: ${location.coords.latitude}, Longitude: ${location.coords.longitude}`;
+//   }
+// console.log("chghgg",location);
+
+//   return (
+//     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//       <Text>{text}</Text>
+//       <Button title="Get Location" onPress={() => {
+//         (async () => {
+//           let { status } = await Location.requestForegroundPermissionsAsync();
+//           if (status !== 'granted') {
+//             Alert.alert('Permission denied', 'Permission to access location was denied');
+//             return;
+//           }
+
+//           let location = await Location.getCurrentPositionAsync({});
+//           setLocation(location);
+//         })();
+//       }} />
+//     </View>
+//   );
+// }

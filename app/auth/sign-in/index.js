@@ -11,8 +11,8 @@ export default function SignIn() {
     const navigation = useNavigation()
     const router = useRouter()
     useEffect(() => {
-        navigation.setOptions({ headerShown: false })
-    })
+        navigation.setOptions({ headerShown: false });
+    }, [navigation]);
     const { control, handleSubmit, formState: { errors } } = useForm(); // Destructure control and handleSubmit from useForm
     const [loading, setLoading] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
@@ -36,10 +36,10 @@ export default function SignIn() {
 
             if (data?.user?.verification === "VERIFIED") {
                 setLoading(false);
-                router.push('/');
+                router.push('/home');
             } else {
                 setLoading(false);
-                router.push('/');
+                router.push('/home');
             }
 
         } catch (err) {
