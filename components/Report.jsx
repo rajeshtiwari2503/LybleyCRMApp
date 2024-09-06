@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, ScrollView, ActivityIndicator, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, ScrollView, ActivityIndicator,   TouchableOpacity } from 'react-native';
 import http_request from "../http_request"
 import ExportToExcel from '../components/DownloadExcel';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -55,13 +55,13 @@ const DealerReport = ({ userData }) => {
 
     const onChangeStartDate = (event, selectedDate) => {
         const currentDate = selectedDate || startDate;
-        setShowStartDatePicker(Platform.OS === 'ios');
+        // setShowStartDatePicker(Platform.OS === 'ios');
         setStartDate(currentDate);
     };
 
     const onChangeEndDate = (event, selectedDate) => {
         const currentDate = selectedDate || endDate;
-        setShowEndDatePicker(Platform.OS === 'ios');
+        // setShowEndDatePicker(Platform.OS === 'ios');
         setEndDate(currentDate);
     };
     const handleExportToExcel = () => {

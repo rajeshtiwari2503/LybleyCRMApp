@@ -279,7 +279,7 @@ import {
     StyleSheet,
     ActivityIndicator,
     Alert,
-    Platform,
+   
     ScrollView
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';

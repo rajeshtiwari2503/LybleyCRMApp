@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, Image, TouchableOpacity,Platform, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, Button, Image, TouchableOpacity,  StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';

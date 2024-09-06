@@ -36,10 +36,10 @@ export default function SignIn() {
 
             if (data?.user?.verification === "VERIFIED") {
                 setLoading(false);
-                router.push('/home');
+                router.push('home');
             } else {
                 setLoading(false);
-                router.push('/home');
+                router.push('home');
             }
 
         } catch (err) {

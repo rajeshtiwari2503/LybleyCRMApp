@@ -12,6 +12,9 @@ import ServiceRequestForm from './CreateServiceRequest';
 import PartOrder from './PartOrder';
 import AddFeedback from './AddFeedback';
 import Toast from 'react-native-toast-message';
+import Map from "./Map"
+import * as Location from 'expo-location';
+import Geolocation from 'react-native-geolocation-service';
 
 const getStatusStyle = (status) => {
     switch (status) {
@@ -19,7 +22,7 @@ const getStatusStyle = (status) => {
             return styles.inProgress;
         case 'PART PENDING':
             return styles.partPending;
-            case 'PENDING':
+        case 'PENDING':
             return styles.pending;
         case 'ASSIGN':
             return styles.assign;
@@ -35,6 +38,8 @@ const getStatusStyle = (status) => {
 export default function ViewComplaints() {
     const router = useRouter();
     const [loading, setloading] = useState(false);
+    const [isMap, setIsMap] = useState(false);
+    const [lantLong, setLatLong] = useState({});
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [refresh, setRefresh] = useState('');
     const [selectedService, setSelectedService] = useState('');
@@ -46,10 +51,60 @@ export default function ViewComplaints() {
     const [orderModalVisible, setOrderModalVisible] = useState(false);
     const [createModalVisible, setCreateModalVisible] = useState(false);
     const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
+    const [locationCurrent, setLocationCurrent] = useState(null);
+    const [errorMsg, setErrorMsg] = useState(null);
 
     useEffect(() => {
+        const interval = setInterval(async () => {
+            try {
+                // Request foreground permissions
+                let { status } = await Location.requestForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    setErrorMsg('Permission to access location was denied');
+                    return;
+                }
+    
+                // Force the location update by passing options
+                let locationCurr = await Location.getCurrentPositionAsync({
+                    accuracy: Location.Accuracy.High, // Adjust accuracy as needed
+                    maximumAge: 0,                    // Ensure no cached result
+                    timeInterval: 2000                // Optional: Set a time interval for getting location
+                });
+    
+                // console.log(locationCurr);
+    
+                // Update the state with the new location
+                setLocationCurrent(locationCurr);
+            } catch (error) {
+                console.error("Error fetching location:", error);
+            }
+        }, 2000);
+    
         getAllComplaint();
-    }, [refresh]);
+    
+        // Clean up the interval on component unmount
+        return () => clearInterval(interval);
+    
+    }, []);
+    
+
+    const getLiveLocation = async () => {
+        const locPermissionDenied = await locationPermission()
+        if (locPermissionDenied) {
+            const res = await Geolocation.requestAuthorization("whenInUse")
+            console.log(res);
+            
+            setLocationCurrent({ lat: latitude, long: longitude });
+        }
+        const res = await Geolocation.requestAuthorization("whenInUse")
+        console.log(res);
+    }
+    let text = 'Waiting..';
+    if (errorMsg) {
+        text = errorMsg;
+    } else if (locationCurrent) {
+        text = `Latitude: ${locationCurrent.coords.latitude}, Longitude: ${locationCurrent.coords.longitude}`;
+    }
 
     const getAllComplaint = async () => {
         try {
@@ -176,6 +231,7 @@ export default function ViewComplaints() {
                         <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleOrder(item)}>
                             <MaterialIcons name="update" size={24} color="blue" />
                         </TouchableOpacity>
+
                     </>
                 ) : null
                 }
@@ -198,6 +254,9 @@ export default function ViewComplaints() {
                                 <Text style={styles.payButtonText}>Pay</Text>
                             </TouchableOpacity>
                         )}
+                        <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleMapData(item?.lat, item?.long)}>
+                            <MaterialIcons name="my-location" size={24} color="green" />
+                        </TouchableOpacity>
                     </>
                     // </View>
                 ) : null
@@ -209,101 +268,114 @@ export default function ViewComplaints() {
             </View>
         </View>
     );
-
+    // const handleMap=()=>{
+    //     setIsMap(!isMap)
+    // }
+    const handleMapData = (lat, long) => {
+        setLatLong({ lat: lat, long: long })
+        setIsMap(true)
+    }
+    // console.log(locationCurrent?.coords?.latitude,locationCurrent?.coords?.longitude);
+    const techLocation = { lat: locationCurrent?.coords?.latitude, long: locationCurrent?.coords?.longitude }
     return (
-        <View style={styles.container}>
-              <Toast  />
-            <View  >
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        style={[styles.categoryButton, selectedCategory === 'All' && styles.selectedButton]}
-                        onPress={() => handleCategoryPress('All')}
-                    >
-                        <Text style={styles.buttonText}>All</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.categoryButton, selectedCategory === 'PENDING' && styles.selectedButton]}
-                        onPress={() => handleCategoryPress('PENDING')}
-                    >
-                        <Text style={styles.buttonText}>Pending</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.categoryButton, selectedCategory === 'ASSIGN' && styles.selectedButton]}
-                        onPress={() => handleCategoryPress('ASSIGN')}
-                    >
-                        <Text style={styles.buttonText}>Assigned</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.categoryButton, selectedCategory === 'COMPLETED' && styles.selectedButton]}
-                        onPress={() => handleCategoryPress('COMPLETED')}
-                    >
-                        <Text style={styles.buttonText}>Closed</Text>
-                    </TouchableOpacity>
-                </View>
+        < >
+            {isMap === true && locationCurrent ? <Map lantLong={lantLong} techLocation={techLocation} handleMap={() => setIsMap(false)} />
+                :
+                <View style={styles.container}>
+                    <Toast />
 
-            </View>
-            {userData?.user?.role === "USER" || "DEALER" ?
-                <TouchableOpacity style={styles.button} onPress={handleCreateService}>
-                    <Text style={styles.buttonText}>Create Service Request</Text>
-                </TouchableOpacity>
-                : null
-            }
-            {loading ?
-                <ActivityIndicator size="large" color="#0000ff" />
-                : <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
-                  
-                    <View>
-                        <View style={styles.header}>
-                            <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
-                            <Text style={[styles.headerCell, { width: 120 }]}>Product </Text>
-                            <Text style={[styles.headerCell, { textAlign: "center", paddingRight: 20 }]}>Status</Text>
-                            <Text style={styles.headerCell}>Updated At</Text>
-                            <Text style={[styles.headerCell, { textAlign: 'center' }]}>Actions</Text>
+                    <View  >
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity
+                                style={[styles.categoryButton, selectedCategory === 'All' && styles.selectedButton]}
+                                onPress={() => handleCategoryPress('All')}
+                            >
+                                <Text style={styles.buttonText}>All</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.categoryButton, selectedCategory === 'PENDING' && styles.selectedButton]}
+                                onPress={() => handleCategoryPress('PENDING')}
+                            >
+                                <Text style={styles.buttonText}>Pending</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.categoryButton, selectedCategory === 'ASSIGN' && styles.selectedButton]}
+                                onPress={() => handleCategoryPress('ASSIGN')}
+                            >
+                                <Text style={styles.buttonText}>Assigned</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.categoryButton, selectedCategory === 'COMPLETED' && styles.selectedButton]}
+                                onPress={() => handleCategoryPress('COMPLETED')}
+                            >
+                                <Text style={styles.buttonText}>Closed</Text>
+                            </TouchableOpacity>
                         </View>
-                        <FlatList
-                            data={filterComplaints(selectedCategory)}
-                            keyExtractor={item => item?._id}
-                            renderItem={renderItem}
-                            contentContainerStyle={styles.listContainer}
-                        />
-                    </View>
-                    
-                </ScrollView>
-            }
-            <ServiceDetails
-                isVisible={isModalVisible}
-                onClose={() => setModalVisible(false)}
-                service={selectedService}
-            />
-            <UpdateServiceStatus
-                isVisible={updateModalVisible}
-                onClose={() => setUpdateModalVisible(false)}
-                service={selectedService}
-                RefreshData={RefreshData}
-            />
-            <PartOrder
-                isVisible={orderModalVisible}
-                onClose={() => setOrderModalVisible(false)}
-                service={selectedOrder}
-                RefreshData={RefreshData}
-            />
-            <ServiceRequestForm
-                isVisible={createModalVisible}
-                onClose={() => setCreateModalVisible(false)}
-                // user={user}
-                // onSave={handleSave}
-                RefreshData={RefreshData}
-            />
-            <AddFeedback
-                isVisible={feedbackModalVisible}
-                onClose={() => setFeedbackModalVisible(false)}
-                complaints={selectedService}
-                // user={user}
-                // onSave={handleSave}
-                RefreshData={RefreshData}
-            />
-        </View>
 
+                    </View>
+                    {userData?.user?.role === "USER" || "DEALER" ?
+                        <TouchableOpacity style={styles.button} onPress={handleCreateService}>
+                            <Text style={styles.buttonText}>Create Service Request</Text>
+                        </TouchableOpacity>
+                        : null
+                    }
+                    {loading ?
+                        <ActivityIndicator size="large" color="#0000ff" />
+                        : <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
+
+                            <View>
+                                <View style={styles.header}>
+                                    <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
+                                    <Text style={[styles.headerCell, { width: 120 }]}>Product </Text>
+                                    <Text style={[styles.headerCell, { textAlign: "center", paddingRight: 20 }]}>Status</Text>
+                                    <Text style={styles.headerCell}>Updated At</Text>
+                                    <Text style={[styles.headerCell, { textAlign: 'center' }]}>Actions</Text>
+                                </View>
+                                <FlatList
+                                    data={filterComplaints(selectedCategory)}
+                                    keyExtractor={item => item?._id}
+                                    renderItem={renderItem}
+                                    contentContainerStyle={styles.listContainer}
+                                />
+                            </View>
+
+                        </ScrollView>
+                    }
+                    <ServiceDetails
+                        isVisible={isModalVisible}
+                        onClose={() => setModalVisible(false)}
+                        service={selectedService}
+                    />
+                    <UpdateServiceStatus
+                        isVisible={updateModalVisible}
+                        onClose={() => setUpdateModalVisible(false)}
+                        service={selectedService}
+                        RefreshData={RefreshData}
+                    />
+                    <PartOrder
+                        isVisible={orderModalVisible}
+                        onClose={() => setOrderModalVisible(false)}
+                        service={selectedOrder}
+                        RefreshData={RefreshData}
+                    />
+                    <ServiceRequestForm
+                        isVisible={createModalVisible}
+                        onClose={() => setCreateModalVisible(false)}
+                        // user={user}
+                        // onSave={handleSave}
+                        RefreshData={RefreshData}
+                    />
+                    <AddFeedback
+                        isVisible={feedbackModalVisible}
+                        onClose={() => setFeedbackModalVisible(false)}
+                        complaints={selectedService}
+                        // user={user}
+                        // onSave={handleSave}
+                        RefreshData={RefreshData}
+                    />
+                </View>
+            }
+        </>
     );
 }
 
@@ -366,7 +438,7 @@ const styles = StyleSheet.create({
         marginTop: "90%",
         color: "red",
         marginBottom: 10,
-      },
+    },
     header: {
         flexDirection: 'row',
         paddingVertical: 10,
