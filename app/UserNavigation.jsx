@@ -15,6 +15,7 @@ const Tab = createBottomTabNavigator();
 const UserNavigator = () => (
  
   <Tab.Navigator
+  initialRouteName='Products'
     screenOptions={{
       tabBarStyle: {
         backgroundColor: '#FFF', // Tab bar background color

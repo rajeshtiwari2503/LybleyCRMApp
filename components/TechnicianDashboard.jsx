@@ -285,58 +285,43 @@ const TechnicianDashboard = (props) => {
                    
                 </View>
 
+{/* 
+                {pieChartData && pieChartData.length > 0 && (
+  <PieChart
+    data={pieChartData}
+    width={screenWidth * 0.9}
+    height={220}
+    chartConfig={{
+      backgroundColor: '#e26a00',
+      backgroundGradientFrom: '#fb8c00',
+      backgroundGradientTo: '#ffa726',
+      color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+      labelColor: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+    }}
+    accessor="population"
+    backgroundColor="transparent"
+    paddingLeft="15"
+  />
+)}
 
-                <PieChart
-                    data={pieChartData}
-                    width={330}
-                    height={220}
-                    chartConfig={{
-                        backgroundColor: "#e26a00",
-                        backgroundGradientFrom: "#fb8c00",
-                        backgroundGradientTo: "#ffa726",
-                        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`, // Color for data slices
-                        labelColor: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`, // Color for labels
-                        style: {
-                            borderRadius: 16,
-                        },
-                    }}
-                    accessor="population"
-                    backgroundColor="transparent"
-                    paddingLeft="5"
-                />
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chartContainer}>
-                    <View style={{ width: 400 }}>
-                        <BarChart
-                            data={{
-                                labels: barChartData.map(item => item.label),
-                                datasets: [{
-                                    data: barChartData.map(item => item.data)
-                                }]
-                            }}
-                            width={350}
-                            height={220}
-                            yAxisLabel=""
-                            chartConfig={{
-                                backgroundColor: "#e26a00",
-                                backgroundGradientFrom: "#fb8c00",
-                                backgroundGradientTo: "#ffa726",
-                                decimalPlaces: 0,
-                                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                                style: {
-                                    borderRadius: 16,
-                                },
-                                propsForLabels: {
-                                    fontSize: 7,
-                                },
-                            }}
-                            style={{
-                                marginVertical: 8,
-                                borderRadius: 16,
-                            }}
-                        />
-                    </View>
-                </ScrollView>
+{barChartData && barChartData.datasets && barChartData.datasets.length > 0 && (
+  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+    <BarChart
+      data={barChartData}
+      width={screenWidth * 1.4}
+      height={220}
+      chartConfig={{
+        backgroundColor: '#e26a00',
+        backgroundGradientFrom: '#fb8c00',
+        backgroundGradientTo: '#ffa726',
+        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+        labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+      }}
+      style={styles.barChart}
+    />
+  </ScrollView>
+)} */}
+
 
                 <RecentServicesList data={filterData} userData={userData} />
                 <NotificationModal
