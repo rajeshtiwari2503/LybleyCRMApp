@@ -1,19 +1,24 @@
-import React, {   useState } from 'react';
+import React, {   useState ,useEffect} from 'react';
 import { useRouter } from 'expo-router';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text,  Alert, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { Colors } from '@/constants/Colors';
 import Toast from 'react-native-toast-message';
 import { Checkbox } from 'react-native-paper';
 import http_request from "../http_request";
+ 
+ 
+import * as Location from 'expo-location';
 
 export default function UserRegistrationForm() {
 
 
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [location, setLocation] = useState(null);
+    const [errorMsg, setErrorMsg] = useState(null);
 
-    const { control, handleSubmit, watch, getValues, formState: { errors } } = useForm();
+    const { control, handleSubmit, watch, getValues,setValue, formState: { errors } } = useForm();
 
     const onSubmit = data => {
         Register(data);
@@ -36,6 +41,52 @@ export default function UserRegistrationForm() {
             console.log(err);
         }
     };
+
+
+ 
+ 
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      setValue("lat",location.coords.latitude)
+      setValue("long",location.coords.longitude)
+    })();
+  }, []);
+
+  let text = 'Waiting..';
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = `Latitude: ${location.coords.latitude}, Longitude: ${location.coords.longitude}`;
+  }
+// console.log("chghgg",location);
+
+//   return (
+//     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//       <Text>{text}</Text>
+//       <Button title="Get Location" onPress={() => {
+//         (async () => {
+//           let { status } = await Location.requestForegroundPermissionsAsync();
+//           if (status !== 'granted') {
+//             Alert.alert('Permission denied', 'Permission to access location was denied');
+//             return;
+//           }
+
+//           let location = await Location.getCurrentPositionAsync({});
+//           setLocation(location);
+//         })();
+//       }} />
+//     </View>
+//   );
+// }
 
     return (
         

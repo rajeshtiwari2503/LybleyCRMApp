@@ -93,7 +93,7 @@ const NotificationModal = ({ notifications, RefreshData, value, visible, onClose
 
                 <View style={{ flexDirection: 'row', alignItems: 'center',   }}>
                     <Text style={{ fontSize: 22, fontWeight: 'bold', flex: 1 }}>
-                        Service Details
+                        Notifications
                     </Text>
                     <TouchableOpacity onPress={onClose}>
                         <MaterialIcons name="cancel" size={40} color="red" />

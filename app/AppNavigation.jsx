@@ -64,7 +64,7 @@ const AppNavigator = () => {
           {user ? (
             <>
               {user?.user?.role === 'USER' && <Stack.Screen name="User" component={UserNavigator} />}
-              {user?.user?.role === 'DEALER' && <Stack.Screen name="Technician" component={DealerNavigator} />}
+              {user?.user?.role === 'DEALER' && <Stack.Screen name="Dealer" component={DealerNavigator} />}
               {user?.user?.role === 'TECHNICIAN' && <Stack.Screen name="Technician" component={TechnicianNavigator} />}
               {/* Add more roles and components as needed */}
             </>

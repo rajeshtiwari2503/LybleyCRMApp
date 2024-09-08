@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, Image, TouchableOpacity,Platform, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, Button, Image, TouchableOpacity,  StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';
@@ -12,6 +12,7 @@ import { Colors } from '@/constants/Colors';
 import * as FileSystem from 'expo-file-system';
 import Toast from 'react-native-toast-message';
 import axios from 'axios';
+import * as Location from 'expo-location';
 
 const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
     const { control, handleSubmit, formState: { errors }, getValues, reset, setValue } = useForm();
@@ -30,6 +31,8 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
     const [pincode, setPincode] = useState('');
     const [error, setError] = useState('');
     const [location, setLocation] = useState(null);
+    const [locationCurrent, setLocationCurrent] = useState(null);
+    const [errorMsg, setErrorMsg] = useState(null);
 
     const getAllProducts = async () => {
         try {
@@ -199,12 +202,31 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
         }
     };
 
+   
+
     useEffect(() => {
-
+        (async () => {
+          let { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== 'granted') {
+            setErrorMsg('Permission to access location was denied');
+            return;
+          }
+    
+          let locationCurr = await Location.getCurrentPositionAsync({});
+          setLocationCurrent(locationCurr);
+          setValue("lat",locationCurr?.coords?.latitude)
+          setValue("long",locationCurr?.coords?.longitude)
+        })();
         getAllProducts()
-
-    }, [  ])
-
+      }, []);
+    
+      let text = 'Waiting..';
+      if (errorMsg) {
+        text = errorMsg;
+      } else if (locationCurrent) {
+        text = `Latitude: ${locationCurrent.coords.latitude}, Longitude: ${locationCurrent.coords.longitude}`;
+      }
+    // console.log("chghgg",locationCurrent);
     
     const pickDocument = async () => {
         let result = await DocumentPicker.getDocumentAsync({

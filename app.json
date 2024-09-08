@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "lybley_crm",
+    "name": "Servsy",
     "slug": "lybley_crm",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/Logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -17,9 +17,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/Logo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.rajeshtiwari2503.lybley_crm"
     },
     "web": {
       "bundler": "metro",
@@ -31,6 +32,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "022b3da0-a407-4c75-8e14-67c6a4dcdc98"
+      }
     }
   }
 }

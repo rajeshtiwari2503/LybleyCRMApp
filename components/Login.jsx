@@ -18,7 +18,7 @@ export default function Login() {
             <View style={styles.container}>
                 <View style={styles.txtContainer}>
                     <Text style={styles.title}>
-                        Ram Services on Any areas
+                        Servsy provide services on Any areas
                     </Text>
                     <Text style={styles.description}>
                         Delivering comprehensive, customer-focused solutions with innovative and reliable expertise.
