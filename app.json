@@ -20,7 +20,12 @@
         "foregroundImage": "./assets/images/Logo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.rajeshtiwari2503.lybley_crm"
+      "package": "com.rajeshtiwari2503.lybley_crm",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBvWULhEJHD7GpeeY3UC2C5N9dJZOIuyEg"
+        }
+      }
     },
     "web": {
       "bundler": "metro",
