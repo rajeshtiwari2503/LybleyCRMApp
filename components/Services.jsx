@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import http_request from "../http_request"; // Assuming this is your HTTP request module
@@ -166,6 +166,9 @@ export default function ViewComplaints() {
     const RefreshData = (data) => {
         setRefresh(data);
     }
+
+    // console.log(userData);
+    
     const amount = 1;
 
     const userPayment = async (item) => {
@@ -228,8 +231,11 @@ export default function ViewComplaints() {
                         <TouchableOpacity onPress={() => handleUpdate(item)}>
                             <MaterialIcons name="system-update-alt" size={24} color="green" />
                         </TouchableOpacity>
-                        <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleOrder(item)}>
+                        {/* <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleOrder(item)}>
                             <MaterialIcons name="update" size={24} color="blue" />
+                        </TouchableOpacity> */}
+                        <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleMapData(item?.lat, item?.long)}>
+                            <MaterialIcons name="my-location" size={24} color="green" />
                         </TouchableOpacity>
 
                     </>
@@ -254,9 +260,9 @@ export default function ViewComplaints() {
                                 <Text style={styles.payButtonText}>Pay</Text>
                             </TouchableOpacity>
                         )}
-                        <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleMapData(item?.lat, item?.long)}>
+                        {/* <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleMapData(item?.lat, item?.long)}>
                             <MaterialIcons name="my-location" size={24} color="green" />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </>
                     // </View>
                 ) : null
@@ -265,6 +271,7 @@ export default function ViewComplaints() {
                 <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleDetails(item)}>
                     <Ionicons name="eye" size={24} color="green" />
                 </TouchableOpacity>
+                
             </View>
         </View>
     );
@@ -272,14 +279,23 @@ export default function ViewComplaints() {
     //     setIsMap(!isMap)
     // }
     const handleMapData = (lat, long) => {
-        setLatLong({ lat: lat, long: long })
-        setIsMap(true)
+// console.log(lat, long);
+
+        if(!lat || !long){
+            Alert.alert("Error", "Invalid location coordinates provided.");
+        }else{
+            setLatLong({ lat: lat, long: long })
+            setIsMap(true)
+        }
+       
     }
     // console.log(locationCurrent?.coords?.latitude,locationCurrent?.coords?.longitude);
     const techLocation = { lat: locationCurrent?.coords?.latitude, long: locationCurrent?.coords?.longitude }
     return (
         < >
-            {isMap === true && locationCurrent ? <Map lantLong={lantLong} techLocation={techLocation} handleMap={() => setIsMap(false)} />
+            {/* {isMap === true && locationCurrent && lantLong  */}
+            {isMap && techLocation?.lat && lantLong?.lat && lantLong?.long 
+            ? <Map lantLong={lantLong} techLocation={techLocation} handleMap={() => setIsMap(false)} />
                 :
                 <View style={styles.container}>
                     <Toast />
