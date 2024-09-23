@@ -21,14 +21,14 @@
 //     const mapRef = useRef();
 
 //     useEffect(() => {
-        
+
 //         const interval = setInterval(() => {
 //             if (!techLocation?.lat || !techLocation?.long || !lantLong?.lat || !lantLong?.long) {
 //                 Alert.alert("Error", "Invalid location coordinates provided.");
 //             }
 //         }, 2000);
 
-   
+
 //         return () => clearInterval(interval);
 //     },  []);
 // // console.log("techLocation",techLocation);
@@ -127,8 +127,8 @@ export default function Map(props) {
 
     return (
         <View style={{ flex: 1 }}>
-            <TouchableOpacity onPress={handleMap}>
-                <Text style={{ color: "white" }}>Back</Text>
+            <TouchableOpacity onPress={handleMap} style={styles.backButton}>
+                <Text style={styles.backButtonText}>Back</Text>
             </TouchableOpacity>
             <MapView
                 ref={mapRef}
@@ -169,4 +169,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    backButton: {
+        position: 'absolute',
+        top: 5, // Adjust this value to control the vertical position
+        left: 20, // Adjust this value to control the horizontal position
+        padding: 10,
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        borderRadius: 5,
+        zIndex: 1, // Ensure the button appears on top of the MapView
+      },
+      backButtonText: {
+        color: 'white',
+        fontSize: 16,
+      },
 });

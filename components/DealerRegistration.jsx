@@ -7,7 +7,7 @@ import Toast from 'react-native-toast-message';
 import { Checkbox } from 'react-native-paper';
 import http_request from "../http_request";
 
-export default function DealerRegistrationForm() {
+export default function DealerRegistrationForm({response}) {
 
 
     const router = useRouter();
@@ -32,8 +32,9 @@ export default function DealerRegistrationForm() {
             router.push("auth/sign-in");
         } catch (err) {
             setLoading(false);
-            Toast.show({ type: 'error', text: err?.response?.data?.msg });
+            // Toast.show({ type: 'error', text: err?.response?.data?.msg });
             console.log(err);
+            response(err?.response?.data?.msg )
         }
     };
 

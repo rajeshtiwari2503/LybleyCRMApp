@@ -7,7 +7,7 @@ import Toast from 'react-native-toast-message';
 import { Checkbox } from 'react-native-paper';
 import http_request from "../http_request";
 
-export default function TechnicianRegistrationForm() {
+export default function TechnicianRegistrationForm({response}) {
 
 
     const router = useRouter();
@@ -33,6 +33,7 @@ export default function TechnicianRegistrationForm() {
             setLoading(false);
             Toast.show({ type: 'error', text: err?.response?.data?.msg });
             console.log(err);
+            response(err?.response?.data?.msg )
         }
     };
 

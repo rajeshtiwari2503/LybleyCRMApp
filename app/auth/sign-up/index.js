@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from 'expo-router';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, SafeAreaView, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, SafeAreaView, StatusBar, Alert } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import DealerRegistrationForm from '../../../components/DealerRegistration';
 import UserRegistrationForm from '../../../components/UserRegistration';
@@ -14,6 +14,7 @@ export default function SignUp() {
     const navigation = useNavigation();
 
     const [userType, setUserType] = useState('user'); // Default user type
+    const [resErrors, setErrors] = useState(null);
 
     useEffect(() => {
         navigation.setOptions({ headerShown: false });
@@ -24,7 +25,14 @@ export default function SignUp() {
         setUserType(userType)
     }
 
-
+const response=(data)=>{
+    setErrors(data)
+    Alert.alert(
+        "Errror",             
+        JSON.stringify(data)  
+      );
+      
+}
 
     return (
         <SafeAreaView style={styles.containerMain}>
@@ -61,10 +69,15 @@ export default function SignUp() {
                             </TouchableOpacity>
                         </ScrollView>
                     </View>
+                    <View style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
 
+                        {resErrors ? (
+                            <Text style={styles.errorText}>{resErrors}</Text>
+                        ) : null}
+                    </View>
                     {userType === 'user' && (
                         <>
-                            <UserRegistrationForm />
+                            <UserRegistrationForm response={response} />
                         </>
                     )}
 
@@ -72,13 +85,13 @@ export default function SignUp() {
                     {/* Conditional Fields based on User Type */}
                     {userType === 'dealer' && (
                         <>
-                            <DealerRegistrationForm />
+                            <DealerRegistrationForm response={response}/>
                         </>
                     )}
 
                     {userType === 'technician' && (
                         <>
-                            <TechnicianRegistrationForm />
+                            <TechnicianRegistrationForm response={response}/>
                         </>
                     )}
                     {/* <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.button}>
