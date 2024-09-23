@@ -16,6 +16,7 @@ export default function SignIn() {
     const { control, handleSubmit, formState: { errors } } = useForm(); // Destructure control and handleSubmit from useForm
     const [loading, setLoading] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+    const [resErrors, setErrors] = useState(null);
 
 
 
@@ -46,6 +47,7 @@ export default function SignIn() {
             setLoading(false);
             Toast.show({ type: 'error', text1: err?.response?.data?.msg });
             console.log(err);
+            setErrors(err?.response?.data?.msg)
         }
     };
     const handleForgetPassword = () => {
@@ -75,6 +77,12 @@ export default function SignIn() {
                                 source={require('../../../assets/images/Logo.png')}
                                 style={styles.logo}
                             />
+                        </View>
+                        <View style={{display:"flex",justifyContent:"center",alignItems:"center"}}>
+
+                            {resErrors ? (
+                                <Text style={styles.errorText}>{resErrors}</Text>
+                            ) : null}
                         </View>
                         <Controller
                             control={control}
@@ -287,5 +295,11 @@ const styles = StyleSheet.create({
     },
     signUpLinkText: {
         color: Colors.PRIMARY,
+    },
+    errorText: {
+        color: 'red',        // Error message color
+        fontSize: 14,        // Font size for the error text
+        fontWeight: 'bold',  // Make the error message bold
+        marginVertical: 10,  // Add some spacing around the message
     },
 });

@@ -10,7 +10,7 @@ import http_request from "../http_request";
  
 import * as Location from 'expo-location';
 
-export default function UserRegistrationForm() {
+export default function UserRegistrationForm({response}) {
 
 
     const router = useRouter();
@@ -39,6 +39,7 @@ export default function UserRegistrationForm() {
             setLoading(false);
             Toast.show({ type: 'error', text: err?.response?.data?.msg });
             console.log(err);
+            response(err?.response?.data?.msg )
         }
     };
 
