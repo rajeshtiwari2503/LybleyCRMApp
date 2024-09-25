@@ -161,6 +161,9 @@ const DashboardScreen = () => {
             case "TECHNICIAN":
               endPoint = `/dashboardDetailsByTechnicianId/${user?.user?._id}`;
               break;
+              case "SERVICE":
+                endPoint = `/dashboardDetailsBySeviceCenterId/${user?.user?._id}`;
+                break;
             default:
               console.error("Invalid user role");
               return;
@@ -231,7 +234,7 @@ const DashboardScreen = () => {
         : [];
       setComplaint(filteredData || []);
     } catch (err) {
-      console.log(err);
+      console.log(err,"FJHJ");
     }
   };
 
@@ -245,6 +248,7 @@ const DashboardScreen = () => {
       <View style={styles.container}>
          {value?.user?.role === "USER" && <UserDashboard dashData={dashData} complaints={complaints} userData={value?.user} notifications={notifications} RefreshData={RefreshData} />}
         {value?.user?.role === "TECHNICIAN" && <TechnicianDashboard dashData={dashData} complaints={complaints} userData={value?.user} notifications={notifications} RefreshData={RefreshData} />}
+        {value?.user?.role === "SERVICE" && <TechnicianDashboard dashData={dashData} complaints={complaints} userData={value?.user} notifications={notifications} RefreshData={RefreshData} />}
         {value?.user?.role === "DEALER" && <DealerDashboard dashData={dashData} complaints={complaints} userData={value?.user} notifications={notifications} RefreshData={RefreshData} />} 
         
       </View>
