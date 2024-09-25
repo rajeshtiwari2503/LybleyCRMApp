@@ -66,6 +66,13 @@ const AppNavigator = () => {
               {user?.user?.role === 'USER' && <Stack.Screen name="User" component={UserNavigator} />}
               {user?.user?.role === 'DEALER' && <Stack.Screen name="Dealer" component={DealerNavigator} />}
               {user?.user?.role === 'TECHNICIAN' && <Stack.Screen name="Technician" component={TechnicianNavigator} />}
+              {/* {user?.user?.role === 'SERVICE' && user?.user?.serviceCenterType === 'Independent' && (
+              <Stack.Screen name="Technician" component={TechnicianNavigator} />
+            )} */}
+              {user?.user?.role === 'SERVICE' && <Stack.Screen name="RoleSelection" component={Login} />}
+              {user?.user?.role === 'BRAND' && <Stack.Screen name="RoleSelection" component={Login} />}
+              {user?.user?.role === 'ADMIN' && <Stack.Screen name="RoleSelection" component={Login} />}
+              
               {/* Add more roles and components as needed */}
             </>
           ) : (

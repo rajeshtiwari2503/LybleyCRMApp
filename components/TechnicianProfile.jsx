@@ -1,18 +1,24 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native'
-import React, {  useState } from 'react'
+import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from '@/constants/Colors'
 import EditTechnicianProfile from './EditTechnicianProfile';
 import { MaterialIcons } from '@expo/vector-icons';
+import Wallet from './Wallet';
 
 export default function TechnicianProfile(props) {
 
   const [isModalVisible, setModalVisible] = useState(false);
- 
-  const {user,RefreshData,handleLogout}=props
-  
+
+  const { user, RefreshData, handleLogout } = props
+  const [wallet, setWallet] = useState(false)
+
+  const handleWallet = () => {
+    setWallet(true)
+  }
+
   return (
-   
+
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         {/* <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -40,16 +46,25 @@ export default function TechnicianProfile(props) {
         </View>
         <View style={styles.infoBox}>
           <Icon name="verified" size={24} color="#3F51B5" />
-          <Text style={styles.infoText}>{user?.acceptedTerms?"Term & Condition   Accepted":"Term & Condition not Accepted"}</Text>
+          <Text style={styles.infoText}>{user?.acceptedTerms ? "Term & Condition   Accepted" : "Term & Condition not Accepted"}</Text>
         </View>
         <View style={styles.infoBox}>
           <Icon name="location-on" size={24} color="#4CAF50" />
           <Text style={styles.infoText}>{user?.address}</Text>
         </View>
         <View style={styles.infoBox}>
-        <MaterialIcons name="event-available" size={24} color="#4CAF50" />
+          <MaterialIcons name="event-available" size={24} color="#4CAF50" />
           <Text style={styles.infoText}>{user?.liveStatus}</Text>
         </View>
+      </View>
+      <View style={styles.container}>
+        <TouchableOpacity style={styles.walletButton} onPress={handleWallet}>
+          <Text style={styles.logoutButtonText}>Check Wallet</Text>
+
+        </TouchableOpacity>
+      </View>
+      <View>
+       {wallet? <Wallet  />:""}
       </View>
       <View style={styles.container}>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -57,7 +72,7 @@ export default function TechnicianProfile(props) {
 
         </TouchableOpacity>
       </View>
-      <EditTechnicianProfile 
+      <EditTechnicianProfile
         isVisible={isModalVisible}
         onClose={() => setModalVisible(false)}
         user={user}
@@ -65,7 +80,7 @@ export default function TechnicianProfile(props) {
         RefreshData={RefreshData}
       />
     </ScrollView>
-    
+
   );
 };
 
@@ -90,13 +105,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  walletButton: {
+    backgroundColor: Colors.PRIMARY,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   logoutButtonText: {
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
   },
   header: {
-    backgroundColor: '#6200EE',
+    backgroundColor: Colors.PRIMARY,
     height: 60,
     flexDirection: 'row',
     alignItems: 'center',
@@ -139,7 +162,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 15,
-    marginTop:20
+    marginTop: 20
   },
   editButtonText: {
     color: '#fff',
