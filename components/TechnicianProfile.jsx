@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator, RefreshControl } from 'react-native'
+import React, { useCallback, useState } from 'react'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from '@/constants/Colors'
 import EditTechnicianProfile from './EditTechnicianProfile';
@@ -17,9 +17,27 @@ export default function TechnicianProfile(props) {
     setWallet(true)
   }
 
-  return (
+  const [refreshing, setRefreshing] = useState(false);
 
-    <ScrollView style={styles.container}>
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    if (typeof RefreshData === 'function') {
+      RefreshData();
+    } else {
+      console.error("RefreshData is not a function");
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, [RefreshData]);
+  return (
+   
+    <ScrollView  refreshControl={
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={onRefresh}  
+      />
+    } style={styles.container} >
       <View style={styles.header}>
         {/* <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon name="arrow-back" size={24} color="#fff" />

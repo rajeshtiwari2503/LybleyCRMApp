@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, Button, StyleSheet, ScrollView } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, ActivityIndicator, Button, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http_request from '../http_request';
 import BankDetailsList from './BankDetailsList';  // Import your BankDetailsList component
@@ -41,12 +41,31 @@ const BankDetails = () => {
     };
 
     const RefreshData = (data) => {
-        setRefresh(data);
+        setRefresh(Date.now());
     };
+
+    const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = useCallback(() => {
+      setRefreshing(true);
+      if (typeof RefreshData === 'function') {
+        RefreshData();
+      } else {
+        console.error("RefreshData is not a function");
+      }
+      setTimeout(() => {
+        setRefreshing(false);
+      }, 2000);
+    }, [RefreshData]);
 
     return (
         <View style={styles.container}>
-            <ScrollView>
+             <ScrollView  refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}  
+            />
+          }  >
                 {loading ? (
                     <ActivityIndicator size="large" color="#0000ff" />
                 ) : (

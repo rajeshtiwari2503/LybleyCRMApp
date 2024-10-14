@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native'
-import React, {  useState } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator, RefreshControl } from 'react-native'
+import React, {  useCallback, useState } from 'react'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from '@/constants/Colors'
 import EditUserProfile from './EditUserProfile';
@@ -9,10 +9,27 @@ export default function UserProfile(props) {
   const [isModalVisible, setModalVisible] = useState(false);
  
   const {user,RefreshData,handleLogout}=props
-  
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    if (typeof RefreshData === 'function') {
+      RefreshData();
+    } else {
+      console.error("RefreshData is not a function");
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, [RefreshData]);
   return (
    
-    <ScrollView style={styles.container}>
+    <ScrollView  refreshControl={
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={onRefresh}  
+      />
+    } style={styles.container} >
       <View style={styles.header}>
         {/* <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon name="arrow-back" size={24} color="#fff" />

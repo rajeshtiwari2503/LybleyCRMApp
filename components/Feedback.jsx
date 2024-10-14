@@ -46,8 +46,8 @@ const UserFeedbacks = () => {
 
   const data = feedbacks?.map((item, index) => ({ ...item, i: index + 1 }));
 
-  const RefreshData = (data) => {
-    setRefresh(data);
+  const RefreshData = ( data) => {
+    setRefresh(Date.now());
   };
 
   return (

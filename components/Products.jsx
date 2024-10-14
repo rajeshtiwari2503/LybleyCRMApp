@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, ScrollView, StyleSheet, RefreshControl } from 'react-native';
 import http_request from "../http_request";
 import ProductList from './ProductList';
-  
+
 
 const Products = () => {
   const [brands, setBrands] = useState([]);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [refresh, setRefresh] = useState("");
-
+  const [refreshing, setRefreshing] = useState(false);
   useEffect(() => {
     getAllProducts();
     getAllCategories();
@@ -37,16 +37,32 @@ const Products = () => {
   const data = products?.map((item, index) => ({ ...item, i: index + 1 }));
 
   const RefreshData = (data) => {
-    setRefresh(data);
+    setRefresh(Date.now());
   };
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    if (typeof RefreshData === 'function') {
+      RefreshData();
+    } else {
+      console.error("RefreshData is not a function");
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, [RefreshData]);
 
   return (
     <View style={styles.container}>
-      
-        <ScrollView>
-          <ProductList categories={categories} brands={brands} data={data} RefreshData={RefreshData} />
-        </ScrollView>
-    
+
+      <ScrollView refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      } >
+        <ProductList categories={categories} brands={brands} data={data} RefreshData={RefreshData} />
+      </ScrollView>
+
     </View>
   );
 };
@@ -54,11 +70,11 @@ const Products = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-        // padding: 10,
-        backgroundColor: '#fff',
-        marginTop:5,
-         marginBottom:5,
-        borderRadius:30
+    // padding: 10,
+    backgroundColor: '#fff',
+    marginTop: 5,
+    marginBottom: 5,
+    borderRadius: 30
   },
 });
 

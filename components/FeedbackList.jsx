@@ -1,17 +1,31 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { Rating } from 'react-native-ratings';
 import Modal from 'react-native-modal';
 
-const FeedbackPage = ({ data }) => {
+const FeedbackPage = ({ data ,RefreshData}) => {
+   
+  
   const [selectedFeedback, setSelectedFeedback] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [refreshing, setRefreshing] = useState(false);
   const handleViewDetails = (item) => {
     setSelectedFeedback(item);
     setModalVisible(true);
   };
 
+   
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    if (typeof RefreshData === 'function') {
+      RefreshData();
+    } else {
+      console.error("RefreshData is not a function");
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, [RefreshData]);
   const renderFeedbackItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <View style={styles.indexContainer}>
@@ -28,19 +42,42 @@ const FeedbackPage = ({ data }) => {
   );
 
   return (
+    
     <View style={styles.container}>
+     
+     <ScrollView
+    refreshControl={
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={onRefresh} // Trigger refresh on pull-down
+      />
+    }
+  >
       <Text style={styles.header}>Feedback List</Text>
-      {data?.length > 0 ?
+      {data?.length>0 ?
         <FlatList
           data={data}
           keyExtractor={(item) => item?._id} // Replace with your unique ID field
           renderItem={renderFeedbackItem}
           contentContainerStyle={styles.listContainer}
+          // refreshControl={
+          //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          // }
         />
         :
         <View>
           <Text style={styles.noFeedback}>You have 0 feedback</Text>
+          {/* <FlatList
+          data={data}
+          keyExtractor={(item) => item?._id} // Replace with your unique ID field
+          renderItem={renderFeedbackItem}
+          contentContainerStyle={styles.listContainer}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        /> */}
         </View>
+        
       }
 
       {/* Modal for displaying detailed feedback */}
@@ -53,7 +90,7 @@ const FeedbackPage = ({ data }) => {
         <View style={styles.modalBackground}>
           <View style={styles.modalContent}>
             {selectedFeedback && (
-              <ScrollView>
+              <View>
                 <Text style={styles.modalHeader}>Feedback Details</Text>
                 <Text style={styles.modalText}>Ticket Number: {selectedFeedback.ticketNumber}</Text>
                 <Text style={styles.modalText}>Service Date: {selectedFeedback.serviceDate}</Text>
@@ -107,7 +144,7 @@ const FeedbackPage = ({ data }) => {
                     style={styles.rating}
                   />
                 </View>
-              </ScrollView>
+              </View>
             )}
             <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
               <Text style={styles.closeButtonText}>Close</Text>
@@ -115,6 +152,7 @@ const FeedbackPage = ({ data }) => {
           </View>
         </View>
       </Modal>
+      </ScrollView>
     </View>
   );
 };
