@@ -39,7 +39,7 @@ export default function Profile() {
   }, [refresh]);
 
   const RefreshData = (data) => {
-    setRefresh(data)
+    setRefresh(Date.now());
   }
   const userData = users?.user?.role ? (users?.user) : users?.service?.role ? (users?.service) : users?.technician?.role ? (users?.technician) : users?.dealer?.role ? (users?.dealer) : users?.brand
   const user = userData;

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, RefreshControl } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import http_request from "../http_request"; // Assuming this is your HTTP request module
@@ -53,7 +53,7 @@ export default function ViewComplaints() {
     const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
     const [locationCurrent, setLocationCurrent] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
-
+    const [refreshing, setRefreshing] = useState(false);
     useEffect(() => {
         const interval = setInterval(async () => {
             try {
@@ -164,7 +164,7 @@ export default function ViewComplaints() {
         setFeedbackModalVisible(true);
     }
     const RefreshData = (data) => {
-        setRefresh(data);
+        setRefresh(Date.now());
     }
 
     // console.log(userData);
@@ -218,6 +218,19 @@ export default function ViewComplaints() {
             console.log(err);
         }
     }
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        if (typeof RefreshData === 'function') {
+          getAllComplaint();
+        } else {
+          console.error("RefreshData is not a function");
+        }
+        setTimeout(() => {
+          setRefreshing(false);
+        }, 2000);
+      }, [RefreshData]);
+
     const renderItem = ({ item, index }) => (
         <View key={index} style={styles.row}>
             <Text style={{ width: 50 }}>{item.i}</Text>
@@ -337,7 +350,12 @@ export default function ViewComplaints() {
                     }
                     {loading ?
                         <ActivityIndicator size="large" color="#0000ff" />
-                        : <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
+                        : <ScrollView  refreshControl={
+                            <RefreshControl
+                              refreshing={refreshing}
+                              onRefresh={onRefresh}  
+                            />
+                          } horizontal contentContainerStyle={styles.scrollContainer}>
 
                             <View>
                                 <View style={styles.header}>
@@ -352,6 +370,9 @@ export default function ViewComplaints() {
                                     keyExtractor={item => item?._id}
                                     renderItem={renderItem}
                                     contentContainerStyle={styles.listContainer}
+                                    // refreshControl={
+                                    //     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                                    //   }
                                 />
                             </View>
 

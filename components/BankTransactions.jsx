@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, Button, StyleSheet, ScrollView } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, ActivityIndicator, Button, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http_request from '../http_request';
 import TransactionList from './BankTransactionsList';
@@ -103,14 +103,35 @@ const BankTransactions = () => {
     };
 
     const RefreshData = (data) => {
-        setRefresh(data);
+        setRefresh(Date.now());
     };
 
     const transData = transactions.length > 0
         ? transactions.map((item, index) => ({ ...item, i: index + 1 }))
         : [];
 
-    return (
+ 
+        const [refreshing, setRefreshing] = useState(false);
+
+        const onRefresh = useCallback(() => {
+          setRefreshing(true);
+          if (typeof RefreshData === 'function') {
+            RefreshData();
+          } else {
+            console.error("RefreshData is not a function");
+          }
+          setTimeout(() => {
+            setRefreshing(false);
+          }, 2000);
+        }, [RefreshData]);
+        return (
+         
+          <ScrollView  refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}  
+            />
+          }  >
         <View style={styles.container}>
             {loading ? (
                 <ActivityIndicator size="large" color="#0000ff" />
@@ -128,6 +149,7 @@ const BankTransactions = () => {
               
             )}
         </View>
+        </ScrollView>
     );
 };
 

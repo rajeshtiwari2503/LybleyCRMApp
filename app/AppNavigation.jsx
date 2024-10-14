@@ -45,6 +45,7 @@ const AppNavigator = () => {
       </View>
     );
   }
+// console.log(user);
 
   return (
     <>
@@ -63,7 +64,7 @@ const AppNavigator = () => {
         }}>
           {user ? (
             <>
-              {user?.user?.role === 'USER' && <Stack.Screen name="User" component={UserNavigator} />}
+              {user?.user?.role === 'USER' && <Stack.Screen name="User" component={DealerNavigator} />}
               {user?.user?.role === 'DEALER' && <Stack.Screen name="Dealer" component={DealerNavigator} />}
               {user?.user?.role === 'TECHNICIAN' && <Stack.Screen name="Technician" component={TechnicianNavigator} />}
               {/* {user?.user?.role === 'SERVICE' && user?.user?.serviceCenterType === 'Independent' && (

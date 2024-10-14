@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity,   FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity,   FlatList, StyleSheet, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
 import Toast from 'react-native-toast-message';
 import http_request from '../../http_request';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ChatReply from './ChatReply';
+ 
 
  
 
@@ -69,8 +70,27 @@ const Chat = () => {
   };
 
  
+  const [refreshing, setRefreshing] = useState(false);
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    if (typeof fetchChatMessages === 'function') {
+      fetchChatMessages();
+    } else {
+      console.error("fetchChatMessages is not a function");
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, [fetchChatMessages]);
   return (
+   
+    <ScrollView  refreshControl={
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={onRefresh}  
+      />
+    } style={styles.container} >
     <View style={styles.container}>
       <Toast />
      
@@ -88,6 +108,7 @@ const Chat = () => {
        </>
         )}
     </View>
+    </ScrollView>
   );
 };
 

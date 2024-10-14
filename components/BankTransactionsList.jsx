@@ -373,7 +373,7 @@ const TransactionList = ({ data, RefreshData, wallet, bankDetails, loading, valu
             Alert.alert("Error", "Please add bank details");
         }
     };
-    console.log(data);
+    // console.log(data);
 
     return (
         <View style={styles.container}>

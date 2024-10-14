@@ -126,8 +126,8 @@
 // });
 
 // export default DashboardScreen;
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, StatusBar, SafeAreaView } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, StyleSheet, StatusBar, SafeAreaView, ScrollView, RefreshControl } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native'; // Assuming you use React Navigation for navigation
 import http_request from "../http_request"; // Assuming this is your HTTP request module
@@ -239,18 +239,37 @@ const DashboardScreen = () => {
   };
 
   const RefreshData = (data) => {
-    setRefresh(data);
+    setRefresh(Date.now());
   };
 
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    if (typeof RefreshData === 'function') {
+      RefreshData();
+    } else {
+      console.error("RefreshData is not a function");
+    }
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, [RefreshData]);
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f8f8f8" />
       <View style={styles.container}>
+      <ScrollView  refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}  
+            />
+          }  >
          {value?.user?.role === "USER" && <UserDashboard dashData={dashData} complaints={complaints} userData={value?.user} notifications={notifications} RefreshData={RefreshData} />}
         {value?.user?.role === "TECHNICIAN" && <TechnicianDashboard dashData={dashData} complaints={complaints} userData={value?.user} notifications={notifications} RefreshData={RefreshData} />}
         {value?.user?.role === "SERVICE" && <TechnicianDashboard dashData={dashData} complaints={complaints} userData={value?.user} notifications={notifications} RefreshData={RefreshData} />}
         {value?.user?.role === "DEALER" && <DealerDashboard dashData={dashData} complaints={complaints} userData={value?.user} notifications={notifications} RefreshData={RefreshData} />} 
-        
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
