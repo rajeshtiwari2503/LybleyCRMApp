@@ -143,6 +143,7 @@ const DashboardScreen = () => {
   const [complaints, setComplaint] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [refresh, setRefresh] = useState("");
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -184,6 +185,7 @@ const DashboardScreen = () => {
     fetchDashboardData();
     getAllComplaint();
     getAllNotification();
+    getAllProducts()
   }, [refresh]);
 
   const getAllNotification = async () => {
@@ -237,7 +239,18 @@ const DashboardScreen = () => {
       console.log(err,"FJHJ");
     }
   };
-
+  const getAllProducts = async () => {
+    try{
+      let response = await http_request.get("/getAllProduct");
+      let { data } = response;
+      setProducts(data);
+    }
+   
+    catch(err){
+      console.log(err);
+      
+    }
+  };
   const RefreshData = (data) => {
     setRefresh(Date.now());
   };
@@ -265,7 +278,7 @@ const DashboardScreen = () => {
               onRefresh={onRefresh}  
             />
           }  >
-         {value?.user?.role === "USER" && <UserDashboard dashData={dashData} complaints={complaints} userData={value?.user} notifications={notifications} RefreshData={RefreshData} />}
+         {value?.user?.role === "USER" && <UserDashboard products={products} dashData={dashData} complaints={complaints} userData={value?.user} notifications={notifications} RefreshData={RefreshData} />}
         {value?.user?.role === "TECHNICIAN" && <TechnicianDashboard dashData={dashData} complaints={complaints} userData={value?.user} notifications={notifications} RefreshData={RefreshData} />}
         {value?.user?.role === "SERVICE" && <TechnicianDashboard dashData={dashData} complaints={complaints} userData={value?.user} notifications={notifications} RefreshData={RefreshData} />}
         {value?.user?.role === "DEALER" && <DealerDashboard dashData={dashData} complaints={complaints} userData={value?.user} notifications={notifications} RefreshData={RefreshData} />} 
