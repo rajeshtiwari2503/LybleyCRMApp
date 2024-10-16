@@ -68,7 +68,7 @@
 //     ];
 
 //     return (
-        
+
 //         <ScrollView>
 //             <View style={styles.container}>
 //                 {/* Replace with your React Native components and styling */}
@@ -234,7 +234,7 @@
 //     container: {
 //         flex: 1,
 //         padding: 10,
-       
+
 //         backgroundColor: '#fff',
 //         // marginTop: 25,
 //         borderRadius: 30
@@ -327,8 +327,8 @@
 // export default UserDashboard;
 
 
- 
-import React, { useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { BarChart, PieChart } from 'react-native-chart-kit';
 import { useNavigation } from '@react-navigation/native';
@@ -337,6 +337,8 @@ import { Colors } from '@/constants/Colors';
 import RecentServicesList from './RecentServices';
 import { useRouter } from 'expo-router';
 import NotificationModal from './Notification';
+import { Ionicons } from '@expo/vector-icons';
+import Modal from 'react-native-modal';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -349,6 +351,7 @@ const UserDashboard = (props) => {
   const notifications = props?.notifications;
   const RefreshData = props?.RefreshData;
   const [modalVisible, setModalVisible] = useState(false);
+
 
   const showNotification = () => setModalVisible(true);
   const hideNotification = () => setModalVisible(false);
@@ -406,10 +409,25 @@ const UserDashboard = (props) => {
     }]
   };
 
+
+  const userProduct = props?.products?.filter((f) => f?.userId === userData?._id)
+  // console.log(userProduct);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [productDetails, setProductDetails] = useState("");
+
+  const handleDetails = (item) => {
+    setProductDetails(item)
+    setEditModalOpen(true);
+  };
+  const handleEditModalClose = () => {
+    setEditModalOpen(false);
+  };
+
+
   return (
     <ScrollView>
       <View style={styles.container}>
-         
+
         <View style={styles.headerContent}>
           <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
             <MaterialIcons name="person" size={24} color="black" style={styles.icon} />
@@ -426,8 +444,6 @@ const UserDashboard = (props) => {
             </TouchableOpacity>
           </View>
         </View>
-
-        
         <View style={styles.summaryContainer}>
           {[
             { label: 'Total Service', value: dashData?.complaints?.allComplaints, color: '#007BFF' },
@@ -435,16 +451,41 @@ const UserDashboard = (props) => {
             { label: 'Assigned', value: dashData?.complaints?.assign, color: '#17A2B8' },
             { label: 'Pending', value: dashData?.complaints?.pending, color: '#FFC107' },
           ].map((item, index) => (
-            <View key={index} style={styles.itemContainer}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: item.color }]}>
+            <View key={index} style={styles.itemContainer} >
+              <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: item.color }]}>
                 <Text>{item.value}</Text>
               </TouchableOpacity>
               <Text>{item.label}</Text>
             </View>
           ))}
         </View>
+        <View >
 
-     
+          {userProduct?.map((item, index) => (
+            <View style={styles.containerP}>
+              <View key={index} style={styles.itemContainerP}>
+                <TouchableOpacity
+                  onPress={() => handleDetails(item)}
+                  style={styles.button}
+                  activeOpacity={0.7} // Provides a touch feedback
+                >
+                  <View style={styles.iconContainerP}>
+                    <Ionicons name="pricetag" size={24} color="white" />
+                  </View>
+                  <View style={styles.textContainerP}>
+                    <Text style={styles.productName}>Product Name: {item?.productName}</Text>
+                    <Text style={styles.warrantyStatus}>
+                      <Ionicons name="shield-checkmark" size={16} color="white" />
+                      <Text> Under Warranty: {item?.warrantyStatus ? "Yes" : "No"}</Text>
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+        </View>
+
+
         {/* {pieChartData && pieChartData.length > 0 && (
   <PieChart
     data={pieChartData}
@@ -482,10 +523,10 @@ const UserDashboard = (props) => {
 )} */}
 
 
-        
+
         <RecentServicesList data={filterData} userData={userData} />
 
-       
+
         <NotificationModal
           visible={modalVisible}
           notifications={notifications}
@@ -494,6 +535,73 @@ const UserDashboard = (props) => {
           message="This is a notification message!"
           onClose={hideNotification}
         />
+        <Modal isVisible={editModalOpen} onBackdropPress={handleEditModalClose}>
+
+          <View style={styles.modalContent}>
+            <ScrollView style={styles.scrollView}>
+              <Text style={styles.headerModal}>Product Details</Text>
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Product Name:</Text>
+                <Text style={styles.value}>{productDetails?.productName || '-'}</Text>
+              </View>
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Brand:</Text>
+                <Text style={styles.value}>{productDetails?.productBrand || '-'}</Text>
+              </View>
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Model No:</Text>
+                <Text style={styles.value}>{productDetails?.modelNo || '-'}</Text>
+              </View>
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Serial No:</Text>
+                <Text style={styles.value}>{productDetails?.serialNo || '-'}</Text>
+              </View>
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Purchase Date:</Text>
+                <Text style={styles.value}>{productDetails?.purchaseDate || '-'}</Text>
+              </View>
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Warranty Status:</Text>
+                <Text style={styles.value}>
+                  {productDetails?.warrantyStatus ? 'In Warranty' : 'Out of Warranty'}
+                </Text>
+              </View>
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Warranty Years:</Text>
+                <Text style={styles.value}>{productDetails?.warrantyYears || '-'}</Text>
+              </View>
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Category:</Text>
+                <Text style={styles.value}>{productDetails?.categoryName || '-'}</Text>
+              </View>
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Description:</Text>
+                <Text style={styles.value}>{productDetails?.productDescription || '-'}</Text>
+              </View>
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Status:</Text>
+                <Text style={[styles.value, productDetails?.status === 'ACTIVE' ? styles.activeStatus : styles.inactiveStatus]}>
+                  {productDetails?.status || '-'}
+                </Text>
+              </View>
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>User Name:</Text>
+                <Text style={styles.value}>{productDetails?.userName || '-'}</Text>
+              </View>
+            </ScrollView>
+          </View>
+        </Modal>
       </View>
     </ScrollView>
   );
@@ -525,6 +633,45 @@ const styles = StyleSheet.create({
   iconContainer: {
     position: 'relative',
     paddingHorizontal: 10,
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    maxHeight: '80%',
+  },
+  scrollView: {
+    width: '100%',
+  },
+  headerModal: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+    color: '#333',
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingVertical: 5,
+  },
+  label: {
+    fontWeight: 'bold',
+    color: '#555',
+  },
+  value: {
+    color: '#333',
+  },
+  activeStatus: {
+    color: 'green',
+    fontWeight: 'bold',
+  },
+  inactiveStatus: {
+    color: 'red',
+    fontWeight: 'bold',
   },
   notificationBadge: {
     position: 'absolute',
@@ -561,6 +708,48 @@ const styles = StyleSheet.create({
   barChart: {
     marginVertical: 8,
     borderRadius: 16,
+  },
+  containerP: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: '#17A2B8',
+    marginBottom: 20 // Light background for contrast
+  },
+  itemContainerP: {
+    marginBottom: 15,
+    // marginTop: 15
+
+  },
+  buttonP: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: "#17A2B8",
+    borderRadius: 10,
+    padding: 15,
+    elevation: 3, // Adds shadow on Android
+    shadowColor: '#000', // Adds shadow on iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+  },
+  iconContainerP: {
+    marginRight: 10,
+  },
+  textContainerP: {
+    flex: 1,
+  },
+  productName: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  warrantyStatus: {
+    color: 'white',
+    fontSize: 14,
+    display: "flex",
+    alignItems: "center",
+
   },
 });
 
