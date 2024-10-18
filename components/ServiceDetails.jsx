@@ -5,6 +5,9 @@ import Modal from 'react-native-modal';
 import { MaterialIcons } from '@expo/vector-icons';
 
 export default function ServiceDetails({ isVisible, onClose, service }) {
+
+  // console.log(service);
+  
   return (
     <Modal isVisible={isVisible} onBackdropPress={onClose}>
       <View style={styles.modalContent}>
@@ -26,6 +29,7 @@ export default function ServiceDetails({ isVisible, onClose, service }) {
             <DetailItem label="Serial No" value={service.serialNo} />
             <DetailItem label="Purchase Date" value={new Date(service.purchaseDate).toLocaleDateString()} />
             <DetailItem label="Warranty Status" value={service.warrantyStatus ? 'Yes' : 'No'} />
+            <DetailItem label="Warranty Status" value={service?.payment} />
           </View>
 
           <View style={styles.section}>
@@ -34,7 +38,7 @@ export default function ServiceDetails({ isVisible, onClose, service }) {
             <DetailItem label="Status" value={service.status} />
             <DetailItem label="Issue Type" value={service.issueType} />
             <DetailItem label="Detailed Description" value={service.detailedDescription} />
-            <Image source={{ uri: service.issueImages }} style={styles.issueImage} />
+            {/* <Image source={{ uri: service.issueImages }} style={styles.issueImage} /> */}
             <DetailItem label="Error Messages" value={service.errorMessages} />
             <DetailItem label="Preferred Service Date" value={new Date(service.preferredServiceDate).toLocaleDateString()} />
             <DetailItem label="Preferred Service Time" value={service.preferredServiceTime} />
@@ -53,8 +57,8 @@ export default function ServiceDetails({ isVisible, onClose, service }) {
           <View style={styles.section}>
             <Text style={styles.sectionHeader}>Assignment Information</Text>
             <DetailItem label="Assigned Service Center" value={service.assignServiceCenter} />
-            <DetailItem label="Technician" value={service.assignTechnician} />
-            <DetailItem label="Technician Contact" value={service.technicianContact} />
+            <DetailItem label="Technician" value={service?.assignTechnician} />
+            <DetailItem label="Technician Contact" value={service?.technicianContact} />
             <DetailItem label="Comments" value={service.comments} />
           </View>
 

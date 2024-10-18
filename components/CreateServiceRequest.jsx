@@ -19,6 +19,7 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
     const [image, setImage] = useState(null);
     // const [issueImages, setIssueImages] = useState([]);
     const [products, setProducts] = useState([]);
+    const [subCategories, setSubCategries] = useState([]);
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -26,6 +27,8 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
     const [date, setDate] = useState(new Date());
     const [time, setTime] = useState(new Date());
     const [productName, setProductName] = useState("")
+    const [subCat, setSubCat] = useState([])
+    const [selectedSubCategory, setSelectedSubCategory] = useState("")
     const [value, setLocalValue] = useState('');
 
     const [pincode, setPincode] = useState('');
@@ -41,14 +44,27 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                 setUserData(JSON.parse(storedValue));
                 setLocalValue(JSON.parse(storedValue))
             }
+            const userD=(JSON.parse(storedValue));
             let response = await http_request.get("/getAllProduct");
             let { data } = response;
-            setProducts(data);
+            const filProduct=data?.filter((f)=>f?.userId===userD?.user?._id)
+            // console.log(filProduct);r
+            
+            setProducts(filProduct);
         } catch (err) {
             console.error("Error fetching products:", err);
         }
     };
-
+    const getAllSubCategories = async () => {
+        try {
+           
+            let response = await http_request.get("/getAllSubCategory");
+            let { data } = response;
+            setSubCategries(data);
+        } catch (err) {
+            console.error("Error fetching products:", err);
+        }
+    };
     const registerComplaint = async (reqData) => {
         try {
             if (location) {
@@ -139,9 +155,7 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
               setError('Failed to fetch location details.');
               return;
             }
-      
-          
-            await registerComplaint(data);
+     await registerComplaint(data);
       
           } else {
             setError('Please enter a pincode.');
@@ -180,6 +194,11 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
       };
     const handleProductChange = (selectedProductId) => {
         const selectedProduct = products.find(product => product._id === selectedProductId);
+        const selectedsubCat = subCategories.filter(cat => cat.categoryId === selectedProduct?.categoryId);
+        // console.log(selectedProduct);
+        // console.log(subCategories);
+        // console.log(selectedsubCat);
+        setSubCat(selectedsubCat)
         setProductName("selectedProduct")
         if (selectedProduct) {
             setValue('productName', selectedProduct.productName);
@@ -201,8 +220,22 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
             setValue('serviceAddress', value?.user?.address);
         }
     };
-
-   
+    
+    const handleSubCatChange = (selectedSubCatId) => {
+        const selectedsubCat = subCat.find(cat => cat._id === selectedSubCatId);
+       
+    //    console.log(selectedsubCat);
+    //    console.log("dhjhdj",+(selectedsubCat?.payout)+100);
+       
+        if (selectedsubCat) {
+            setValue('payment', +(selectedsubCat?.payout)+100);
+            setValue('subCategoryName', selectedsubCat?.subCategoryName);
+            setValue('subCategoryId', selectedsubCat?._id);
+            // setValue('productBrand', selectedProduct.productBrand);
+            // setValue('productId', selectedProduct._id);
+            // setValue('categoryId', selectedProduct.categoryId);
+        }
+    };
 
     useEffect(() => {
         (async () => {
@@ -218,6 +251,7 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
           setValue("long",locationCurr?.coords?.longitude)
         })();
         getAllProducts()
+        getAllSubCategories()
       }, []);
     
       let text = 'Waiting..';
@@ -294,6 +328,7 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                 <Controller
                     control={control}
                     name="productName"
+                    rules={{ required: 'Product is required' }}
                     render={({ field: { onChange, value } }) => (
                         <Picker
                             selectedValue={products.find(product => product._id === getValues('productId'))?._id || ''}
@@ -325,24 +360,25 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                 />
                 {errors.categoryName && <Text style={styles.errorText}>{errors.categoryName.message}</Text>}
 
-                {/* <Text style={styles.label}>Select Category</Text>
+                <Text style={styles.label}>Select Sub Category</Text>
             <Controller
                 control={control}
-                name="selectedCategory"
+                name="subCategoryName"
+                rules={{ required: ' Sub Category is required' }}
                 render={({ field: { onChange, value } }) => (
                     <Picker
-                        selectedValue={value}
-                        onValueChange={(itemValue) => onChange(itemValue)}
+                    selectedValue={subCat?.find(product => product._id === getValues('subCategoryId'))?._id || ''}
+                        onValueChange={(itemValue) => handleSubCatChange(itemValue)}
                         style={[styles.picker, errors.selectedCategory && styles.errorBorder]}
                     >
                         <Picker.Item label="Select a category" value="" />
-                        {products.map(product => (
-                            <Picker.Item key={product._id} label={product.productName} value={product.productId} />
+                        {subCat?.map(product => (
+                            <Picker.Item key={product._id} label={product.subCategoryName} value={product._id} />
                         ))}
                     </Picker>
                 )}
             />
-            {errors.selectedCategory && <Text style={styles.errorText}>{errors.selectedCategory.message}</Text>} */}
+            {errors.subCategoryName && <Text style={styles.errorText}>{errors.subCategoryName.message}</Text>}
 
                 <Text style={styles.label}>Brand</Text>
                 <Controller
@@ -444,8 +480,25 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                     />
                 )}
             </View> */}
-
-                <View style={styles.inputContainer}>
+ <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Issue Type</Text>
+                    <Controller
+                        control={control}
+                        rules={{ required: 'Issue Type is required' }}
+                        render={({ field: { onChange, value } }) => (
+                            <TextInput
+                                style={[styles.input, errors.detailedDescription && styles.errorInput]}
+                                onChangeText={onChange}
+                                value={value}
+                                multiline
+                            />
+                        )}
+                        name="issueType"
+                        defaultValue=""
+                    />
+                    {errors.issueType && <Text style={styles.errorText}>{errors.issueType.message}</Text>}
+                </View>
+                {/* <View style={styles.inputContainer}>
                     <Text style={styles.label}>Issue Type</Text>
                     <Controller
                         control={control}
@@ -467,7 +520,7 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                         defaultValue=""
                     />
                     {errors.issueType && <Text style={styles.errorText}>{errors.issueType.message}</Text>}
-                </View>
+                </View> */}
 
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>Detailed Description</Text>
@@ -488,14 +541,14 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                     {errors.detailedDescription && <Text style={styles.errorText}>{errors.detailedDescription.message}</Text>}
                 </View>
 
-                <View style={styles.inputContainer}>
+                {/* <View style={styles.inputContainer}>
                     <Text style={styles.label}>Issue Images</Text>
                     <Button title="Pick a document" onPress={pickDocument} />
                     <ScrollView contentContainerStyle={styles.imagesContainer}>
                     {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
 
                     </ScrollView>
-                </View>
+                </View> */}
 
                 <Controller
                     control={control}
