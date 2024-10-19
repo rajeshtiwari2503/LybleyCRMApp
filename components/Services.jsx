@@ -169,11 +169,11 @@ export default function ViewComplaints() {
 
     // console.log(userData);
     
-    const amount = 1;
+   
 
     const userPayment = async (item) => {
         try {
-
+            const amount = item?.payment;
             const storedValue = await AsyncStorage.getItem('user');
             const userData = JSON.parse(storedValue);
             let response = await http_request.post("/payment", { amount: +amount });
@@ -265,7 +265,7 @@ export default function ViewComplaints() {
                             <Text style={styles.feedbackButtonText}>Give Feedback</Text>
                         </TouchableOpacity>
 
-                        {item?.payment === 0 && (
+                        {item?.paymentStatus === "NotPay" && (
                             <TouchableOpacity
                                 onPress={() => userPayment(item)}
                                 style={styles.payButton}
