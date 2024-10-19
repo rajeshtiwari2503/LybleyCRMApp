@@ -265,7 +265,7 @@ export default function ViewComplaints() {
                             <Text style={styles.feedbackButtonText}>Give Feedback</Text>
                         </TouchableOpacity>
 
-                        {item?.payment === 0 && (
+                        {item?.paymentStatus === "NotPay" && (
                             <TouchableOpacity
                                 onPress={() => userPayment(item)}
                                 style={styles.payButton}

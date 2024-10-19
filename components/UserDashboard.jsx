@@ -386,7 +386,7 @@ const UserDashboard = (props) => {
               ? complaint.filter((item) => item?.dealerId === userData._id)
               : [];
 
-  const data = filterData?.map((item, index) => ({ ...item, i: index + 1 }));
+  // const data = filterData?.map((item, index) => ({ ...item, i: index + 1 }));
 
   const pieChartData = [
     { name: 'AllComplaints', population: dashData?.complaints?.allComplaints || 0, color: 'rgba(131, 167, 234, 1)', legendFontColor: '#7F7F7F', legendFontSize: 15 },
@@ -459,25 +459,25 @@ const UserDashboard = (props) => {
             </View>
           ))}
         </View>
-        <View >
-
+        <View>
           {userProduct?.map((item, index) => (
-            <View style={styles.containerP}>
-              <View key={index} style={styles.itemContainerP}>
+            <View key={item?._id} style={styles.containerP}>
+              <View style={styles.itemContainerP}>
                 <TouchableOpacity
                   onPress={() => handleDetails(item)}
                   style={styles.button}
-                  activeOpacity={0.7} // Provides a touch feedback
+                  activeOpacity={0.7}
                 >
                   <View style={styles.iconContainerP}>
                     <Ionicons name="pricetag" size={24} color="white" />
                   </View>
                   <View style={styles.textContainerP}>
                     <Text style={styles.productName}>Product Name: {item?.productName}</Text>
-                    <Text style={styles.warrantyStatus}>
+                    <View style={[styles.warrantyStatus, { flexDirection: 'row', alignItems: 'center' }]}>
                       <Ionicons name="shield-checkmark" size={16} color="white" />
-                      <Text> Under Warranty: {item?.warrantyStatus ? "Yes" : "No"}</Text>
-                    </Text>
+                      <Text style={{ marginLeft: 4,color:"white" }}>Under Warranty: {item?.warrantyStatus ? "Yes" : "No"}</Text>
+                    </View>
+
                   </View>
                 </TouchableOpacity>
               </View>
@@ -486,41 +486,6 @@ const UserDashboard = (props) => {
         </View>
 
 
-        {/* {pieChartData && pieChartData.length > 0 && (
-  <PieChart
-    data={pieChartData}
-    width={screenWidth * 0.9}
-    height={220}
-    chartConfig={{
-      backgroundColor: '#e26a00',
-      backgroundGradientFrom: '#fb8c00',
-      backgroundGradientTo: '#ffa726',
-      color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-      labelColor: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-    }}
-    accessor="population"
-    backgroundColor="transparent"
-    paddingLeft="15"
-  />
-)}
-
-{barChartData && barChartData.datasets && barChartData.datasets.length > 0 && (
-  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-    <BarChart
-      data={barChartData}
-      width={screenWidth * 1.4}
-      height={220}
-      chartConfig={{
-        backgroundColor: '#e26a00',
-        backgroundGradientFrom: '#fb8c00',
-        backgroundGradientTo: '#ffa726',
-        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-        labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-      }}
-      style={styles.barChart}
-    />
-  </ScrollView>
-)} */}
 
 
 
