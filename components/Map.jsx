@@ -17,7 +17,7 @@
 //         },
 //     });
 
-//     const GOOGLE_MAPS_APIKEY = "AIzaSyBvWULhEJHD7GpeeY3UC2C5N9dJZOIuyEg"; // Replace with your actual Google Maps API key
+//     const GOOGLE_MAPS_APIKEY = "AIzaSyC_L9VzjnWL4ent9VzCRAabM52RCcJJd2k"; // Replace with your actual Google Maps API key
 //     const mapRef = useRef();
 
 //     useEffect(() => {
@@ -105,7 +105,7 @@ export default function Map(props) {
         longitude: parseFloat(lantLong?.long) || 0,
     };
 
-    const GOOGLE_MAPS_APIKEY = "AIzaSyBvWULhEJHD7GpeeY3UC2C5N9dJZOIuyEg"; // Secure the API key using environment variables
+    const GOOGLE_MAPS_APIKEY = "AIzaSyC_L9VzjnWL4ent9VzCRAabM52RCcJJd2k"; // Secure the API key using environment variables
     const mapRef = useRef();
 
     // Effect to handle invalid coordinates
