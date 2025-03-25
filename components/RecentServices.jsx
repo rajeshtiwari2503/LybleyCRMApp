@@ -1,73 +1,132 @@
- import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors } from '@/constants/Colors'
+import { Colors } from '@/constants/Colors';
 import ServiceDetails from './ServiceDetails';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import http_request from "../http_request";
 
 const RecentServicesList = (props) => {
   const router = useRouter();
   const [selectedService, setSelectedService] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
   const userData = props?.userData;
-  const data11 = props?.data;
- 
-  const sortedData1 = data11.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-  // const data1 = userData?.role === "USER" ? sortedData1?.filter((item) => item?.status === "ASSIGN" || item?.status === "PENDING") : sortedData1;
+  const [sampleComplaints, setComplaint] = useState([]);
+  const [page, setPage] = useState(1); 
+  const [limit, setLimit] = useState(5); 
+  const [totalPages, setTotalPages] = useState(1); 
+  const [loading, setLoading] = useState(false);
 
-  const sortData = sortedData1?.map((item, index) => ({ ...item, i: index + 1 }));
-  const data = sortData;
-  // console.log(sortData,"sortData");
+  useEffect(() => {
+    getAllComplaint();
+  }, [page]);
+
+  const getAllComplaint = async () => {
+    setLoading(true);
+    try {
+      const storedValue = await AsyncStorage.getItem('user');
+      const user = JSON.parse(storedValue);
+      let role = user.user.role;
+      let id = user.user._id;
+
+      let queryParams = new URLSearchParams();
+      queryParams.append("page", page);
+      queryParams.append("limit", limit);
+
+      if (role === "BRAND") queryParams.append("brandId", id);
+      else if (role === "SERVICE") queryParams.append("serviceCenterId", id);
+      else if (role === "TECHNICIAN") queryParams.append("technicianId", id);
+      else if (role === "CUSTOMER") queryParams.append("userId", id);
+      else if (role === "DEALER") queryParams.append("dealerId", id);
+
+      let response =
+        role === "ADMIN" || role === "EMPLOYEE"
+          ? await http_request.get(`/getAllComplaint?page=${page}&limit=${limit}`)
+          : await http_request.get(`/getAllComplaintByRole?${queryParams.toString()}`);
+
+      let { data } = response;
+
+      setComplaint(data?.data);
+      setTotalPages(Math.ceil(data?.totalComplaints / limit));
+    } catch (err) {
+      console.error("Error fetching complaints:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDetails = (item) => {
     setSelectedService(item);
     setModalVisible(true);
-}
+  };
 
-  const renderItem = ({ item,index }) => (
-    <View  key={index}style={styles.row}>
-      <Text style={{width:50}}>{item.i}</Text>
-      <Text  style={[  {paddingLeft:13,width:120}]}>{item.productName}</Text>
-      <Text style={styles.statusCell}>{item?.status==="ASSIGN"?"ASSIGNED":item?.status}</Text>
-      <Text style={styles.cell}>{new Date(item.updatedAt).toLocaleString()}</Text>
-      <View style={styles.actions}>
-        <TouchableOpacity onPress={() => handleDetails(item)}>
-        <Ionicons name="eye" size={24} color="green" />
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
+  const handleNextPage = () => {
+    if (page < totalPages) setPage(page + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const sortedData = sampleComplaints?.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+    ?.map((item, index) => ({ ...item, i: index + 1 }));
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Recent Service Information</Text>
-      {!data?.length > 0 ? (
+      {loading ? (
         <View style={styles.loader}>
           <ActivityIndicator size="large" color="#0000ff" />
         </View>
       ) : (
-        <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
-          <View>
-            <View style={styles.header}>
-              <Text style={[styles.headerCell, { width:60 }]}>Sr. No.</Text>
-              <Text  style={[styles.headerCell,  { width:120}]}>Product </Text>
-              <Text style={[styles.headerCell,  {textAlign:"center",paddingRight:20}]}>Status</Text>
-              <Text style={styles.headerCell}>Updated At</Text>
-              <Text style={[styles.headerCell, { textAlign: 'right' }]}>Actions</Text>
+        <>
+          <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
+            <View>
+              <View style={styles.header}>
+                <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
+                <Text style={[styles.headerCell, { width: 120 }]}>Product </Text>
+                <Text style={[styles.headerCell, { textAlign: "center", paddingRight: 20 }]}>Status</Text>
+                <Text style={styles.headerCell}>Updated At</Text>
+                <Text style={[styles.headerCell, { textAlign: 'right' }]}>Actions</Text>
+              </View>
+              <FlatList
+                data={sortedData}
+                keyExtractor={item => item?._id}
+                renderItem={({ item, index }) => (
+                  <View key={index} style={styles.row}>
+                    <Text style={{ width: 50 }}>{item.i}</Text>
+                    <Text style={[{ paddingLeft: 13, width: 120 }]}>{item.productName}</Text>
+                    <Text style={styles.statusCell}>{item?.status === "ASSIGN" ? "ASSIGNED" : item?.status}</Text>
+                    <Text style={styles.cell}>{new Date(item.updatedAt).toLocaleString()}</Text>
+                    <View style={styles.actions}>
+                      <TouchableOpacity onPress={() => handleDetails(item)}>
+                        <Ionicons name="eye" size={24} color="green" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              />
             </View>
-            <FlatList
-              data={data}
-              keyExtractor={item => item?._id}
-              // keyExtractor={(item) => item.i.toString()}
-              renderItem={renderItem}
-            />
+          </ScrollView>
+
+          {/* Pagination Controls */}
+          <View style={styles.pagination}>
+            <TouchableOpacity onPress={handlePrevPage} disabled={page === 1} style={[styles.button, page === 1 && styles.disabledButton]}>
+              <Text style={styles.buttonText}>Previous</Text>
+            </TouchableOpacity>
+            <Text style={styles.pageText}>Page {page} of {totalPages}</Text>
+            <TouchableOpacity onPress={handleNextPage} disabled={page >= totalPages} style={[styles.button, page >= totalPages && styles.disabledButton]}>
+              <Text style={styles.buttonText}>Next</Text>
+            </TouchableOpacity>
           </View>
-        </ScrollView>
+        </>
       )}
-       <ServiceDetails
-                isVisible={isModalVisible}
-                onClose={() => setModalVisible(false)}
-                service={selectedService}
-            />
+      <ServiceDetails
+        isVisible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+        service={selectedService}
+      />
     </View>
   );
 };
@@ -91,7 +150,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 15,
-    
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
     backgroundColor: '#f8f8f8',
@@ -100,51 +158,61 @@ const styles = StyleSheet.create({
     flex: 1,
     fontWeight: 'bold',
     textAlign: 'left',
-    width:110,
+    width: 110,
   },
   row: {
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
-    alignItems:"center",
+    alignItems: "center",
     borderBottomColor: '#ddd',
   },
   cell: {
     flex: 1,
     textAlign: 'left',
-    width:120,
+    width: 120,
   },
   statusCell: {
     flex: 1,
     textAlign: 'center',
-    backgroundColor:Colors.PRIMARY,
-    color:"white",
-    // marginLeft:20,
-    display:"flex",
-    justifyContent:"center",
-    alignItems:"center",
-    // paddingLeft:20,
-    paddingTop:7,
-    paddingBottom:7,
-    marginRight:10,
-    borderRadius:10,
-    width:120,
+    backgroundColor: Colors.PRIMARY,
+    color: "white",
+    paddingTop: 7,
+    paddingBottom: 7,
+    marginRight: 10,
+    borderRadius: 10,
+    width: 120,
   },
   actions: {
     flexDirection: 'row',
-    width:100,
-    alignItems: 'center', 
-    justifyContent:"flex-end"
-  },
-  viewButton: {
-    color: 'blue',
-    paddingRight: 10,
-    textAlign:"right"
+    width: 100,
+    alignItems: 'center',
+    justifyContent: "flex-end",
   },
   scrollContainer: {
     flexDirection: 'column',
- 
+  },
+  pagination: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  button: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 5,
+  },
+  disabledButton: {
+    backgroundColor: '#cccccc',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  pageText: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

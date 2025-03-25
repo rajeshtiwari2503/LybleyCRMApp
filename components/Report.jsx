@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet, ScrollView, ActivityIndicator,   TouchableOpacity } from 'react-native';
 import http_request from "../http_request"
 import ExportToExcel from '../components/DownloadExcel';
-import DateTimePicker from '@react-native-community/datetimepicker';
+// import DateTimePicker from '@react-native-community/datetimepicker';
 import ReportServicesList from './ReportServices';
 
 const DealerReport = ({ userData }) => {
@@ -76,7 +76,7 @@ const DealerReport = ({ userData }) => {
             <Text style={styles.title}>Complaint Filter and Reports</Text>
 
             <View style={styles.datePickerContainer}>
-                <View style={styles.datePickerWrapper}>
+                {/* <View style={styles.datePickerWrapper}>
                     <Text>Start Date:</Text>
                     <TouchableOpacity onPress={() => setShowStartDatePicker(true)} style={styles.dateButton}>
                         <Text style={styles.dateButtonText}>{startDate ? startDate.toDateString() : 'Select start date'}</Text>
@@ -89,9 +89,9 @@ const DealerReport = ({ userData }) => {
                             onChange={onChangeStartDate}
                         />
                     )}
-                </View>
+                </View> */}
 
-                <View style={styles.datePickerWrapper}>
+                {/* <View style={styles.datePickerWrapper}>
                     <Text>End Date:</Text>
                     <TouchableOpacity onPress={() => setShowEndDatePicker(true)} style={styles.dateButton}>
                         <Text style={styles.dateButtonText}>{endDate ? endDate.toDateString() : 'Select end date'}</Text>
@@ -105,7 +105,7 @@ const DealerReport = ({ userData }) => {
                             minimumDate={startDate}
                         />
                     )}
-                </View>
+                </View> */}
             </View>
 
             <View style={styles.buttonContainer}>

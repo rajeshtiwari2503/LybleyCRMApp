@@ -54,6 +54,11 @@ export default function ViewComplaints() {
     const [locationCurrent, setLocationCurrent] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
+
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(5);
+    const [totalPages, setTotalPages] = useState(0);
+
     useEffect(() => {
         const interval = setInterval(async () => {
             try {
@@ -63,37 +68,37 @@ export default function ViewComplaints() {
                     setErrorMsg('Permission to access location was denied');
                     return;
                 }
-    
+
                 // Force the location update by passing options
                 let locationCurr = await Location.getCurrentPositionAsync({
                     accuracy: Location.Accuracy.High, // Adjust accuracy as needed
                     maximumAge: 0,                    // Ensure no cached result
                     timeInterval: 2000                // Optional: Set a time interval for getting location
                 });
-    
+
                 // console.log(locationCurr);
-    
+
                 // Update the state with the new location
                 setLocationCurrent(locationCurr);
             } catch (error) {
                 console.error("Error fetching location:", error);
             }
         }, 2000);
-    
+
         getAllComplaint();
-    
+
         // Clean up the interval on component unmount
         return () => clearInterval(interval);
-    
-    }, []);
-    
+
+    }, [page, limit,]);
+
 
     const getLiveLocation = async () => {
         const locPermissionDenied = await locationPermission()
         if (locPermissionDenied) {
             const res = await Geolocation.requestAuthorization("whenInUse")
             console.log(res);
-            
+
             setLocationCurrent({ lat: latitude, long: longitude });
         }
         const res = await Geolocation.requestAuthorization("whenInUse")
@@ -111,18 +116,32 @@ export default function ViewComplaints() {
             setloading(true);
             const storedValue = await AsyncStorage.getItem('user');
             const user = JSON.parse(storedValue);
-            setUserData(user?.user)
-            let response = await http_request.get("/getAllComplaint");
+            let role = user.user.role;
+            let id = user.user._id;
+
+            let queryParams = new URLSearchParams();
+            queryParams.append("page", page);
+            queryParams.append("limit", limit);
+            console.log("queryParams.toString()",queryParams.toString());
+            if (role === "BRAND") queryParams.append("brandId", id);
+            else if (role === "SERVICE") queryParams.append("serviceCenterId", id);
+            else if (role === "TECHNICIAN") queryParams.append("technicianId", id);
+            else if (role === "CUSTOMER") queryParams.append("userId", id);
+            else if (role === "DEALER") queryParams.append("dealerId", id);
+
+            let response =
+                role === "ADMIN" || role === "EMPLOYEE"
+                    ? await http_request.get(`/getAllComplaint?page=${page}&limit=${limit}`)
+                    : await http_request.get(`/getAllComplaintByRole?${queryParams.toString()}`);
+
             let { data } = response;
-            const filteredData = user?.user.role === "ADMIN" ? data
-                : user?.user.role === "BRAND" ? data.filter((item) => item?.brandId === user?.user?._id)
-                    : user?.user.role === "USER" ? data.filter((item) => item?.userId === user?.user?._id)
-                        : user?.user.role === "SERVICE" ? data.filter((item) => item?.assignServiceCenterId === user?.user?._id)
-                            : user?.user.role === "TECHNICIAN" ? data.filter((item) => item?.technicianId === user?.user?._id)
-                                : user?.user.role === "DEALER" ? data.filter((item) => item?.userId === user?.user?._id)
-                                    : []
-            const data1 = filteredData?.map((item, index) => ({ ...item, i: index + 1 }));
-            setComplaint(data1);
+            console.log("data",data);
+            const filData = data?.data?.map((item, index) => ({ ...item, i: index + 1 }));
+
+            setComplaint(filData);
+
+
+            setTotalPages(Math.ceil(data?.totalComplaints));
             setloading(false);
         }
         catch (err) {
@@ -168,8 +187,8 @@ export default function ViewComplaints() {
     }
 
     // console.log(userData);
-    
-   
+
+
 
     const userPayment = async (item) => {
         try {
@@ -222,14 +241,29 @@ export default function ViewComplaints() {
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         if (typeof RefreshData === 'function') {
-          getAllComplaint();
+            getAllComplaint();
+           
+            
         } else {
-          console.error("RefreshData is not a function");
+            console.error("RefreshData is not a function");
+            console.log("dhjhj");
+
         }
         setTimeout(() => {
-          setRefreshing(false);
+            setRefreshing(false);
         }, 2000);
-      }, [RefreshData]);
+    }, [RefreshData]);
+
+
+
+    const handleNextPage = () => {
+        if (page < totalPages) setPage(page + 1);
+    };
+
+    const handlePrevPage = () => {
+        if (page > 1) setPage(page - 1);
+    };
+
 
     const renderItem = ({ item, index }) => (
         <View key={index} style={styles.row}>
@@ -238,22 +272,21 @@ export default function ViewComplaints() {
             <Text style={[styles.statusCell, getStatusStyle(item?.status)]}>{item?.status === "ASSIGN" ? "ASSIGNED" : item?.status}</Text>
             <Text style={styles.cell}>{new Date(item.updatedAt).toLocaleString()}</Text>
             <View style={styles.actions}>
-                {userData?.role === "TECHNICIAN" &&
-                    ["ASSIGN", "PART PENDING", "IN PROGRESS", "PENDING"].includes(item?.status) ? (
-                    <>
-                        <TouchableOpacity onPress={() => handleUpdate(item)}>
-                            <MaterialIcons name="system-update-alt" size={24} color="green" />
-                        </TouchableOpacity>
-                        {/* <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleOrder(item)}>
+
+
+                <>
+                    <TouchableOpacity onPress={() => handleUpdate(item)}>
+                        <MaterialIcons name="system-update-alt" size={24} color="green" />
+                    </TouchableOpacity>
+                    {/* <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleOrder(item)}>
                             <MaterialIcons name="update" size={24} color="blue" />
                         </TouchableOpacity> */}
-                        <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleMapData(item?.lat, item?.long)}>
-                            <MaterialIcons name="my-location" size={24} color="green" />
-                        </TouchableOpacity>
+                    <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleMapData(item?.lat, item?.long)}>
+                        <MaterialIcons name="my-location" size={24} color="green" />
+                    </TouchableOpacity>
 
-                    </>
-                ) : null
-                }
+                </>
+
 
                 {(userData?.role === 'USER' || userData?.role === 'DEALER') && ["COMPLETED"].includes(item?.status) ? (
                     // <View style={{display:"flex"}}>
@@ -284,7 +317,7 @@ export default function ViewComplaints() {
                 <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleDetails(item)}>
                     <Ionicons name="eye" size={24} color="green" />
                 </TouchableOpacity>
-                
+
             </View>
         </View>
     );
@@ -292,91 +325,130 @@ export default function ViewComplaints() {
     //     setIsMap(!isMap)
     // }
     const handleMapData = (lat, long) => {
-// console.log(lat, long);
+        // console.log(lat, long);
 
-        if(!lat || !long){
+        if (!lat || !long) {
             Alert.alert("Error", "Invalid location coordinates provided.");
-        }else{
+        } else {
             setLatLong({ lat: lat, long: long })
             setIsMap(true)
         }
-       
+
     }
     // console.log(locationCurrent?.coords?.latitude,locationCurrent?.coords?.longitude);
     const techLocation = { lat: locationCurrent?.coords?.latitude, long: locationCurrent?.coords?.longitude }
+
+    //    console.log("userData",userData);
+
     return (
         < >
             {/* {isMap === true && locationCurrent && lantLong  */}
-            {isMap && techLocation?.lat && lantLong?.lat && lantLong?.long 
-            ? <Map lantLong={lantLong} techLocation={techLocation} handleMap={() => setIsMap(false)} />
+            {isMap && techLocation?.lat && lantLong?.lat && lantLong?.long
+                ? <Map lantLong={lantLong} techLocation={techLocation} handleMap={() => setIsMap(false)} />
                 :
                 <View style={styles.container}>
                     <Toast />
 
-                    <View  >
-                        <View style={styles.buttonContainer}>
-                            <TouchableOpacity
-                                style={[styles.categoryButton, selectedCategory === 'All' && styles.selectedButton]}
-                                onPress={() => handleCategoryPress('All')}
-                            >
-                                <Text style={styles.buttonText}>All</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.categoryButton, selectedCategory === 'PENDING' && styles.selectedButton]}
-                                onPress={() => handleCategoryPress('PENDING')}
-                            >
-                                <Text style={styles.buttonText}>Pending</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.categoryButton, selectedCategory === 'ASSIGN' && styles.selectedButton]}
-                                onPress={() => handleCategoryPress('ASSIGN')}
-                            >
-                                <Text style={styles.buttonText}>Assigned</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.categoryButton, selectedCategory === 'COMPLETED' && styles.selectedButton]}
-                                onPress={() => handleCategoryPress('COMPLETED')}
-                            >
-                                <Text style={styles.buttonText}>Closed</Text>
-                            </TouchableOpacity>
-                        </View>
+                    <View>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                            <View style={styles.buttonContainer}>
+                                {[
+                                    { label: "All", value: "All" },
+                                    { label: "Pending", value: "PENDING" },
+                                    { label: "Assigned", value: "ASSIGN" },
 
+                                    { label: "In Progress", value: "IN PROGRESS" },
+                                    { label: "Part Pending", value: "PART PENDING" },
+                                    { label: "Final Verification", value: "FINAL VERIFICATION" },
+                                    { label: "Cancel", value: "CANCELED" },
+                                    { label: "Complete", value: "COMPLETED" }
+                                ].map((item) => (
+                                    <TouchableOpacity
+                                        key={item.value}
+                                        style={[
+                                            styles.categoryButton,
+                                            selectedCategory === item.value && styles.selectedButton
+                                        ]}
+                                        onPress={() => handleCategoryPress(item.value)}
+                                    >
+                                        <Text
+                                            style={[
+                                                styles.buttonText,
+                                                selectedCategory === item.value && styles.selectedText
+                                            ]}
+                                        >
+                                            {item.label}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </ScrollView>
                     </View>
-                    {userData?.user?.role === "USER" || "DEALER" ?
-                        <TouchableOpacity style={styles.button} onPress={handleCreateService}>
-                            <Text style={styles.buttonText}>Create Service Request</Text>
+
+
+                    {(userData?.role === "USER" || userData?.role === "DEALER") && (
+                        <TouchableOpacity style={styles.button} onPress={handleCreateService} activeOpacity={0.8}>
+                            <Text style={styles.buttonText}>+ Create Service Request</Text>
                         </TouchableOpacity>
-                        : null
-                    }
+                    )}
+
                     {loading ?
                         <ActivityIndicator size="large" color="#0000ff" />
-                        : <ScrollView  refreshControl={
-                            <RefreshControl
-                              refreshing={refreshing}
-                              onRefresh={onRefresh}  
-                            />
-                          } horizontal contentContainerStyle={styles.scrollContainer}>
+                        :
+                        <>
 
-                            <View>
-                                <View style={styles.header}>
-                                    <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
-                                    <Text style={[styles.headerCell, { width: 120 }]}>Product </Text>
-                                    <Text style={[styles.headerCell, { textAlign: "center", paddingRight: 20 }]}>Status</Text>
-                                    <Text style={styles.headerCell}>Updated At</Text>
-                                    <Text style={[styles.headerCell, { textAlign: 'center' }]}>Actions</Text>
-                                </View>
-                                <FlatList
-                                    data={filterComplaints(selectedCategory)}
-                                    keyExtractor={item => item?._id}
-                                    renderItem={renderItem}
-                                    contentContainerStyle={styles.listContainer}
-                                    // refreshControl={
-                                    //     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                                    //   }
+                            <ScrollView refreshControl={
+                                <RefreshControl
+                                    refreshing={refreshing}
+                                    onRefresh={onRefresh}
                                 />
-                            </View>
+                            } horizontal contentContainerStyle={styles.scrollContainer}>
+                                {filterComplaints(selectedCategory)?.length === 0 ? (
+                                    <View style={styles.noDataContainer}>
+                                        <Text style={styles.noDataText}>No complaints found for "{selectedCategory}"</Text>
+                                    </View>) :
+                                    <View>
+                                        <View style={styles.header}>
+                                            <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
+                                            <Text style={[styles.headerCell, { width: 120 }]}>Product </Text>
+                                            <Text style={[styles.headerCell, { textAlign: "center", paddingRight: 20 }]}>Status</Text>
+                                            <Text style={styles.headerCell}>Updated At</Text>
+                                            <Text style={[styles.headerCell, { textAlign: 'center' }]}>Actions</Text>
+                                        </View>
+                                        <FlatList
+                                            data={filterComplaints(selectedCategory)}
+                                            keyExtractor={item => item?._id}
+                                            renderItem={renderItem}
+                                            contentContainerStyle={styles.listContainer}
+                                        // refreshControl={
+                                        //     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                                        //   }
+                                        />
 
-                        </ScrollView>
+                                    </View>
+                                }
+                            </ScrollView>
+
+
+                            {/* Pagination Controls */}
+                            {filterComplaints(selectedCategory)?.length > 4 ? (
+                                <View style={styles.pagination}>
+                                    <TouchableOpacity onPress={handlePrevPage} disabled={page === 1} style={[styles.button, page === 1 && styles.disabledButton]}>
+                                        <Text style={styles.buttonText}>Previous</Text>
+                                    </TouchableOpacity>
+                                    <Text style={styles.pageText}>
+                                        Page {page} of {totalPages} |  : {totalPages}
+                                    </Text>
+                                    <Text style={styles.pageText}>Page {page} of {totalPages}</Text>
+                                    <TouchableOpacity onPress={handleNextPage} disabled={page >= totalPages} style={[styles.button, page >= totalPages && styles.disabledButton]}>
+                                        <Text style={styles.buttonText}>Next</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )
+                                : ""
+                            }
+                        </>
+
                     }
                     <ServiceDetails
                         isVisible={isModalVisible}
@@ -439,32 +511,28 @@ const styles = StyleSheet.create({
         borderRadius: 30
     },
     buttonContainer: {
-        flexDirection: 'row',
-        backgroundColor: '#333', // Dark background for tabs
-        borderRadius: 8,
-        marginBottom: 10,
-        justifyContent: "space-between",
-        //     marginLeft:20,
-        //    marginRight:20,
-        overflow: 'hidden',
+        flexDirection: "row",
+        paddingVertical: 10,
+        paddingHorizontal: 5,
     },
     categoryButton: {
-        flex: 1,
         paddingVertical: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#444',
+        paddingHorizontal: 15,
+        backgroundColor: "#cccccc",
+        borderRadius: 5,
+        marginHorizontal: 5,
     },
     selectedButton: {
-        backgroundColor: '#0284c7',
-        fontFamily: 'outfit',
+        backgroundColor: "#09090b",  // Highlight color for selection
     },
     buttonText: {
-
-        fontFamily: 'outfit',
-        color: '#FFFFFF',
-        fontSize: 16,
-        fontWeight: 'bold'
+        fontSize: 14,
+        color: "#09090b",
+        fontWeight: "500",
+    },
+    selectedText: {
+        color: "#fff",
+        fontWeight: "bold",
     },
     listContainer: {
         paddingBottom: 20,
@@ -489,6 +557,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'left',
         width: 110,
+    },
+    scrollContainer: {
+        flexDirection: 'column',
     },
     row: {
         flexDirection: 'row',
@@ -584,5 +655,37 @@ const styles = StyleSheet.create({
     payButtonText: {
         color: 'black',
         fontWeight: 'bold',
+    },
+    pagination: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
+        marginBottom: 10,
+    },
+    button: {
+        backgroundColor: '#007bff',
+        padding: 10,
+        borderRadius: 5,
+    },
+    disabledButton: {
+        backgroundColor: '#cccccc',
+    },
+    buttonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+    },
+    pageText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    noDataContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 20,
+    },
+    noDataText: {
+        fontSize: 16,
+        color: "#888",
+        fontWeight: "500",
     },
 });
