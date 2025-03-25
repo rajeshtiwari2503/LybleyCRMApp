@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, Image, TouchableOpacity,  StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
-import DateTimePicker from '@react-native-community/datetimepicker';
+// import DateTimePicker from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';
 import { Picker } from '@react-native-picker/picker';
 import Modal from 'react-native-modal';
@@ -550,7 +550,7 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                     </ScrollView>
                 </View> */}
 
-                <Controller
+                {/* <Controller
                     control={control}
                     name="preferredServiceDate"
                     rules={{ required: 'Preferred Service Date is required' }}
@@ -575,9 +575,9 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                             )}
                         </View>
                     )}
-                />
+                /> */}
 
-                <Controller
+                {/* <Controller
                     control={control}
                     name="preferredServiceTime"
                     rules={{ required: 'Preferred Service Time is required' }}
@@ -602,7 +602,7 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
                             )}
                         </View>
                     )}
-                />
+                /> */}
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>Service Location</Text>
                     <Controller

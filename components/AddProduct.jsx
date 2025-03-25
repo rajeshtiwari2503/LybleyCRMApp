@@ -5,7 +5,7 @@ import http_request from '../http_request';
 import Toast from 'react-native-toast-message';
 import { Picker } from '@react-native-picker/picker';
 import { Colors } from '@/constants/Colors';
-import DateTimePicker from '@react-native-community/datetimepicker';
+// import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function AddProduct ({ existingProduct, RefreshData, onClose, userData, categories, brands })   {
     const [loading, setLoading] = useState(false);
@@ -263,7 +263,7 @@ export default function AddProduct ({ existingProduct, RefreshData, onClose, use
                 )}
             />
             <View style={{ marginBottom: 20 }}>
-            <Controller
+            {/* <Controller
         control={control}
         name="purchaseDate"
         defaultValue={date.toISOString().split('T')[0]}
@@ -287,7 +287,7 @@ export default function AddProduct ({ existingProduct, RefreshData, onClose, use
             )}
           </>
         )}
-      />
+      /> */}
             </View>
 
             <TouchableOpacity

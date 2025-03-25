@@ -56,8 +56,8 @@ const AppNavigator = () => {
         <>
           {user?.user?.role === 'USER' && <Stack.Screen name="User" component={UserNavigator} />}
           {user?.user?.role === 'DEALER' && <Stack.Screen name="Dealer" component={DealerNavigator} />}
-          {user?.user?.role === 'TECHNICIAN' && <Stack.Screen name="Technician" component={TechnicianNavigator} />}
-          {['SERVICE', 'BRAND', 'ADMIN'].includes(user?.user?.role) && (
+          {user?.user?.role === 'SERVICE' && <Stack.Screen name="Technician" component={TechnicianNavigator} />}
+          {['SERVICE1', 'BRAND', 'ADMIN'].includes(user?.user?.role) && (
             <Stack.Screen name="RoleSelection" component={Login} />
           )}
         </>
