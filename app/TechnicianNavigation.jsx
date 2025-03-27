@@ -69,20 +69,20 @@ const TechnicianNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Skill"
-        component={SkillScreen}
+        name="Wallet"
+        component={WalletScreen}
         options={{
           tabBarLabel: ({ focused }) => (
             <Text style={{ color: focused ? Colors.PRIMARY : 'gray', fontSize: 10 }}>
-              Skill
+              Wallet
             </Text>
           ),
           tabBarIcon: ({ color }) => (
-            <Foundation name="social-skillshare" size={20} color={color} />
+            <Ionicons name="wallet-outline" size={20} color={color} />
           ),
         }}
       />
-      {user?.user?.independent &&
+      {user?.user?.role==="SERVICE" &&
         <Tab.Screen
           name="Inventory"
           component={InventoryScreen}

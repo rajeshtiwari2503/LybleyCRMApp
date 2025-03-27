@@ -440,6 +440,7 @@ import { PieChart } from "react-native-chart-kit";
 import http_request from "../http_request";
 import NotificationModal from "./Notification";
 import RecentServicesList from "./RecentServices";
+import WalletDashboard from "./walletDashSection";
 
 const TechnicianDashboard = ({ userData, dashData, notifications,RefreshData }) => {
   const navigation = useNavigation();
@@ -488,6 +489,7 @@ const TechnicianDashboard = ({ userData, dashData, notifications,RefreshData }) 
   return (
     <ScrollView style={styles.container}>
       {/* Header */}
+     
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
           <MaterialIcons name="person" size={28} color="white" />
@@ -502,7 +504,7 @@ const TechnicianDashboard = ({ userData, dashData, notifications,RefreshData }) 
           )}
         </TouchableOpacity>
       </View>
-
+      <WalletDashboard />
   {/* Performance Metrics */}
   <View style={styles.metricsContainer}>
         <Text style={styles.sectionTitle}>Performance Metrics</Text>
@@ -523,14 +525,18 @@ const TechnicianDashboard = ({ userData, dashData, notifications,RefreshData }) 
       {/* Service Summary Cards */}
       <View style={styles.cardContainer}>
   {[
-    { label: "Total Service", value: dashData?.complaints?.allComplaints, color: "#f4b400" },
-    { label: "Completed", value: dashData?.complaints?.complete, color: "#34a853" },
+   
     { label: "Pending", value: dashData?.complaints?.pending, color: "#ea4335" },
     { label: "In Progress", value: dashData?.complaints?.inProgress, color: "#4285f4" },
     { label: "Assigned", value: dashData?.complaints?.assign, color: "#a142f4" },
     { label: "Part Pending", value: dashData?.complaints?.partPending, color: "#ff9800" },
+   
+    { label: "Final Verification", value: dashData?.complaints?.finalVerification, color: "#00bcd4" }, 
     { label: "Cancel", value: dashData?.complaints?.cancel, color: "#616161" }, // Gray for cancel
-    { label: "Final Verification", value: dashData?.complaints?.finalVerification, color: "#00bcd4" }, // Cyan for verification
+    { label: "Completed", value: dashData?.complaints?.complete, color: "#34a853" },
+    
+    { label: "Total Service", value: dashData?.complaints?.allComplaints, color: "#f4b400" },
+   
     { label: "Schedule", value: dashData?.complaints?.schedule, color: "#2c3e50" }, // Dark blue for schedule
     { label: "Schedule Upcoming", value: dashData?.complaints?.scheduleUpcomming, color: "#34495e" }, // Slightly darker blue
     { label: "Last Week", value: dashData?.complaints?.lastWeek?.allComplaints, color: "#795548" }, // Brown for last week

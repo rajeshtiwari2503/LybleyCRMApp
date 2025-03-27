@@ -56,7 +56,7 @@ export default function ViewComplaints() {
     const [refreshing, setRefreshing] = useState(false);
 
     const [page, setPage] = useState(1);
-   
+
 
     useEffect(() => {
         const interval = setInterval(async () => {
@@ -89,7 +89,7 @@ export default function ViewComplaints() {
         // Clean up the interval on component unmount
         return () => clearInterval(interval);
 
-    }, [ ]);
+    }, []);
 
 
     const getLiveLocation = async () => {
@@ -113,42 +113,42 @@ export default function ViewComplaints() {
     const getAllComplaint = async () => {
         setLoading(true);
         try {
-          const storedValue = await AsyncStorage.getItem("user");
-          const user = JSON.parse(storedValue);
-          let role = user.user.role;
-          let id = user.user._id;
-          // console.log("id",id);
-    
-          let response;
-         
-          if (role === "SERVICE") {
-            
-            response = await http_request.get(`/getComplaintByCenterId/${id}`);
-          } else if (role === "TECHNICIAN") {
-        
-            response = await http_request.get(`/getComplaintByTechId/${id}`);
-          } else if (role === "DEALER") {
-        
-            response = await http_request.get(`/getComplaintBydealerId/${id}`);
-          } else if (role === "USER") {
-    
-         
-            response = await http_request.get(`/getComplaintByUserId?${id}`);
-          }
-          const { data } = response
-          // console.log("data",data?.length);
-    
-          setComplaint(data);
-    
+            const storedValue = await AsyncStorage.getItem("user");
+            const user = JSON.parse(storedValue);
+            let role = user.user.role;
+            let id = user.user._id;
+            // console.log("id",id);
+
+            let response;
+
+            if (role === "SERVICE") {
+
+                response = await http_request.get(`/getComplaintByCenterId/${id}`);
+            } else if (role === "TECHNICIAN") {
+
+                response = await http_request.get(`/getComplaintByTechId/${id}`);
+            } else if (role === "DEALER") {
+
+                response = await http_request.get(`/getComplaintBydealerId/${id}`);
+            } else if (role === "USER") {
+
+
+                response = await http_request.get(`/getComplaintByUserId?${id}`);
+            }
+            const { data } = response
+            // console.log("data",data?.length);
+
+            setComplaint(data);
+
         } catch (err) {
-          console.error("Error fetching complaints:", err);
+            console.error("Error fetching complaints:", err);
         } finally {
-          setLoading(false);
+            setLoading(false);
         }
-      };
+    };
     // const filteredComplaints = filterComplaints(selectedCategory);
 
-   
+
 
     const handleCategoryPress = (category) => {
         setSelectedCategory(category);
@@ -233,8 +233,8 @@ export default function ViewComplaints() {
         setRefreshing(true);
         if (typeof RefreshData === 'function') {
             getAllComplaint();
-           
-            
+
+
         } else {
             console.error("RefreshData is not a function");
             console.log("dhjhj");
@@ -253,9 +253,9 @@ export default function ViewComplaints() {
     const itemsPerPage = 5;
     const totalPages = Math.ceil((filterComplaints(selectedCategory)?.length || 0) / itemsPerPage);
     const paginatedData = filterComplaints(selectedCategory)
-    ?.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
-    ?.map((item, index) => ({ ...item, i: index + 1 }))
-    ?.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+        ?.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+        ?.map((item, index) => ({ ...item, i: index + 1 }))
+        ?.slice((page - 1) * itemsPerPage, page * itemsPerPage);
     const handleNextPage = () => {
         if (page < totalPages) setPage(prev => prev + 1);
     };
@@ -275,9 +275,13 @@ export default function ViewComplaints() {
 
 
                 <>
-                    <TouchableOpacity onPress={() => handleUpdate(item)}>
-                        <MaterialIcons name="system-update-alt" size={24} color="green" />
-                    </TouchableOpacity>
+                    {item?.status !== "COMPLETED" && item?.status !== "CANCELED"&& item?.status !== "FINAL VERIFICATION" && (
+                        <View style={styles.actions}>
+                            <TouchableOpacity onPress={() => handleUpdate(item)}>
+                                <MaterialIcons name="system-update-alt" size={24} color="green" />
+                            </TouchableOpacity>
+                        </View>
+                    )}
                     {/* <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleOrder(item)}>
                             <MaterialIcons name="update" size={24} color="blue" />
                         </TouchableOpacity> */}
@@ -298,14 +302,14 @@ export default function ViewComplaints() {
                             <Text style={styles.feedbackButtonText}>Give Feedback</Text>
                         </TouchableOpacity>
 
-                        {item?.paymentStatus === "NotPay" && (
+                        {/* {item?.paymentStatus === "NotPay" && (
                             <TouchableOpacity
                                 onPress={() => userPayment(item)}
                                 style={styles.payButton}
                             >
                                 <Text style={styles.payButtonText}>Pay</Text>
                             </TouchableOpacity>
-                        )}
+                        )} */}
                         {/* <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleMapData(item?.lat, item?.long)}>
                             <MaterialIcons name="my-location" size={24} color="green" />
                         </TouchableOpacity> */}
@@ -403,10 +407,12 @@ export default function ViewComplaints() {
                                     onRefresh={onRefresh}
                                 />
                             } horizontal contentContainerStyle={styles.scrollContainer}>
-                                {paginatedData=== 0 ? (
-                                    <View style={styles.noDataContainer}>
-                                        <Text style={styles.noDataText}>No complaints found for "{selectedCategory}"</Text>
-                                    </View>) :
+                                {paginatedData?.length === 0 ? (
+                                     <View style={styles.noDataContainer}>
+                                     <MaterialIcons name="info-outline" style={styles.noDataIcon} />
+                                     <Text style={styles.noDataText}>No Data Available</Text>
+                                 </View>
+                                 ) :
                                     <View>
                                         <View style={styles.header}>
                                             <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
@@ -447,24 +453,24 @@ export default function ViewComplaints() {
                             )
                                 : ""
                             } */}
-                             <View style={styles.pagination}>
-                                        <TouchableOpacity onPress={handlePrevPage} disabled={page === 1} style={[styles.button, page === 1 && styles.disabledButton]}>
-                                          <Text style={styles.buttonText}>Previous</Text>
-                                        </TouchableOpacity>
-                                        <Text style={styles.pageText}>
-                                          Page {page} of {totalPages} ( total records  {filterComplaints(selectedCategory)?.length} )
-                                        </Text>
-                                        <TouchableOpacity onPress={handleNextPage} disabled={page >= totalPages} style={[styles.button, page >= totalPages && styles.disabledButton]}>
-                                          <Text style={styles.buttonText}>Next</Text>
-                                        </TouchableOpacity>
-                                      </View>
+                            <View style={styles.pagination}>
+                                <TouchableOpacity onPress={handlePrevPage} disabled={page === 1} style={[styles.button, page === 1 && styles.disabledButton]}>
+                                    <Text style={styles.buttonText}>Previous</Text>
+                                </TouchableOpacity>
+                                <Text style={styles.pageText}>
+                                    Page {page} of {totalPages} ( total records  {filterComplaints(selectedCategory)?.length} )
+                                </Text>
+                                <TouchableOpacity onPress={handleNextPage} disabled={page >= totalPages} style={[styles.button, page >= totalPages && styles.disabledButton]}>
+                                    <Text style={styles.buttonText}>Next</Text>
+                                </TouchableOpacity>
+                            </View>
                         </>
 
                     }
                     <ServiceDetails
                         isVisible={isModalVisible}
                         onClose={() => setModalVisible(false)}
-                        service={selectedService}
+                        complaint={selectedService}
                     />
                     <UpdateServiceStatus
                         isVisible={updateModalVisible}
@@ -670,7 +676,7 @@ const styles = StyleSheet.create({
     pagination: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems:"center",
+        alignItems: "center",
         marginTop: 10,
         marginBottom: 10,
     },
@@ -690,14 +696,26 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: 'bold',
     },
+    
     noDataContainer: {
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 20,
+        flex: 1,
+        justifyContent: "center",  // Centers content vertically
+        alignItems: "center",      // Centers content horizontally
+        padding: 20,
+        marginLeft:65
     },
+    
     noDataText: {
-        fontSize: 16,
+        fontSize: 18,
         color: "#888",
         fontWeight: "500",
+        textAlign: "center",
+        marginTop: 10,
     },
+    
+    noDataIcon: {
+        fontSize: 50,
+        color: "#bbb",
+    },
+    
 });

@@ -25,9 +25,10 @@ const OrderList = (props) => {
   }, []);
 
   // const filterData = props?.data?.filter((item) => item?.userId === userData?.user?._id);
-  const filterData = props?.data;
-  const data = props?.data;
-
+  
+  const rawData=props?.data
+  // const filterData = props?.data?.filter((item) => item?.userId === userData?.user?._id);
+  const data= userData?.user?.role==="SERVICE"?rawData?.filter((f)=>f?.serviceCenterId===userData?.user?._id):[]
   
  
   
@@ -56,7 +57,8 @@ const OrderList = (props) => {
       </View>
       {data.length === 0 ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color="#0000ff" />
+          {/* <ActivityIndicator size="large" color="#0000ff" /> */}
+            <Text>No data</Text>
         </View>
       ) : (
 

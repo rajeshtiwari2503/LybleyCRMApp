@@ -7,9 +7,9 @@ const Knowledge = () => {
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <Text style={styles.header}>Knowledge Page</Text>
         <View style={styles.card}>
-          <Text style={styles.subHeader}>Welcome to Lybley India Pvt. Ltd. Knowledge Hub</Text>
+          <Text style={styles.subHeader}>Welcome to  Servsy Knowledge Hub</Text>
           <Text style={styles.text}>
-            Lybley India Pvt. Ltd. is committed to delivering exceptional services and innovative solutions to meet the diverse needs of our customers. Our expertise spans across various domains, including technology, customer support, and after-sales services.
+          India's #1 After-Sales Service Partner for home appliance brands and OEMs. Covering 19,000+ PIN codes with 500+ service centers across India.
           </Text>
           <Text style={styles.sectionHeader}>Our Expertise</Text>
           <View style={styles.list}>
