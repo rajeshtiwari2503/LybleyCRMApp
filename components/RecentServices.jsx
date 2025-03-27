@@ -13,42 +13,78 @@ const RecentServicesList = (props) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const userData = props?.userData;
   const [sampleComplaints, setComplaint] = useState([]);
-  const [page, setPage] = useState(1); 
-  const [limit, setLimit] = useState(5); 
-  const [totalPages, setTotalPages] = useState(1); 
+  const [page, setPage] = useState(1);
+   
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getAllComplaint();
   }, [page]);
 
+  // const getAllComplaint = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const storedValue = await AsyncStorage.getItem('user');
+  //     const user = JSON.parse(storedValue);
+  //     let role = user.user.role;
+  //     let id = user.user._id;
+
+  //     let queryParams = new URLSearchParams();
+  //     queryParams.append("page", page);
+  //     queryParams.append("limit", limit);
+
+  //     if (role === "BRAND") queryParams.append("brandId", id);
+  //     else if (role === "SERVICE") queryParams.append("serviceCenterId", id);
+  //     else if (role === "TECHNICIAN") queryParams.append("technicianId", id);
+  //     else if (role === "CUSTOMER") queryParams.append("userId", id);
+  //     else if (role === "DEALER") queryParams.append("dealerId", id);
+
+  //     let response =
+  //       role === "ADMIN" || role === "EMPLOYEE"
+  //         ? await http_request.get(`/getAllComplaint?page=${page}&limit=${limit}`)
+  //         : await http_request.get(`/getAllComplaintByRole?${queryParams.toString()}`);
+
+  //     let { data } = response;
+
+  //     setComplaint(data?.data);
+  //     setTotalPages(Math.ceil(data?.totalComplaints / limit));
+  //   } catch (err) {
+  //     console.error("Error fetching complaints:", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const getAllComplaint = async () => {
     setLoading(true);
     try {
-      const storedValue = await AsyncStorage.getItem('user');
+      const storedValue = await AsyncStorage.getItem("user");
       const user = JSON.parse(storedValue);
       let role = user.user.role;
       let id = user.user._id;
+      // console.log("id",id);
 
+      let response;
       let queryParams = new URLSearchParams();
-      queryParams.append("page", page);
-      queryParams.append("limit", limit);
+      if (role === "SERVICE") {
+        // queryParams.append("userId", id);
+        response = await http_request.get(`/getComplaintByCenterId/${id}`);
+      } else if (role === "TECHNICIAN") {
+        // queryParams.append("userId", id);
+        response = await http_request.get(`/getComplaintByTechId/${id}`);
+      } else if (role === "DEALER") {
+        // queryParams.append("userId", id);
+        response = await http_request.get(`/getComplaintBydealerId/${id}`);
+      } else if (role === "USER") {
 
-      if (role === "BRAND") queryParams.append("brandId", id);
-      else if (role === "SERVICE") queryParams.append("serviceCenterId", id);
-      else if (role === "TECHNICIAN") queryParams.append("technicianId", id);
-      else if (role === "CUSTOMER") queryParams.append("userId", id);
-      else if (role === "DEALER") queryParams.append("dealerId", id);
+        // queryParams.append("userId", id);
+        response = await http_request.get(`/getComplaintByUserId?${id}`);
+      }
+      const { data } = response
+      // console.log("data",data?.length);
 
-      let response =
-        role === "ADMIN" || role === "EMPLOYEE"
-          ? await http_request.get(`/getAllComplaint?page=${page}&limit=${limit}`)
-          : await http_request.get(`/getAllComplaintByRole?${queryParams.toString()}`);
+      setComplaint(data);
 
-      let { data } = response;
-
-      setComplaint(data?.data);
-      setTotalPages(Math.ceil(data?.totalComplaints / limit));
     } catch (err) {
       console.error("Error fetching complaints:", err);
     } finally {
@@ -56,22 +92,32 @@ const RecentServicesList = (props) => {
     }
   };
 
+
   const handleDetails = (item) => {
     setSelectedService(item);
     setModalVisible(true);
   };
 
+ 
+  const itemsPerPage = 5; // Adjust as needed
+
+  const totalPages = Math.ceil((sampleComplaints?.length || 0) / itemsPerPage);
+
+  // Sort and Paginate Data
+  const paginatedData = sampleComplaints
+    ?.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+    ?.map((item, index) => ({ ...item, i: index + 1 }))
+    ?.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
+  // Handlers
   const handleNextPage = () => {
-    if (page < totalPages) setPage(page + 1);
+    if (page < totalPages) setPage(prev => prev + 1);
   };
 
   const handlePrevPage = () => {
-    if (page > 1) setPage(page - 1);
+    if (page > 1) setPage(prev => prev - 1);
   };
-
-  const sortedData = sampleComplaints?.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
-    ?.map((item, index) => ({ ...item, i: index + 1 }));
-
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Recent Service Information</Text>
@@ -85,13 +131,13 @@ const RecentServicesList = (props) => {
             <View>
               <View style={styles.header}>
                 <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
-                <Text style={[styles.headerCell, { width: 120 }]}>Product </Text>
+                <Text style={[styles.headerCell, { width: 120 }]}>Product</Text>
                 <Text style={[styles.headerCell, { textAlign: "center", paddingRight: 20 }]}>Status</Text>
                 <Text style={styles.headerCell}>Updated At</Text>
                 <Text style={[styles.headerCell, { textAlign: 'right' }]}>Actions</Text>
               </View>
               <FlatList
-                data={sortedData}
+                data={paginatedData}
                 keyExtractor={item => item?._id}
                 renderItem={({ item, index }) => (
                   <View key={index} style={styles.row}>
@@ -115,7 +161,9 @@ const RecentServicesList = (props) => {
             <TouchableOpacity onPress={handlePrevPage} disabled={page === 1} style={[styles.button, page === 1 && styles.disabledButton]}>
               <Text style={styles.buttonText}>Previous</Text>
             </TouchableOpacity>
-            <Text style={styles.pageText}>Page {page} of {totalPages}</Text>
+            <Text style={styles.pageText}>
+              Page {page} of {totalPages} ( total records  {sampleComplaints?.length} )
+            </Text>
             <TouchableOpacity onPress={handleNextPage} disabled={page >= totalPages} style={[styles.button, page >= totalPages && styles.disabledButton]}>
               <Text style={styles.buttonText}>Next</Text>
             </TouchableOpacity>
@@ -196,6 +244,7 @@ const styles = StyleSheet.create({
   pagination: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems:"center",
     marginTop: 10,
   },
   button: {
@@ -211,7 +260,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   pageText: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: 'bold',
   },
 });

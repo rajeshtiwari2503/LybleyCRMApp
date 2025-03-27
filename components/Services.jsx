@@ -37,7 +37,7 @@ const getStatusStyle = (status) => {
 
 export default function ViewComplaints() {
     const router = useRouter();
-    const [loading, setloading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [isMap, setIsMap] = useState(false);
     const [lantLong, setLatLong] = useState({});
     const [selectedCategory, setSelectedCategory] = useState('All');
@@ -56,8 +56,7 @@ export default function ViewComplaints() {
     const [refreshing, setRefreshing] = useState(false);
 
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(5);
-    const [totalPages, setTotalPages] = useState(0);
+   
 
     useEffect(() => {
         const interval = setInterval(async () => {
@@ -90,7 +89,7 @@ export default function ViewComplaints() {
         // Clean up the interval on component unmount
         return () => clearInterval(interval);
 
-    }, [page, limit,]);
+    }, [ ]);
 
 
     const getLiveLocation = async () => {
@@ -112,52 +111,44 @@ export default function ViewComplaints() {
     }
 
     const getAllComplaint = async () => {
+        setLoading(true);
         try {
-            setloading(true);
-            const storedValue = await AsyncStorage.getItem('user');
-            const user = JSON.parse(storedValue);
-            let role = user.user.role;
-            let id = user.user._id;
-
-            let queryParams = new URLSearchParams();
-            queryParams.append("page", page);
-            queryParams.append("limit", limit);
-            console.log("queryParams.toString()",queryParams.toString());
-            if (role === "BRAND") queryParams.append("brandId", id);
-            else if (role === "SERVICE") queryParams.append("serviceCenterId", id);
-            else if (role === "TECHNICIAN") queryParams.append("technicianId", id);
-            else if (role === "CUSTOMER") queryParams.append("userId", id);
-            else if (role === "DEALER") queryParams.append("dealerId", id);
-
-            let response =
-                role === "ADMIN" || role === "EMPLOYEE"
-                    ? await http_request.get(`/getAllComplaint?page=${page}&limit=${limit}`)
-                    : await http_request.get(`/getAllComplaintByRole?${queryParams.toString()}`);
-
-            let { data } = response;
-            console.log("data",data);
-            const filData = data?.data?.map((item, index) => ({ ...item, i: index + 1 }));
-
-            setComplaint(filData);
-
-
-            setTotalPages(Math.ceil(data?.totalComplaints));
-            setloading(false);
+          const storedValue = await AsyncStorage.getItem("user");
+          const user = JSON.parse(storedValue);
+          let role = user.user.role;
+          let id = user.user._id;
+          // console.log("id",id);
+    
+          let response;
+         
+          if (role === "SERVICE") {
+            
+            response = await http_request.get(`/getComplaintByCenterId/${id}`);
+          } else if (role === "TECHNICIAN") {
+        
+            response = await http_request.get(`/getComplaintByTechId/${id}`);
+          } else if (role === "DEALER") {
+        
+            response = await http_request.get(`/getComplaintBydealerId/${id}`);
+          } else if (role === "USER") {
+    
+         
+            response = await http_request.get(`/getComplaintByUserId?${id}`);
+          }
+          const { data } = response
+          // console.log("data",data?.length);
+    
+          setComplaint(data);
+    
+        } catch (err) {
+          console.error("Error fetching complaints:", err);
+        } finally {
+          setLoading(false);
         }
-        catch (err) {
-            setloading(false);
-            console.log(err);
-        }
-    }
+      };
     // const filteredComplaints = filterComplaints(selectedCategory);
 
-    const filterComplaints = (category) => {
-        if (category === 'All') {
-            return sampleComplaints;
-        } else {
-            return sampleComplaints.filter(complaint => complaint.status === category);
-        }
-    };
+   
 
     const handleCategoryPress = (category) => {
         setSelectedCategory(category);
@@ -256,12 +247,21 @@ export default function ViewComplaints() {
 
 
 
+    const filterComplaints = (category) => {
+        return category === 'All' ? sampleComplaints : sampleComplaints.filter(complaint => complaint.status === category);
+    };
+    const itemsPerPage = 5;
+    const totalPages = Math.ceil((filterComplaints(selectedCategory)?.length || 0) / itemsPerPage);
+    const paginatedData = filterComplaints(selectedCategory)
+    ?.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+    ?.map((item, index) => ({ ...item, i: index + 1 }))
+    ?.slice((page - 1) * itemsPerPage, page * itemsPerPage);
     const handleNextPage = () => {
-        if (page < totalPages) setPage(page + 1);
+        if (page < totalPages) setPage(prev => prev + 1);
     };
 
     const handlePrevPage = () => {
-        if (page > 1) setPage(page - 1);
+        if (page > 1) setPage(prev => prev - 1);
     };
 
 
@@ -281,9 +281,9 @@ export default function ViewComplaints() {
                     {/* <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleOrder(item)}>
                             <MaterialIcons name="update" size={24} color="blue" />
                         </TouchableOpacity> */}
-                    <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleMapData(item?.lat, item?.long)}>
+                    {/* <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleMapData(item?.lat, item?.long)}>
                         <MaterialIcons name="my-location" size={24} color="green" />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
                 </>
 
@@ -403,7 +403,7 @@ export default function ViewComplaints() {
                                     onRefresh={onRefresh}
                                 />
                             } horizontal contentContainerStyle={styles.scrollContainer}>
-                                {filterComplaints(selectedCategory)?.length === 0 ? (
+                                {paginatedData=== 0 ? (
                                     <View style={styles.noDataContainer}>
                                         <Text style={styles.noDataText}>No complaints found for "{selectedCategory}"</Text>
                                     </View>) :
@@ -416,7 +416,7 @@ export default function ViewComplaints() {
                                             <Text style={[styles.headerCell, { textAlign: 'center' }]}>Actions</Text>
                                         </View>
                                         <FlatList
-                                            data={filterComplaints(selectedCategory)}
+                                            data={paginatedData}
                                             keyExtractor={item => item?._id}
                                             renderItem={renderItem}
                                             contentContainerStyle={styles.listContainer}
@@ -431,7 +431,7 @@ export default function ViewComplaints() {
 
 
                             {/* Pagination Controls */}
-                            {filterComplaints(selectedCategory)?.length > 4 ? (
+                            {/* {filterComplaints(selectedCategory)?.length > 4 ? (
                                 <View style={styles.pagination}>
                                     <TouchableOpacity onPress={handlePrevPage} disabled={page === 1} style={[styles.button, page === 1 && styles.disabledButton]}>
                                         <Text style={styles.buttonText}>Previous</Text>
@@ -446,7 +446,18 @@ export default function ViewComplaints() {
                                 </View>
                             )
                                 : ""
-                            }
+                            } */}
+                             <View style={styles.pagination}>
+                                        <TouchableOpacity onPress={handlePrevPage} disabled={page === 1} style={[styles.button, page === 1 && styles.disabledButton]}>
+                                          <Text style={styles.buttonText}>Previous</Text>
+                                        </TouchableOpacity>
+                                        <Text style={styles.pageText}>
+                                          Page {page} of {totalPages} ( total records  {filterComplaints(selectedCategory)?.length} )
+                                        </Text>
+                                        <TouchableOpacity onPress={handleNextPage} disabled={page >= totalPages} style={[styles.button, page >= totalPages && styles.disabledButton]}>
+                                          <Text style={styles.buttonText}>Next</Text>
+                                        </TouchableOpacity>
+                                      </View>
                         </>
 
                     }
@@ -659,6 +670,7 @@ const styles = StyleSheet.create({
     pagination: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems:"center",
         marginTop: 10,
         marginBottom: 10,
     },
@@ -675,7 +687,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     pageText: {
-        fontSize: 16,
+        fontSize: 12,
         fontWeight: 'bold',
     },
     noDataContainer: {

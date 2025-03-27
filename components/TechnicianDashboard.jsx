@@ -441,7 +441,7 @@ import http_request from "../http_request";
 import NotificationModal from "./Notification";
 import RecentServicesList from "./RecentServices";
 
-const TechnicianDashboard = ({ userData, dashData, notifications }) => {
+const TechnicianDashboard = ({ userData, dashData, notifications,RefreshData }) => {
   const navigation = useNavigation();
   const [averageTAT, setAverageTAT] = useState(0);
   const [averageRT, setAverageRT] = useState(0);
@@ -467,11 +467,14 @@ const TechnicianDashboard = ({ userData, dashData, notifications }) => {
     }
   };
 
-  const unreadNoti = notifications?.filter(
+  const unreadNoti = userData?.user?.role==="SERVICE" ?notifications?.filter(
+    (item) => item?.serviceCenterStatus === "UNREAD"
+  ):notifications?.filter(
     (item) => item?.technicianStatus === "UNREAD"
   );
   const notificationCount = unreadNoti?.length;
   
+// console.log(notifications);
 
   const chartData = [
     { name: "Assigned", population: dashData?.complaints?.assign ?? 0, color: "#FF6347" },
@@ -578,7 +581,7 @@ const TechnicianDashboard = ({ userData, dashData, notifications }) => {
       <RecentServicesList services={dashData?.recentServices} />
 
       {/* Notification Modal */}
-      {modalVisible && <NotificationModal visible={modalVisible} onClose={() => setModalVisible(false)} />}
+      {modalVisible && <NotificationModal notifications={notifications} RefreshData={RefreshData} value={userData}   visible={modalVisible} onClose={() => setModalVisible(false)} />}
     </ScrollView>
   );
 };
