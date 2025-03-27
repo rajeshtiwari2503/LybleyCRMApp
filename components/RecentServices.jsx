@@ -173,7 +173,7 @@ const RecentServicesList = (props) => {
       <ServiceDetails
         isVisible={isModalVisible}
         onClose={() => setModalVisible(false)}
-        service={selectedService}
+        complaint={selectedService}
       />
     </View>
   );

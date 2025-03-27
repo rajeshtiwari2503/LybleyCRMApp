@@ -23,10 +23,11 @@ const StockList = (props) => {
 
     fetchUserData();
   }, []);
-
+// console.log("userData",userData);
+const rawData=props?.data
   // const filterData = props?.data?.filter((item) => item?.userId === userData?.user?._id);
-  const filterData = props?.data;
-  const data = props?.data;
+  const data= userData?.user?.role==="SERVICE"?rawData?.filter((f)=>f?.serviceCenterId===userData?.user?._id):[]
+   
 
   
  
@@ -56,7 +57,8 @@ const StockList = (props) => {
       </View>
       {data.length === 0 ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color="#0000ff" />
+          {/* <ActivityIndicator size="large" color="#0000ff" /> */}
+          <Text>No data</Text>
         </View>
       ) : (
 

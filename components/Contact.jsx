@@ -35,8 +35,8 @@ const Contact = () => {
                             </View>
                             <View style={styles.infoTextContainer}>
                                 <Text style={styles.infoTitle}>Technical support</Text>
-                                <Text style={styles.infoText}>support@example.com</Text>
-                                <Text style={styles.infoText}>+1 234-567-89</Text>
+                                <Text style={styles.infoText}>hello@servsy.in</Text>
+                                <Text style={styles.infoText}>+91 9266985775</Text>
                             </View>
                         </View>
                         <View style={styles.infoCard}>
@@ -46,13 +46,13 @@ const Contact = () => {
                             </View>
                             <View style={styles.infoTextContainer}>
                                 <Text style={styles.infoTitle}>Sales questions</Text>
-                                <Text style={styles.infoText}>sales@example.com</Text>
-                                <Text style={styles.infoText}>+1 234-567-89</Text>
+                                <Text style={styles.infoText}>hello@servsy.in</Text>
+                                <Text style={styles.infoText}>+91 9266985775</Text>
                             </View>
                         </View>
-                        <View style={styles.infoCard}>
+                        {/* <View style={styles.infoCard}>
                             <View style={styles.iconContainer}>
-                                {/* Replace with an appropriate icon */}
+                              
                                 <Text>📰</Text>
                             </View>
                             <View style={styles.infoTextContainer}>
@@ -63,7 +63,7 @@ const Contact = () => {
                         </View>
                         <View style={styles.infoCard}>
                             <View style={styles.iconContainer}>
-                                {/* Replace with an appropriate icon */}
+                               
                                 <Text>🐞</Text>
                             </View>
                             <View style={styles.infoTextContainer}>
@@ -71,7 +71,7 @@ const Contact = () => {
                                 <Text style={styles.infoText}>bugs@example.com</Text>
                                 <Text style={styles.infoText}>+1 234-567-89</Text>
                             </View>
-                        </View>
+                        </View> */}
                     </View>
                 </View>
             </ScrollView>
