@@ -183,7 +183,7 @@ const DashboardScreen = () => {
     };
 
     fetchDashboardData();
-    getAllComplaint();
+    // getAllComplaint();
     getAllNotification();
     getAllProducts()
   }, [refresh]);
@@ -210,35 +210,38 @@ const DashboardScreen = () => {
       }
 
       const response = await http_request.get(endPoint);
-      setNotifications(response.data || []);
+      const {data}=response
+      // console.log("data",data);
+      
+      setNotifications(data);
     } catch (err) {
       console.log(err);
     }
   };
 
-  const getAllComplaint = async () => {
-    try {
-      const storedValue = await AsyncStorage.getItem('user');
-      if (!storedValue) {
-        console.error("No user found in AsyncStorage");
-        return;
-      }
-      const user = JSON.parse(storedValue);
+  // const getAllComplaint = async () => {
+  //   try {
+  //     const storedValue = await AsyncStorage.getItem('user');
+  //     if (!storedValue) {
+  //       console.error("No user found in AsyncStorage");
+  //       return;
+  //     }
+  //     const user = JSON.parse(storedValue);
 
-      let response = await http_request.get("/getAllComplaint");
-      let { data } = response;
-      const filteredData = user?.user.role === "ADMIN" ? data
-        : user?.user.role === "BRAND" ? data.filter((item) => item?.brandId === user?.user?._id)
-        : user?.user.role === "USER" ? data.filter((item) => item?.userId === user?.user?._id)
-        : user?.user.role === "SERVICE" ? data.filter((item) => item?.assignServiceCenterId === user?.user?._id)
-        : user?.user.role === "TECHNICIAN" ? data.filter((item) => item?.technicianId === user?.user?._id)
-        : user?.user.role === "DEALER" ? data.filter((item) => item?.userId === user?.user?._id)
-        : [];
-      setComplaint(filteredData || []);
-    } catch (err) {
-      console.log(err,"FJHJ");
-    }
-  };
+  //     let response = await http_request.get("/getAllComplaint");
+  //     let { data } = response;
+  //     const filteredData = user?.user.role === "ADMIN" ? data
+  //       : user?.user.role === "BRAND" ? data.filter((item) => item?.brandId === user?.user?._id)
+  //       : user?.user.role === "USER" ? data.filter((item) => item?.userId === user?.user?._id)
+  //       : user?.user.role === "SERVICE" ? data.filter((item) => item?.assignServiceCenterId === user?.user?._id)
+  //       : user?.user.role === "TECHNICIAN" ? data.filter((item) => item?.technicianId === user?.user?._id)
+  //       : user?.user.role === "DEALER" ? data.filter((item) => item?.userId === user?.user?._id)
+  //       : [];
+  //     setComplaint(filteredData || []);
+  //   } catch (err) {
+  //     console.log(err,"FJHJ");
+  //   }
+  // };
   const getAllProducts = async () => {
     try{
       let response = await http_request.get("/getAllProduct");
@@ -268,6 +271,9 @@ const DashboardScreen = () => {
       setRefreshing(false);
     }, 2000);
   }, [RefreshData]);
+
+  // console.log(notifications);
+  
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f8f8f8" />

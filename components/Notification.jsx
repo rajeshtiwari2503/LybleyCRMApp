@@ -65,7 +65,8 @@ const NotificationModal = ({ notifications, RefreshData, value, visible, onClose
                 {(
                     (value?.role === "USER" && item?.userStatus === "UNREAD") ||
                     (value?.role === "TECHNICIAN" && item?.technicianStatus === "UNREAD") ||
-                    (value?.role === "DEALER" && item?.dealerStatus === "UNREAD")
+                    (value?.role === "DEALER" && item?.dealerStatus === "UNREAD")||
+                    (value?.role === "SERVICE" && item?.serviceCenterStatus === "UNREAD")
                 ) && (
                         <TouchableOpacity
                             onPress={() => handleReadMark(item?._id)}
