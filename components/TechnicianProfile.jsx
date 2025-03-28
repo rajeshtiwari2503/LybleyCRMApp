@@ -75,12 +75,12 @@ export default function TechnicianProfile(props) {
           <Text style={styles.infoText}>{user?.liveStatus}</Text>
         </View>
       </View>
-      <View style={styles.container}>
+      {/* <View style={styles.container}>
         <TouchableOpacity style={styles.walletButton} onPress={handleWallet}>
           <Text style={styles.logoutButtonText}>Check Wallet</Text>
 
         </TouchableOpacity>
-      </View>
+      </View> */}
       <View>
        {wallet? <Wallet  />:""}
       </View>

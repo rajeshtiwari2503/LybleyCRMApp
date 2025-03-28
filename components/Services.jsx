@@ -89,7 +89,7 @@ export default function ViewComplaints() {
         // Clean up the interval on component unmount
         return () => clearInterval(interval);
 
-    }, []);
+    }, [refreshing,refresh]);
 
 
     const getLiveLocation = async () => {
@@ -346,6 +346,7 @@ export default function ViewComplaints() {
 
     return (
         < >
+         {/* <Toast /> */}
             {/* {isMap === true && locationCurrent && lantLong  */}
             {isMap && techLocation?.lat && lantLong?.lat && lantLong?.long
                 ? <Map lantLong={lantLong} techLocation={techLocation} handleMap={() => setIsMap(false)} />

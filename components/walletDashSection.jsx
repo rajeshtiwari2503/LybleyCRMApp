@@ -1,3 +1,4 @@
+import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 
@@ -12,10 +13,12 @@ const WalletDashboard = () => {
       {/* Cards Section */}
       <View style={styles.cardContainer}>
         <View style={styles.card}>
+        <MaterialIcons name="account-balance-wallet" size={30} color="#4CAF50" />
           <Text style={styles.cardValue}>0</Text>
           <Text style={styles.cardLabel}>Total Balance</Text>
         </View>
         <View style={styles.card}>
+        <MaterialIcons name="account-balance-wallet" size={30} color="#2196F3" />
           <Text style={styles.cardValue}>0</Text>
           <Text style={styles.cardLabel}>Available Balance</Text>
         </View>
