@@ -20,6 +20,7 @@ const EditUserProfile = ({ isVisible, RefreshData,onClose, user, onSave }) => {
       setValue('address', user?.address || '');
       setValue('contact', user?.contact ||'' );
       setValue('password', user?.password || '');
+      setValue('pincode', user?.pincode || '');
     }
   }, [user ]);
 
@@ -120,6 +121,25 @@ const EditUserProfile = ({ isVisible, RefreshData,onClose, user, onSave }) => {
             name="contact"
           />
           {errors.contact && <Text style={styles.errorText}>{errors.contact.message}</Text>}
+          <Controller
+            control={control}
+            rules={{ 
+              required: 'Pincode is required',
+              pattern: {   message: 'Pincode is required' } 
+            }}
+            render={({ field: { onChange,  value } }) => (
+              <TextInput
+                style={styles.input}
+                placeholder="pincode"
+             
+                onChangeText={onChange}
+                value={value}
+                keyboardType="phone-pad"
+              />
+            )}
+            name="pincode"
+          />
+          {errors.pincode && <Text style={styles.errorText}>{errors.pincode.message}</Text>}
 
           <Controller
             control={control}
@@ -138,21 +158,24 @@ const EditUserProfile = ({ isVisible, RefreshData,onClose, user, onSave }) => {
           />
           {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
 
-          <TouchableOpacity 
-            style={[styles.saveButton, loading && styles.saveButtonDisabled]} 
-            disabled={loading} 
-            onPress={handleSubmit(onSubmit)}
-          >
-            {loading ? (
-              <ActivityIndicator size="small" color="#ffffff" />
-            ) : (
-              <Text style={styles.saveButtonText}>Save</Text>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.closeButtonText}>Cancel</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+         
+         
+                                 <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                                     <Text style={styles.closeButtonText}>Cancel</Text>
+                                 </TouchableOpacity>
+                                 <TouchableOpacity
+                                     style={[styles.saveButton, loading && styles.saveButtonDisabled]}
+                                     disabled={loading}
+                                     onPress={handleSubmit(onSubmit)}
+                                 >
+                                     {loading ? (
+                                         <ActivityIndicator size="small" color="#ffffff" />
+                                     ) : (
+                                         <Text style={styles.saveButtonText}>Save</Text>
+                                     )}
+                                 </TouchableOpacity>
+                             </View>
         </ScrollView>
       </View>
     </Modal>
@@ -185,31 +208,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   saveButton: {
-    backgroundColor:Colors.PRIMARY,
-    paddingVertical: 12,
-    borderRadius: 15,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  closeButton: {
-    backgroundColor: '#f44336',
-    paddingVertical: 12,
-    borderRadius: 15,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  closeButtonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  errorText: {
-    color: 'red',
-    marginBottom: 8,
-  },
+         backgroundColor: Colors.PRIMARY,
+         paddingVertical: 12,
+         borderRadius: 15,
+         alignItems: 'center',
+         // marginTop: 20,
+         padding: 20
+     },
+     saveButtonDisabled: {
+         backgroundColor: Colors.PRIMARY,
+     },
+     saveButtonText: {
+         color: '#fff',
+         fontSize: 16,
+     },
+     closeButton: {
+         backgroundColor: '#f44336',
+         paddingVertical: 12,
+         borderRadius: 15,
+         alignItems: 'center',
+         // marginTop: 20,
+         padding: 20
+     },
+     closeButtonText: {
+         color: '#fff',
+         fontSize: 16,
+     },
 });
 
 export default EditUserProfile;
