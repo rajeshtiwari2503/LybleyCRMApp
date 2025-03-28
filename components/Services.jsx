@@ -13,6 +13,7 @@ import PartOrder from './PartOrder';
 import AddFeedback from './AddFeedback';
 import Toast from 'react-native-toast-message';
 import Map from "./Map"
+import { Card } from "react-native-paper";
 import * as Location from 'expo-location';
 import Geolocation from 'react-native-geolocation-service';
 
@@ -89,7 +90,7 @@ export default function ViewComplaints() {
         // Clean up the interval on component unmount
         return () => clearInterval(interval);
 
-    }, [refreshing,refresh]);
+    }, [refreshing, refresh]);
 
 
     const getLiveLocation = async () => {
@@ -265,66 +266,131 @@ export default function ViewComplaints() {
     };
 
 
+
+    // const renderItem = ({ item, index }) => (
+    //     <View key={index} style={styles.row}>
+    //         <Text style={{ width: 50 }}>{item.i}</Text>
+    //         <Text style={[{ paddingLeft: 13, width: 120 }]}>{item.productName}</Text>
+    //         <Text style={[styles.statusCell, getStatusStyle(item?.status)]}>{item?.status === "ASSIGN" ? "ASSIGNED" : item?.status}</Text>
+    //         <Text style={styles.cell}>{new Date(item.updatedAt).toLocaleString()}</Text>
+    //         <View style={styles.actions}>
+
+
+    //             <>
+    //                 {item?.status !== "COMPLETED" && item?.status !== "CANCELED"&& item?.status !== "FINAL VERIFICATION" && (
+    //                     <View style={styles.actions}>
+    //                         <TouchableOpacity onPress={() => handleUpdate(item)}>
+    //                             <MaterialIcons name="system-update-alt" size={24} color="green" />
+    //                         </TouchableOpacity>
+    //                     </View>
+    //                 )}
+    //                 {/* <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleOrder(item)}>
+    //                         <MaterialIcons name="update" size={24} color="blue" />
+    //                     </TouchableOpacity> */}
+    //                 {/* <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleMapData(item?.lat, item?.long)}>
+    //                     <MaterialIcons name="my-location" size={24} color="green" />
+    //                 </TouchableOpacity> */}
+
+    //             </>
+
+
+    //             {(userData?.role === 'USER' || userData?.role === 'DEALER') && ["COMPLETED"].includes(item?.status) ? (
+    //                 // <View style={{display:"flex"}}>
+    //                 <>
+    //                     <TouchableOpacity
+    //                         onPress={() => handleFeedback(item)}
+    //                         style={styles.feedbackButton}
+    //                     >
+    //                         <Text style={styles.feedbackButtonText}>Give Feedback</Text>
+    //                     </TouchableOpacity>
+
+    //                     {/* {item?.paymentStatus === "NotPay" && (
+    //                         <TouchableOpacity
+    //                             onPress={() => userPayment(item)}
+    //                             style={styles.payButton}
+    //                         >
+    //                             <Text style={styles.payButtonText}>Pay</Text>
+    //                         </TouchableOpacity>
+    //                     )} */}
+    //                     {/* <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleMapData(item?.lat, item?.long)}>
+    //                         <MaterialIcons name="my-location" size={24} color="green" />
+    //                     </TouchableOpacity> */}
+    //                 </>
+    //                 // </View>
+    //             ) : null
+    //             }
+
+    //             <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleDetails(item)}>
+    //                 <Ionicons name="eye" size={24} color="green" />
+    //             </TouchableOpacity>
+
+    //         </View>
+    //     </View>
+    // );
+    // console.log("",sampleComplaints);
+
     const renderItem = ({ item, index }) => (
-        <View key={index} style={styles.row}>
-            <Text style={{ width: 50 }}>{item.i}</Text>
-            <Text style={[{ paddingLeft: 13, width: 120 }]}>{item.productName}</Text>
-            <Text style={[styles.statusCell, getStatusStyle(item?.status)]}>{item?.status === "ASSIGN" ? "ASSIGNED" : item?.status}</Text>
-            <Text style={styles.cell}>{new Date(item.updatedAt).toLocaleString()}</Text>
-            <View style={styles.actions}>
+        <Card key={index} style={styles.card}>
+            <Card.Content>
+                {/* Complaint ID & Name */}
+                <View style={styles.header}>
+                    <Text style={styles.complaintId}>#{item.i} {item?.complaintId}</Text>
+                    <Text style={styles.userName}>{item.fullName}</Text>
+                </View>
 
+                {/* Details Section */}
+                <View style={styles.detailsContainer}>
+                    <DetailRow label="Product Name" value={item.productName} />
+                    <DetailRow label="Brand" value={item.productBrand} />
+                    <DetailRow label="Category" value={item.categoryName} />
+                    <DetailRow label="Contact No." value={item.phoneNumber} /> 
+                    <DetailRow
+                        label="Address"
+                        value={`${item.serviceAddress}, ${item.pincode}, ${item.district}, ${item.state}`}
+                        isAddress
+                    />
+                      <DetailRow label="CreatedAt" value={new Date(item.updatedAt).toLocaleString()} />
+                </View>
 
-                <>
-                    {item?.status !== "COMPLETED" && item?.status !== "CANCELED"&& item?.status !== "FINAL VERIFICATION" && (
-                        <View style={styles.actions}>
-                            <TouchableOpacity onPress={() => handleUpdate(item)}>
-                                <MaterialIcons name="system-update-alt" size={24} color="green" />
-                            </TouchableOpacity>
-                        </View>
+                {/* Status & Date */}
+                <View style={styles.infoContainer}>
+                    <Text style={[styles.statusCell, getStatusStyle(item?.status)]}>{item?.status === "ASSIGN" ? "ASSIGNED" : item?.status}
+                    </Text>
+                     {/* Action Buttons */}
+                <View style={styles.actions}>
+                    {item?.status !== "COMPLETED" && item?.status !== "CANCELED" && item?.status !== "FINAL VERIFICATION" && (
+                        <TouchableOpacity onPress={() => handleUpdate(item)} style={styles.iconButton}>
+                            <MaterialIcons name="system-update-alt" size={24} color="green" />
+                        </TouchableOpacity>
                     )}
-                    {/* <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleOrder(item)}>
-                            <MaterialIcons name="update" size={24} color="blue" />
-                        </TouchableOpacity> */}
-                    {/* <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleMapData(item?.lat, item?.long)}>
-                        <MaterialIcons name="my-location" size={24} color="green" />
-                    </TouchableOpacity> */}
 
-                </>
-
-
-                {(userData?.role === 'USER' || userData?.role === 'DEALER') && ["COMPLETED"].includes(item?.status) ? (
-                    // <View style={{display:"flex"}}>
-                    <>
-                        <TouchableOpacity
-                            onPress={() => handleFeedback(item)}
-                            style={styles.feedbackButton}
-                        >
+                    {(userData?.role === "USER" || userData?.role === "DEALER") && item?.status === "COMPLETED" && (
+                        <TouchableOpacity onPress={() => handleFeedback(item)} style={styles.feedbackButton}>
                             <Text style={styles.feedbackButtonText}>Give Feedback</Text>
                         </TouchableOpacity>
+                    )}
 
-                        {/* {item?.paymentStatus === "NotPay" && (
-                            <TouchableOpacity
-                                onPress={() => userPayment(item)}
-                                style={styles.payButton}
-                            >
-                                <Text style={styles.payButtonText}>Pay</Text>
-                            </TouchableOpacity>
-                        )} */}
-                        {/* <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleMapData(item?.lat, item?.long)}>
-                            <MaterialIcons name="my-location" size={24} color="green" />
-                        </TouchableOpacity> */}
-                    </>
-                    // </View>
-                ) : null
-                }
+                    <TouchableOpacity onPress={() => handleDetails(item)} style={styles.iconButton}>
+                        <Ionicons name="eye" size={24} color="green" />
+                    </TouchableOpacity>
+                </View>
+                   
+                </View>
 
-                <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleDetails(item)}>
-                    <Ionicons name="eye" size={24} color="green" />
-                </TouchableOpacity>
+               
+            </Card.Content>
+        </Card>
+    );
 
-            </View>
+    // A reusable component for displaying label-value pairs
+    const DetailRow = ({ label, value, isAddress = false }) => (
+        <View style={[styles.detailRow, isAddress && styles.addressRow]}>
+            <Text style={styles.label}>{label}:</Text>
+            <Text style={[styles.value, isAddress && styles.addressValue]}>{value}</Text>
         </View>
     );
+
+
     // const handleMap=()=>{
     //     setIsMap(!isMap)
     // }
@@ -346,7 +412,7 @@ export default function ViewComplaints() {
 
     return (
         < >
-         {/* <Toast /> */}
+            {/* <Toast /> */}
             {/* {isMap === true && locationCurrent && lantLong  */}
             {isMap && techLocation?.lat && lantLong?.lat && lantLong?.long
                 ? <Map lantLong={lantLong} techLocation={techLocation} handleMap={() => setIsMap(false)} />
@@ -409,19 +475,13 @@ export default function ViewComplaints() {
                                 />
                             } horizontal contentContainerStyle={styles.scrollContainer}>
                                 {paginatedData?.length === 0 ? (
-                                     <View style={styles.noDataContainer}>
-                                     <MaterialIcons name="info-outline" style={styles.noDataIcon} />
-                                     <Text style={styles.noDataText}>No Data Available</Text>
-                                 </View>
-                                 ) :
+                                    <View style={styles.noDataContainer}>
+                                        <MaterialIcons name="info-outline" style={styles.noDataIcon} />
+                                        <Text style={styles.noDataText}>No Data Available</Text>
+                                    </View>
+                                ) :
                                     <View>
-                                        <View style={styles.header}>
-                                            <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
-                                            <Text style={[styles.headerCell, { width: 120 }]}>Product </Text>
-                                            <Text style={[styles.headerCell, { textAlign: "center", paddingRight: 20 }]}>Status</Text>
-                                            <Text style={styles.headerCell}>Updated At</Text>
-                                            <Text style={[styles.headerCell, { textAlign: 'center' }]}>Actions</Text>
-                                        </View>
+
                                         <FlatList
                                             data={paginatedData}
                                             keyExtractor={item => item?._id}
@@ -438,22 +498,7 @@ export default function ViewComplaints() {
 
 
                             {/* Pagination Controls */}
-                            {/* {filterComplaints(selectedCategory)?.length > 4 ? (
-                                <View style={styles.pagination}>
-                                    <TouchableOpacity onPress={handlePrevPage} disabled={page === 1} style={[styles.button, page === 1 && styles.disabledButton]}>
-                                        <Text style={styles.buttonText}>Previous</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.pageText}>
-                                        Page {page} of {totalPages} |  : {totalPages}
-                                    </Text>
-                                    <Text style={styles.pageText}>Page {page} of {totalPages}</Text>
-                                    <TouchableOpacity onPress={handleNextPage} disabled={page >= totalPages} style={[styles.button, page >= totalPages && styles.disabledButton]}>
-                                        <Text style={styles.buttonText}>Next</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )
-                                : ""
-                            } */}
+
                             <View style={styles.pagination}>
                                 <TouchableOpacity onPress={handlePrevPage} disabled={page === 1} style={[styles.button, page === 1 && styles.disabledButton]}>
                                     <Text style={styles.buttonText}>Previous</Text>
@@ -579,6 +624,101 @@ const styles = StyleSheet.create({
     scrollContainer: {
         flexDirection: 'column',
     },
+
+    card: {
+        marginVertical: 8,
+        marginLeft: 2,
+        borderRadius: 10,
+        backgroundColor: "#e2dede",
+        elevation: 3,
+        width:"90%"
+    },
+    header: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 8,
+    },
+    complaintId: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#333",
+    },
+    userName: {
+        fontSize: 14,
+        fontWeight: "600",
+        color: "#555",
+    },
+    detailsContainer: {
+        marginVertical: 8,
+       
+    },
+    detailRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingVertical: 4,
+    },
+    addressRow: {
+        alignItems: "flex-start",  // Aligns text to the top for address wrapping
+        flexDirection: "column",   // Makes label and value stack vertically
+    },
+    label: {
+        fontSize: 14,
+        fontWeight: "600",
+        color: "#666",
+        flexShrink: 0,
+    },
+    value: {
+        fontSize: 14,
+        fontWeight: "400",
+        color: "#333",
+        textAlign: "right",
+        flexShrink: 1,
+    },
+    addressValue: {
+        textAlign: "left",
+        flexWrap: "wrap",   // Allows wrapping
+        width: "100%",      // Ensures it takes full width
+    },
+    infoContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: 10,
+    },
+    statusText: {
+        fontSize: 14,
+        fontWeight: "600",
+    },
+    dateText: {
+        fontSize: 12,
+        color: "#777",
+    },
+    actions: {
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        marginTop: 10,
+    },
+    iconButton: {
+        padding: 8,
+        marginHorizontal: 4,
+    },
+    feedbackButton: {
+        backgroundColor: "#4CAF50",
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderRadius: 6,
+        marginLeft: 8,
+    },
+    feedbackButtonText: {
+        color: "#fff",
+        fontSize: 14,
+        fontWeight: "bold",
+    },
+
+
     row: {
         flexDirection: 'row',
         paddingVertical: 10,
@@ -697,15 +837,15 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: 'bold',
     },
-    
+
     noDataContainer: {
         flex: 1,
         justifyContent: "center",  // Centers content vertically
         alignItems: "center",      // Centers content horizontally
         padding: 20,
-        marginLeft:65
+        marginLeft: 65
     },
-    
+
     noDataText: {
         fontSize: 18,
         color: "#888",
@@ -713,10 +853,10 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: 10,
     },
-    
+
     noDataIcon: {
         fontSize: 50,
         color: "#bbb",
     },
-    
+
 });

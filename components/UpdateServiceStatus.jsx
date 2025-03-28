@@ -147,6 +147,11 @@ export default function UpdateServiceStatus({ isVisible, onClose, RefreshData, s
 
   // Function to pick an image from the gallery
   const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (status !== 'granted') {
+    Alert.alert('Permission Denied', 'You need to allow access to the gallery.');
+    return;
+  }
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,

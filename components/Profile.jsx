@@ -6,6 +6,7 @@ import http_request from "../http_request";
 import UserProfile from './UserProfile';
 import TechnicianProfile from './TechnicianProfile';
 import DealerProfile from './DealerProfile';
+import ServiceCenterProfile from './ServiceCenterProfile';
 // import ServiceCenterProfile from './ServiceCenterProfile';
 
 export default function Profile() {
@@ -64,8 +65,8 @@ export default function Profile() {
         <>
           {userValue?.user?.role === "USER" && <UserProfile user={user} RefreshData={RefreshData} handleLogout={handleLogout} />}
           {userValue?.user?.role === "DEALER" && <DealerProfile user={user} RefreshData={RefreshData} handleLogout={handleLogout} />}
-          {userValue?.user?.role === "TECHNICIAN" ||userValue?.user?.role === "SERVICE" && <TechnicianProfile user={user} RefreshData={RefreshData} handleLogout={handleLogout} />}
-          {/* {userValue?.user?.role === "SERVICE"  && <ServiceCenterProfile user={user} RefreshData={RefreshData} handleLogout={handleLogout} />} */}
+          {userValue?.user?.role === "TECHNICIAN"   &&<TechnicianProfile user={user} RefreshData={RefreshData} handleLogout={handleLogout} />}
+          {userValue?.user?.role === "SERVICE"  && <ServiceCenterProfile user={user} RefreshData={RefreshData} handleLogout={handleLogout} />}
         </>
       )}
     </>
