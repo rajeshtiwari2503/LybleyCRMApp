@@ -1,6 +1,7 @@
 import axios from "axios";
 
 // const baseUrl= "http://localhost:5000"
+// const baseUrl = "http://192.168.0.163:5000";
 //  const baseUrl="https://lybleycrmserver-production.up.railway.app"
 
  const baseUrl= "https://crm-backend-weld-pi.vercel.app" 
