@@ -25,14 +25,14 @@ const EditUserProfile = ({ isVisible, RefreshData,onClose, user, onSave }) => {
   }, [user ]);
 
   const onSubmit = async(data) => {
-    // console.log(data);
+    console.log(data);
     try {
 
       setLoading(true);
       const endpoint =   `/editUser/${user._id}`  ;
       const response =   await http_request.patch(endpoint, data)  ;
       const { data: responseData } = response;
-
+      console.log(   responseData);
       // onSave(data);
       RefreshData(responseData);
       setLoading(false);
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    height: 40,
+    height: 46,
     borderColor: '#ddd',
     borderWidth: 1,
     borderRadius: 4,

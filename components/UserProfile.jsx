@@ -71,7 +71,7 @@ export default function UserProfile(props) {
         
         { icon: "verified", color: "#FF9800", text: user?.verification },   
         { icon: "policy", color: "#FF9800", text: `Agreement: ${user?.agreement ? "Accepted" : "Not Accepted"}` },
-        { icon: "lock", color: "#3F51B5", text: `Status: ${user?.status}` }
+        // { icon: "lock", color: "#3F51B5", text: `Status: ${user?.status}` }
     ].map((item, index) => (
         <View key={index} style={styles.infoBox}>
             <Icon name={item.icon} size={24} color={item.color} />
@@ -159,11 +159,11 @@ const styles = StyleSheet.create({
     },
     editButton: {
         backgroundColor: Colors.PRIMARY,
-        paddingHorizontal: 20,
+        paddingHorizontal: 10,
         paddingVertical: 10,
         borderRadius: 15,
-        marginTop: 10,
-        elevation: 3,
+        // marginTop: 10,
+        // elevation: 3,
     },
     editButtonText: {
         color: '#fff',

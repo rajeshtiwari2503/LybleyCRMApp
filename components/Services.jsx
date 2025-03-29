@@ -116,6 +116,7 @@ export default function ViewComplaints() {
         try {
             const storedValue = await AsyncStorage.getItem("user");
             const user = JSON.parse(storedValue);
+            setUserData(user?.user)
             let role = user.user.role;
             let id = user.user._id;
             // console.log("id",id);
@@ -134,7 +135,7 @@ export default function ViewComplaints() {
             } else if (role === "USER") {
 
 
-                response = await http_request.get(`/getComplaintByUserId?${id}`);
+                response = await http_request.get(`/getComplaintByUserId/${id}`);
             }
             const { data } = response
             // console.log("data",data?.length);
@@ -327,7 +328,7 @@ export default function ViewComplaints() {
     //         </View>
     //     </View>
     // );
-    // console.log("",sampleComplaints);
+    // console.log("",userData);
 
     const renderItem = ({ item, index }) => (
         <Card key={index} style={styles.card}>
@@ -354,8 +355,10 @@ export default function ViewComplaints() {
 
                 {/* Status & Date */}
                 <View style={styles.infoContainer}>
+                   
                     <Text style={[styles.statusCell, getStatusStyle(item?.status)]}>{item?.status === "ASSIGN" ? "ASSIGNED" : item?.status}
                     </Text>
+                 
                      {/* Action Buttons */}
                 <View style={styles.actions}>
                     {item?.status !== "COMPLETED" && item?.status !== "CANCELED" && item?.status !== "FINAL VERIFICATION" && (
@@ -631,7 +634,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: "#e2dede",
         elevation: 3,
-        width:"90%"
+        width:"57%"
     },
     header: {
         flexDirection: "row",
@@ -749,8 +752,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        flex: 1,
-        width: 100,
+        // flex: 1,
+        // width: 100,
     },
     inProgress: {
         backgroundColor: "#17A2B8", // Change Colors.PENDING to your desired color for IN PROGRESS

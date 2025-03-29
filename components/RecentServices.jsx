@@ -78,7 +78,7 @@ const RecentServicesList = (props) => {
       } else if (role === "USER") {
 
         // queryParams.append("userId", id);
-        response = await http_request.get(`/getComplaintByUserId?${id}`);
+        response = await http_request.get(`/getComplaintByUserId/${id}`);
       }
       const { data } = response
       // console.log("data",data?.length);

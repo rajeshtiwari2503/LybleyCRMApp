@@ -7,7 +7,7 @@
 // export default function ServiceDetails({ isVisible, onClose, service }) {
 
 //   // console.log(service);
-  
+
 //   return (
 //     <Modal isVisible={isVisible} onBackdropPress={onClose}>
 //       <View style={styles.modalContent}>
@@ -18,7 +18,7 @@
 //             </TouchableOpacity>
 //           </View>
 //         <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent}>
-         
+
 
 //           <View style={styles.section}>
 //             <Text style={styles.sectionHeader}>Product Information</Text>
@@ -141,29 +141,25 @@
 //   },
 // });
 
+
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Modal from 'react-native-modal';
 import { MaterialIcons } from '@expo/vector-icons';
+import { Card } from 'react-native-paper';
 
-const ServiceDetails = ({ isVisible, onClose, complaint, onAccept, onReject, onUpdateStatus }) => {
+const ServiceDetails = ({ isVisible, onClose, complaint }) => {
   if (!complaint) {
     return null;
   }
-  const Section = ({ title, children }) => (
-    <View style={{ marginBottom: 15 }}>
-      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 5 }}>{title}</Text>
-      <View style={{ paddingLeft: 10 }}>{children}</View>
-    </View>
-  );
+
   const DetailItem = ({ label, value }) => (
     <View style={styles.detailContainer}>
       <Text style={styles.detailLabel}>{label}:</Text>
-      <Text style={styles.detailValue}>
-        {typeof value === 'object' ? JSON.stringify(value, null, 2) : value || 'N/A'}
-      </Text>
+      <Text style={styles.detailValue}>{value || 'N/A'}</Text>
     </View>
   );
+
   return (
     <Modal isVisible={isVisible} onBackdropPress={onClose}>
       <View style={styles.modalContent}>
@@ -174,79 +170,119 @@ const ServiceDetails = ({ isVisible, onClose, complaint, onAccept, onReject, onU
           </TouchableOpacity>
         </View>
         <ScrollView>
-          <Section title="Product Information">
-            <DetailItem label="CreatedAT" value={ new Date(complaint.createdAt).toLocaleString()} />
-            
-            <DetailItem label="Product Name" value={complaint.productName} />
-            <DetailItem label="Category" value={complaint.categoryName} />
-            <DetailItem label="Brand" value={complaint.productBrand} />
-            <DetailItem label="Model Number" value={complaint.modelNo} />
-            <DetailItem label="Serial Number" value={complaint.serialNo} />
-            <DetailItem label="Purchase Date" value={new Date(complaint.purchaseDate).toLocaleString()} />
-            <DetailItem label="Warranty Status" value={complaint.warrantyStatus} />
-          </Section>
-          <Section title="Service Information">
-            <DetailItem label="Issue Type" value={complaint.issueType} />
-            <DetailItem label="Detailed Description" value={complaint.detailedDescription} />
-            <DetailItem label="Error Messages" value={complaint.errorMessages} />
-            <DetailItem label="Preferred Service Date" value={new Date(complaint.preferredServiceDate).toLocaleString()} />
-            <DetailItem label="Preferred Service Time" value={complaint.preferredServiceTime} />
-            <DetailItem label="Service Location" value={complaint.serviceLocation} />
-          </Section>
-          <Section title="Customer Information">
-            <DetailItem label="Full Name" value={complaint.fullName} />
-            <DetailItem label="Phone Number" value={complaint.phoneNumber} />
-            <DetailItem label="Email Address" value={complaint.emailAddress} />
-            <DetailItem label="Alternate Contact Info" value={complaint.alternateContactInfo} />
-            <DetailItem label="Service Address" value={complaint.serviceAddress} />
-          </Section>
-          <Section title="Payment Information">
-            {/* <DetailItem label="Payment Brand" value={complaint.paymentBrand} /> */}
-            <DetailItem label="Payment Service Center" value={complaint.paymentServiceCenter} />
-          </Section>
-          <Section title="Assignment Information">
-            <DetailItem label="Assigned Service Center" value={complaint.assignServiceCenter} />
-            <DetailItem label="Assigned Time " value= {new Date(complaint.assignServiceCenterTime).toLocaleString()} />
-            {/* <DetailItem label="Response Time " value= {new Date(complaint.serviceCenterResponseTime).toLocaleString()} /> */}
-          </Section>
-          {/* <Section title="Update History">
-            {complaint.updateHistory && complaint.updateHistory.length > 0 ? (
-              complaint.updateHistory.map((history) => (
-                <View key={history._id} style={styles.commentContainer}>
-                  <Text style={styles.commentDate}>
-                    <Text style={styles.boldText}>Updated At:</Text> {new Date(history.updatedAt).toLocaleString()}
-                  </Text>
-                  {Object.entries(history.changes).map(([key, value]) =>
-                    key !== "serviceCenterContact" ? (
-                      <Text key={key} style={styles.commentText}>
-                        <Text style={styles.boldText}>{key.replace(/\b\w/, (char) => char.toUpperCase())}:</Text> {typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
-                      </Text>
-                    ) : null
-                  )}
-                </View>
-              ))
-            ) : (
-              <Text>No updates available.</Text>
-            )}
-          </Section>
-          <Section title="Updated Comments">
-            {complaint.updateComments && complaint.updateComments.length > 0 ? (
-              complaint.updateComments.map((comment) => (
-                <View key={comment._id} style={styles.commentContainer}>
-                  <Text style={styles.commentDate}><Text style={styles.boldText}>Updated At:</Text> {new Date(comment.updatedAt).toLocaleString()}</Text>
-                  {Object.entries(comment.changes).map(([key, value]) => (
-                    <Text key={key} style={styles.commentText}>
-                      <Text style={styles.boldText}>{key.replace(/\b\w/, (char) => char.toUpperCase())}:</Text> {typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
+          <Card style={[styles.card, styles.productInfo]}>
+            <Card.Title title="Product Information" titleStyle={styles.cardTitle} />
+            <Card.Content>
+              <DetailItem label="Created At" value={new Date(complaint.createdAt).toLocaleString()} />
+              <DetailItem label="Product Name" value={complaint.productName} />
+              <DetailItem label="Category" value={complaint.categoryName} />
+              <DetailItem label="Brand" value={complaint.productBrand} />
+              <DetailItem label="Model Number" value={complaint.modelNo} />
+              <DetailItem label="Serial Number" value={complaint.serialNo} />
+              <DetailItem label="Purchase Date" value={new Date(complaint.purchaseDate).toLocaleString()} />
+              <DetailItem label="Warranty Status" value={complaint.warrantyStatus} />
+            </Card.Content>
+          </Card>
+
+          <Card style={[styles.card, styles.serviceInfo]}>
+            <Card.Title title="Service Information" titleStyle={styles.cardTitle} />
+            <Card.Content>
+              <DetailItem label="Issue Type" value={complaint.issueType} />
+              <DetailItem label="Detailed Description" value={complaint.detailedDescription} />
+              <DetailItem label="Error Messages" value={complaint.errorMessages} />
+              <DetailItem label="Preferred Service Date" value={new Date(complaint.preferredServiceDate).toLocaleString()} />
+              <DetailItem label="Preferred Service Time" value={complaint.preferredServiceTime} />
+              <DetailItem label="Service Location" value={complaint.serviceLocation} />
+            </Card.Content>
+          </Card>
+
+          <Card style={[styles.card, styles.customerInfo]}>
+            <Card.Title title="Customer Information" titleStyle={styles.cardTitle} />
+            <Card.Content>
+              <DetailItem label="Full Name" value={complaint.fullName} />
+              <DetailItem label="Phone Number" value={complaint.phoneNumber} />
+              <DetailItem label="Email Address" value={complaint.emailAddress} />
+              <DetailItem label="Alternate Contact Info" value={complaint.alternateContactInfo} />
+              <DetailItem label="Service Address" value={complaint.serviceAddress} />
+              <DetailItem label="Pincode" value={complaint.pincode} />
+              <DetailItem label="District" value={complaint.district} />
+              <DetailItem label="State" value={complaint.state} />
+            </Card.Content>
+          </Card>
+
+          {/* <Card style={[styles.card, styles.paymentInfo]}>
+            <Card.Title title="Payment Information" titleStyle={styles.cardTitle} />
+            <Card.Content>
+              <DetailItem label="Payment Service Center" value={complaint.paymentServiceCenter} />
+            </Card.Content>    
+          </Card> */}
+
+          <Card style={[styles.card, styles.assignmentInfo]}>
+            <Card.Title title="Assignment Information" titleStyle={styles.cardTitle} />
+            <Card.Content>
+              <DetailItem label="Assigned Service Center" value={complaint.assignServiceCenter} />
+              <DetailItem label="Assigned Time" value={new Date(complaint.assignServiceCenterTime).toLocaleString()} />
+            </Card.Content>
+          </Card>
+          <Card style={[styles.card, styles.paymentInfo]}>
+            <Card.Title title="Part pending Image" titleStyle={styles.cardTitle} />
+            <Card.Content>
+              {complaint.partPendingImage && typeof complaint.partPendingImage === 'string' && complaint.partPendingImage.startsWith('http') ? (
+                <Image source={{ uri: complaint.partPendingImage }} style={styles.partImage} />
+              ) : (
+                <Text style={{ color: 'red' }}>Image not available</Text>
+              )}
+            </Card.Content>
+          </Card>
+          <Card style={[styles.card, styles.paymentInfo]}>
+            <Card.Title title="Issue  Image" titleStyle={styles.cardTitle} />
+            <Card.Content>
+              {complaint.issueImages && typeof complaint.issueImages === 'string' && complaint.issueImages.startsWith('http') ? (
+                <Image source={{ uri: complaint.issueImages }} style={styles.partImage} />
+              ) : (
+                <Text style={{ color: 'red' }}>Image not available</Text>
+              )}
+            </Card.Content>
+          </Card>
+          <Card style={[styles.card, styles.paymentInfo]}>
+            <Card.Title title="Part Replace Image" titleStyle={styles.cardTitle} />
+            <Card.Content>
+              {complaint.partImage && typeof complaint.partImage === 'string' && complaint.partImage.startsWith('http') ? (
+                <Image source={{ uri: complaint.partImage }} style={styles.partImage} />
+              ) : (
+                <Text style={{ color: 'red' }}>Image not available</Text>
+              )}
+            </Card.Content>
+          </Card>
+          <Card style={[styles.card, styles.historyInfo]}>
+            <Card.Title title="Update Comment" titleStyle={styles.cardTitle} />
+            <Card.Content>
+              {complaint.updateHistory && complaint.updateHistory.length > 0 ? (
+                complaint.updateHistory.map((history) => (
+                  <View key={history._id} style={styles.commentContainer}>
+                    <Text style={styles.commentDate}>
+                      <Text style={styles.boldText}>Updated At:</Text> {new Date(history.updatedAt).toLocaleString()}
                     </Text>
-                  ))}
-                </View>
-              ))
-            ) : (
-              <Text>No comments available.</Text>
-            )}
-          </Section> */}
+                    {Object.entries(history.changes).map(([key, value]) =>
+                      key !== "serviceCenterContact" && key !== "paymentBrand" ? (
+                        <View key={key} style={styles.commentItem}>
+                          <Text style={styles.commentLabel}>
+                            {key.replace(/\b\w/, (char) => char.toUpperCase())}:
+                          </Text>
+                          <Text style={styles.commentValue}>
+                            {typeof value === "object" ? JSON.stringify(value, null, 2) : value}
+                          </Text>
+                        </View>
+                      ) : null
+                    )}
+                  </View>
+                ))
+              ) : (
+                <Text>No updates available.</Text>
+              )}
+            </Card.Content>
+          </Card>
         </ScrollView>
-       
       </View>
     </Modal>
   );
@@ -266,58 +302,75 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   header: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
+    color: '#333',
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
-  button: {
-    flex: 1,
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginHorizontal: 5,
-  },
-  acceptButton: {
-    backgroundColor: 'green',
-  },
-  rejectButton: {
-    backgroundColor: 'red',
-  },
-  updateButton: {
-    backgroundColor: 'blue',
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  sectionContainer: {
+  card: {
     marginBottom: 15,
+    padding: 10,
+    borderRadius: 10,
+    elevation: 3,
   },
-  sectionTitle: {
+  cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
+    color: 'black',
   },
-  sectionContent: {
-    paddingLeft: 10,
-  },
+  productInfo: { backgroundColor: '#e3f2fd' },
+  serviceInfo: { backgroundColor: '#fce4ec' },
+  customerInfo: { backgroundColor: '#e8f5e9' },
+  paymentInfo: { backgroundColor: '#fff3e0' },
+  assignmentInfo: { backgroundColor: '#ede7f6' },
   detailContainer: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: 8,
+    padding: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
   detailLabel: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginRight: 5,
+    color: '#555',
+    flex: 1,
   },
   detailValue: {
     fontSize: 16,
-    color: 'gray',
+    color: '#333',
+    flex: 1,
+    textAlign: 'right',
+  },
+  historyInfo: { backgroundColor: '#f3e5f5' },
+  commentContainer: { marginBottom: 10 },
+  commentDate: { fontWeight: 'bold' },
+  boldText: { fontWeight: 'bold' },
+  commentText: { marginLeft: 10 },
+  partImage: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'contain',
+    marginTop: 10,
+  },
+  commentItem: {
+    backgroundColor: "#f8f9fa", // Light gray background
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  commentLabel: {
+    fontWeight: "bold",
+    color: "#333",
+    fontSize: 14,
+    marginBottom: 3,
+  },
+  commentValue: {
+    fontSize: 14,
+    color: "#555",
   },
 });
 
