@@ -423,42 +423,62 @@ const UserDashboard = (props) => {
     setEditModalOpen(false);
   };
 
+  // console.log("props?.userData",props?.dashData);
+  
 
   return (
     <ScrollView>
       <View style={styles.container}>
 
-        <View style={styles.headerContent}>
-          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-            <MaterialIcons name="person" size={24} color="black" style={styles.icon} />
-          </TouchableOpacity>
-          <Text style={styles.title}>Dashboard</Text>
-          <View style={styles.iconContainer}>
-            <TouchableOpacity onPress={showNotification}>
-              <FontAwesome name="bell" size={24} color="black" style={styles.icon} />
-              {notificationCount > 0 && (
-                <View style={styles.notificationBadge}>
-                  <Text style={styles.notificationText}>{notificationCount}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.summaryContainer}>
-          {[
-            { label: 'Total Service', value: dashData?.complaints?.allComplaints, color: '#007BFF' },
-            { label: 'Completed', value: dashData?.complaints?.complete, color: '#28A745' },
-            { label: 'Assigned', value: dashData?.complaints?.assign, color: '#17A2B8' },
-            { label: 'Pending', value: dashData?.complaints?.pending, color: '#FFC107' },
-          ].map((item, index) => (
-            <View key={index} style={styles.itemContainer} >
-              <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.button, { backgroundColor: item.color }]}>
-                <Text>{item.value}</Text>
-              </TouchableOpacity>
-              <Text>{item.label}</Text>
-            </View>
-          ))}
-        </View>
+        <View style={styles.header}>
+               <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+                 <MaterialIcons name="person" size={28} color="white" />
+               </TouchableOpacity>
+               <Text style={styles.title}>Dashboard</Text>
+               <TouchableOpacity onPress={() => setModalVisible(true)}>
+                 <FontAwesome name="bell" size={24} color="white" />
+                 {notificationCount > 0 && (
+                   <View style={styles.badge}>
+                     <Text style={styles.badgeText}>{notificationCount}</Text>
+                   </View>
+                 )}
+               </TouchableOpacity>
+             </View>
+         {/* Service Summary Cards */}
+             <View style={styles.cardContainer}>
+         {[
+          
+           { label: "Pending", value: dashData?.complaints?.pending, color: "#ea4335" },
+           { label: "In Progress", value: dashData?.complaints?.inProgress, color: "#4285f4" },
+           { label: "Assigned", value: dashData?.complaints?.assign, color: "#a142f4" },
+           { label: "Part Pending", value: dashData?.complaints?.partPending, color: "#ff9800" },
+          
+           { label: "Final Verification", value: dashData?.complaints?.finalVerification, color: "#00bcd4" }, 
+           { label: "Cancel", value: dashData?.complaints?.cancel, color: "#616161" }, // Gray for cancel
+           { label: "Completed", value: dashData?.complaints?.complete, color: "#34a853" },
+           
+           { label: "Total Service", value: dashData?.complaints?.allComplaints, color: "#f4b400" },
+          
+           { label: "Schedule", value: dashData?.complaints?.schedule, color: "#2c3e50" }, // Dark blue for schedule
+           { label: "Schedule Upcoming", value: dashData?.complaints?.scheduleUpcomming, color: "#34495e" }, // Slightly darker blue
+           { label: "Zero to One Days", value: dashData?.complaints?.zeroToOneDays, color: "#8e44ad" }, // Purple
+           { label: "Two to Five Days", value: dashData?.complaints?.twoToFiveDays, color: "#3498db" }, // Blue
+           { label: "More than Five Days", value: dashData?.complaints?.moreThanFiveDays, color: "#e67e22" }, // Orange
+        
+         ]
+           // .filter((item) => item.value > 0) // Hide zero-value cards
+           .map((item, index) => (
+             <TouchableOpacity
+               key={index}
+               style={[styles.card, { backgroundColor: item.color }]}
+               onPress={() => navigation?.navigate("Services")}
+             >
+               <Text style={styles.cardValue}>{item.value}</Text>
+               <Text style={styles.cardLabel}>{item.label}</Text>
+             </TouchableOpacity>
+           ))}
+       </View>
+       
         <View>
           {userProduct?.map((item, index) => (
             <View key={item?._id} style={styles.containerP}>
@@ -573,12 +593,7 @@ const UserDashboard = (props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-  },
+ 
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -598,6 +613,94 @@ const styles = StyleSheet.create({
   iconContainer: {
     position: 'relative',
     paddingHorizontal: 10,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: "black", // Black background
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "white", // White text
+  },
+  notificationContainer: {
+    position: "relative",
+  },
+  badge: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    backgroundColor: "red",
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  badgeText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  cardContainer: {
+    padding: 16,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  card: {
+    width: "48%",
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 12,
+    elevation: 3,
+  },
+  cardValue: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "white",
+  },
+  cardLabel: {
+    fontSize: 14,
+    color: "white",
+    marginTop: 4,
+  },
+  metricsContainer: {
+    padding: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  metricsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  metricBox: {
+    backgroundColor: "white",
+    borderRadius: 8,
+    padding: 16,
+    alignItems: "center",
+    width: "30%",
+    elevation: 2,
+  },
+  metricValue: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  metricLabel: {
+    fontSize: 14,
+    color: "#666",
+  },
+  chartContainer: {
+    padding: 16,
+    alignItems: "center",
   },
   modalContent: {
     backgroundColor: 'white',
@@ -679,7 +782,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     backgroundColor: '#17A2B8',
-    marginBottom: 20 // Light background for contrast
+    margin: 20 // Light background for contrast
   },
   itemContainerP: {
     marginBottom: 15,

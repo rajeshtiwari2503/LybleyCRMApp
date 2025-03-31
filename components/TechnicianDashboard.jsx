@@ -457,7 +457,8 @@ const TechnicianDashboard = ({ userData, dashData, notifications,RefreshData }) 
   const getAllComplaint = async () => {
     try {
       const response = await http_request.get(
-        `/getAllTatByServiceCenter?assignServiceCenterId=${userData?._id}`
+        userData?.user?.role==="SERVICE" ? `/getAllTatByServiceCenter?assignServiceCenterId=${userData?._id}`
+        :`/getAllTatByServiceCenter?assignServiceCenterId=${userData?._id}`
       );
       const { data } = response;
       setAverageTAT(data?.overallTATPercentage || 0);
@@ -539,7 +540,6 @@ const TechnicianDashboard = ({ userData, dashData, notifications,RefreshData }) 
    
     { label: "Schedule", value: dashData?.complaints?.schedule, color: "#2c3e50" }, // Dark blue for schedule
     { label: "Schedule Upcoming", value: dashData?.complaints?.scheduleUpcomming, color: "#34495e" }, // Slightly darker blue
-    { label: "Last Week", value: dashData?.complaints?.lastWeek?.allComplaints, color: "#795548" }, // Brown for last week
     { label: "Zero to One Days", value: dashData?.complaints?.zeroToOneDays, color: "#8e44ad" }, // Purple
     { label: "Two to Five Days", value: dashData?.complaints?.twoToFiveDays, color: "#3498db" }, // Blue
     { label: "More than Five Days", value: dashData?.complaints?.moreThanFiveDays, color: "#e67e22" }, // Orange
@@ -603,7 +603,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 15,
     paddingVertical: 10,
-    backgroundColor: "black", // Black background
+    marginLeft: 20,
+    marginRight: 20,
+    borderRadius: 10,
+    backgroundColor:  "#09090b", // Black background
+    
   },
   title: {
     fontSize: 20,

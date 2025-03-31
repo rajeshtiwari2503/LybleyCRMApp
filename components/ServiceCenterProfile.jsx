@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     header: {
-        backgroundColor: Colors.PRIMARY,
+        backgroundColor: "#09090b",
         height: 70,
         flexDirection: 'row',
         alignItems: 'center',
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     },
     editButton: {
         backgroundColor: Colors.PRIMARY,
-        paddingHorizontal: 20,
+        paddingHorizontal: 10,
         paddingVertical: 10,
         borderRadius: 15,
         marginTop: 10,

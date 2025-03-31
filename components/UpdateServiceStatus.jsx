@@ -133,7 +133,7 @@ import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-toast-message';
 
-export default function UpdateServiceStatus({ isVisible, onClose, RefreshData, service }) {
+export default function UpdateServiceStatus({ isVisible,userData, onClose, RefreshData, service }) {
   const { control, handleSubmit, setValue, watch, reset } = useForm();
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -163,6 +163,7 @@ export default function UpdateServiceStatus({ isVisible, onClose, RefreshData, s
       setSelectedImage(result.assets[0]); // Store the selected image
     }
   };
+// console.log("userData",userData);
 
   // Handle Form Submission
   const onSubmit = async (formData) => {
@@ -172,6 +173,8 @@ export default function UpdateServiceStatus({ isVisible, onClose, RefreshData, s
       const data = new FormData();
       data.append('status', formData.status);
       data.append('comments', formData.comments);
+      data.append('serviceCenterName', userData?.serviceCenterName || userData?.name);
+      data.append('Id', userData?._id);
       // data.append('id', service?._id);
 
       // Append Image if selected
@@ -241,11 +244,11 @@ export default function UpdateServiceStatus({ isVisible, onClose, RefreshData, s
                 <View style={styles.inputContainer}>
                   <Text style={styles.label}>Status</Text>
                   <Picker selectedValue={value} style={styles.picker} onValueChange={onChange}>
-                    <Picker.Item label="In Progress" value="IN PROGRESS" />
+                    {/* <Picker.Item label="In Progress" value="IN PROGRESS" /> */}
                     <Picker.Item label="Awaiting Parts" value="PART PENDING" />
-                    <Picker.Item label="Assign" value="ASSIGN" />
+                    {/* <Picker.Item label="Assign" value="ASSIGN" /> */}
                     <Picker.Item label="Completed" value="FINAL VERIFICATION" />
-                    <Picker.Item label="Canceled" value="CANCELED" />
+                    {/* <Picker.Item label="Canceled" value="CANCELED" /> */}
                   </Picker>
                 </View>
               )}

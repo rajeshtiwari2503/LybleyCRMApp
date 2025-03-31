@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   logoutButton: {
     backgroundColor: '#ff4757',
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   header: {
-    backgroundColor: '#6200EE',
+    backgroundColor:  "#09090b",
     height: 60,
     flexDirection: 'row',
     alignItems: 'center',

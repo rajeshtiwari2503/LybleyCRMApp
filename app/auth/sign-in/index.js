@@ -26,8 +26,10 @@ export default function SignIn() {
     };
     const Login = async (reqdata) => {
         try {
+            let fcmToken=await AsyncStorage.getItem('fcmToken')
+            let reqDataToken={...reqdata,fcmToken:fcmToken}
             setLoading(true);
-            let response = await http_request.post('/login', reqdata);
+            let response = await http_request.post('/login', reqDataToken);
             let { data } = response;
             // console.log("data", data);
             setLoading(false);
