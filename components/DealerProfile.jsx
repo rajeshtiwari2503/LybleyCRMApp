@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   header: {
-    backgroundColor: '#6200EE',
+    backgroundColor:  "#09090b",
     height: 60,
     flexDirection: 'row',
     alignItems: 'center',

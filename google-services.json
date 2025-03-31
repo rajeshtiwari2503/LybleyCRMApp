@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "824248435029",
+    "project_id": "servsy-f26f5",
+    "storage_bucket": "servsy-f26f5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824248435029:android:ba9d37c90f1cd90a00efdc",
+        "android_client_info": {
+          "package_name": "com.rajeshtiwari2503.lybley_crm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8AR7_xOb7mmdMq9D_nh1EeXh8p-Xi4DA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

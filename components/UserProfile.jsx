@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     header: {
-        backgroundColor: Colors.PRIMARY,
+        backgroundColor:  "#09090b",
         height: 70,
         flexDirection: 'row',
         alignItems: 'center',

@@ -18,6 +18,8 @@
     "@expo/vector-icons": "^14.0.2",
     "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-native-community/datetimepicker": "^8.2.0",
+    "@react-native-firebase/app": "^21.12.3",
+    "@react-native-firebase/messaging": "^21.12.3",
     "@react-native-picker/picker": "^2.7.7",
     "@react-navigation/native": "^6.0.2",
     "axios": "^1.7.2",
@@ -53,7 +55,8 @@
     "react-native-toast-message": "^2.2.0",
     "react-native-video": "^6.4.3",
     "react-native-web": "~0.19.10",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "expo-dev-client": "~4.0.29"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

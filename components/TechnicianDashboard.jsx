@@ -603,7 +603,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 15,
     paddingVertical: 10,
-    backgroundColor: "black", // Black background
+    marginLeft: 20,
+    marginRight: 20,
+    borderRadius: 10,
+    backgroundColor:  "#09090b", // Black background
+    
   },
   title: {
     fontSize: 20,

@@ -21,6 +21,7 @@
         "foregroundImage": "./assets/images/Logo.png",
         "backgroundColor": "#ffffff"
       },
+      "googleServicesFile": "./google-services.json",
       "package": "com.rajeshtiwari2503.lybley_crm",
       "config": {
         "googleMaps": {
@@ -34,7 +35,8 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "@react-native-firebase/app"
     ],
     "experiments": {
       "typedRoutes": true

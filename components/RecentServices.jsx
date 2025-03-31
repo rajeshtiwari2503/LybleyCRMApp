@@ -6,7 +6,30 @@ import { Colors } from '@/constants/Colors';
 import ServiceDetails from './ServiceDetails';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http_request from "../http_request";
+import { Card } from "react-native-paper";
 
+
+
+
+
+const getStatusStyle = (status) => {
+  switch (status) {
+      case 'IN PROGRESS':
+          return styles.inProgress;
+      case 'PART PENDING':
+          return styles.partPending;
+      case 'PENDING':
+          return styles.pending;
+      case 'ASSIGN':
+          return styles.assign;
+      case 'COMPLETED':
+          return styles.completed;
+      case 'CANCELED':
+          return styles.canceled;
+      default:
+          return styles.defaultStatus;
+  }
+};
 const RecentServicesList = (props) => {
   const router = useRouter();
   const [selectedService, setSelectedService] = useState('');
@@ -118,6 +141,69 @@ const RecentServicesList = (props) => {
     if (page > 1) setPage(prev => prev - 1);
   };
   
+
+   const renderItem = ({ item, index }) => (
+          <Card key={index} style={userData?.role === "USER" ? styles.cardUser : styles.card}>
+              <Card.Content>
+                  {/* Complaint ID & Name */}
+                  <View style={styles.header}>
+                      <Text style={styles.complaintId}>#{item.i} {item?.complaintId}</Text>
+                      <Text style={styles.userName}>{item.fullName}</Text>
+                  </View>
+  
+                  {/* Details Section */}
+                  <View style={styles.detailsContainer}>
+                      <DetailRow label="Product Name" value={item.productName} />
+                      <DetailRow label="Brand" value={item.productBrand} />
+                      <DetailRow label="Category" value={item.categoryName} />
+                      <DetailRow label="Contact No." value={item.phoneNumber} /> 
+                      <DetailRow
+                          label="Address"
+                          value={`${item.serviceAddress}, ${item.pincode}, ${item.district}, ${item.state}`}
+                          isAddress
+                      />
+                        <DetailRow label="CreatedAt" value={new Date(item.updatedAt).toLocaleString()} />
+                  </View>
+  
+                  {/* Status & Date */}
+                  <View style={styles.infoContainer}>
+                     
+                      <Text style={[styles.statusCell, getStatusStyle(item?.status)]}>{item?.status === "ASSIGN" ? "ASSIGNED" : item?.status}
+                      </Text>
+                   
+                       {/* Action Buttons */}
+                  <View style={styles.actions}>
+                      {userData?.role !==  "USER" && userData?.role !==  "DEALER"  && item?.status !== "COMPLETED" && item?.status !== "CANCELED" && item?.status !== "FINAL VERIFICATION" && (
+                          <TouchableOpacity onPress={() => handleUpdate(item)} style={styles.iconButton}>
+                              <MaterialIcons name="system-update-alt" size={24} color="green" />
+                          </TouchableOpacity>
+                      )}
+  
+                      {(userData?.role === "USER" || userData?.role === "DEALER") && item?.status === "COMPLETED" && (
+                          <TouchableOpacity onPress={() => handleFeedback(item)} style={styles.feedbackButton}>
+                              <Text style={styles.feedbackButtonText}>Give Feedback</Text>
+                          </TouchableOpacity>
+                      )}
+  
+                      <TouchableOpacity onPress={() => handleDetails(item)} style={styles.iconButton}>
+                          <Ionicons name="eye" size={24} color="green" />
+                      </TouchableOpacity>
+                  </View>
+                     
+                  </View>
+  
+                 
+              </Card.Content>
+          </Card>
+      );
+       // A reusable component for displaying label-value pairs
+          const DetailRow = ({ label, value, isAddress = false }) => (
+              <View style={[styles.detailRow, isAddress && styles.addressRow]}>
+                  <Text style={styles.label}>{label}:</Text>
+                  <Text style={[styles.value, isAddress && styles.addressValue]}>{value}</Text>
+              </View>
+          );
+      
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Recent Service Information</Text>
@@ -129,29 +215,18 @@ const RecentServicesList = (props) => {
         <>
           <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
             <View>
-              <View style={styles.header}>
+              {/* <View style={styles.header}>
                 <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
                 <Text style={[styles.headerCell, { width: 120 }]}>Product</Text>
                 <Text style={[styles.headerCell, { textAlign: "center", paddingRight: 20 }]}>Status</Text>
                 <Text style={styles.headerCell}>Updated At</Text>
                 <Text style={[styles.headerCell, { textAlign: 'right' }]}>Actions</Text>
-              </View>
+              </View> */}
+              
               <FlatList
                 data={paginatedData}
                 keyExtractor={item => item?._id}
-                renderItem={({ item, index }) => (
-                  <View key={index} style={styles.row}>
-                    <Text style={{ width: 50 }}>{item.i}</Text>
-                    <Text style={[{ paddingLeft: 13, width: 120 }]}>{item.productName}</Text>
-                    <Text style={styles.statusCell}>{item?.status === "ASSIGN" ? "ASSIGNED" : item?.status}</Text>
-                    <Text style={styles.cell}>{new Date(item.updatedAt).toLocaleString()}</Text>
-                    <View style={styles.actions}>
-                      <TouchableOpacity onPress={() => handleDetails(item)}>
-                        <Ionicons name="eye" size={24} color="green" />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                )}
+                renderItem={renderItem}
               />
             </View>
           </ScrollView>
@@ -208,6 +283,108 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     width: 110,
   },
+  card: {
+    marginVertical: 8,
+    marginLeft: 2,
+    borderRadius: 10,
+    backgroundColor: "#e2dede",
+    elevation: 3,
+    width:"89%"
+},
+cardUser: {
+    marginVertical: 8,
+    marginLeft: 2,
+    borderRadius: 10,
+    backgroundColor: "#e2dede",
+    elevation: 3,
+    width:"57%"
+},
+header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+},
+complaintId: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+},
+userName: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#555",
+},
+detailsContainer: {
+    marginVertical: 8,
+   
+},
+detailRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 4,
+},
+addressRow: {
+    alignItems: "flex-start",  // Aligns text to the top for address wrapping
+    flexDirection: "column",   // Makes label and value stack vertically
+},
+label: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#666",
+    flexShrink: 0,
+},
+value: {
+    fontSize: 14,
+    fontWeight: "400",
+    color: "#333",
+    textAlign: "right",
+    flexShrink: 1,
+},
+addressValue: {
+    textAlign: "left",
+    flexWrap: "wrap",   // Allows wrapping
+    width: "100%",      // Ensures it takes full width
+},
+infoContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 10,
+},
+statusText: {
+    fontSize: 14,
+    fontWeight: "600",
+},
+dateText: {
+    fontSize: 12,
+    color: "#777",
+},
+actions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    marginTop: 10,
+},
+iconButton: {
+    padding: 8,
+    marginHorizontal: 4,
+},
+feedbackButton: {
+    backgroundColor: "#4CAF50",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    marginLeft: 8,
+},
+feedbackButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "bold",
+},
+
+
   row: {
     flexDirection: 'row',
     paddingVertical: 10,

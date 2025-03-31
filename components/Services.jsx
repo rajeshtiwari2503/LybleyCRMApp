@@ -331,7 +331,7 @@ export default function ViewComplaints() {
     // console.log("",userData);
 
     const renderItem = ({ item, index }) => (
-        <Card key={index} style={styles.card}>
+        <Card key={index} style={userData?.role === "USER" ? styles.cardUser : styles.card}>
             <Card.Content>
                 {/* Complaint ID & Name */}
                 <View style={styles.header}>
@@ -361,7 +361,7 @@ export default function ViewComplaints() {
                  
                      {/* Action Buttons */}
                 <View style={styles.actions}>
-                    {item?.status !== "COMPLETED" && item?.status !== "CANCELED" && item?.status !== "FINAL VERIFICATION" && (
+                    {userData?.role !==  "USER" && userData?.role !==  "DEALER"  && item?.status !== "COMPLETED" && item?.status !== "CANCELED" && item?.status !== "FINAL VERIFICATION" && (
                         <TouchableOpacity onPress={() => handleUpdate(item)} style={styles.iconButton}>
                             <MaterialIcons name="system-update-alt" size={24} color="green" />
                         </TouchableOpacity>
@@ -525,6 +525,7 @@ export default function ViewComplaints() {
                         isVisible={updateModalVisible}
                         onClose={() => setUpdateModalVisible(false)}
                         service={selectedService}
+                        userData={userData}
                         RefreshData={RefreshData}
                     />
                     <PartOrder
@@ -629,6 +630,14 @@ const styles = StyleSheet.create({
     },
 
     card: {
+        marginVertical: 8,
+        marginLeft: 2,
+        borderRadius: 10,
+        backgroundColor: "#e2dede",
+        elevation: 3,
+        width:"89%"
+    },
+    cardUser: {
         marginVertical: 8,
         marginLeft: 2,
         borderRadius: 10,
