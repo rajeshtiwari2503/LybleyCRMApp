@@ -70,16 +70,16 @@ export default function ViewComplaints() {
                 }
 
                 // Force the location update by passing options
-                let locationCurr = await Location.getCurrentPositionAsync({
-                    accuracy: Location.Accuracy.High, // Adjust accuracy as needed
-                    maximumAge: 0,                    // Ensure no cached result
-                    timeInterval: 2000                // Optional: Set a time interval for getting location
-                });
+                // let locationCurr = await Location.getCurrentPositionAsync({
+                //     accuracy: Location.Accuracy.High, // Adjust accuracy as needed
+                //     maximumAge: 0,                    // Ensure no cached result
+                //     timeInterval: 2000                // Optional: Set a time interval for getting location
+                // });
 
                 // console.log(locationCurr);
 
                 // Update the state with the new location
-                setLocationCurrent(locationCurr);
+                // setLocationCurrent(locationCurr);
             } catch (error) {
                 console.error("Error fetching location:", error);
             }
@@ -414,7 +414,7 @@ export default function ViewComplaints() {
     //    console.log("userData",userData);
 
     return (
-        < >
+        <>
             {/* <Toast /> */}
             {/* {isMap === true && locationCurrent && lantLong  */}
             {isMap && techLocation?.lat && lantLong?.lat && lantLong?.long
@@ -476,26 +476,29 @@ export default function ViewComplaints() {
                                     refreshing={refreshing}
                                     onRefresh={onRefresh}
                                 />
-                            }  >
+                            }    >
                                 {paginatedData?.length === 0 ? (
                                     <View style={styles.noDataContainer}>
                                         <MaterialIcons name="info-outline" style={styles.noDataIcon} />
                                         <Text style={styles.noDataText}>No Data Available</Text>
                                     </View>
-                                ) :
+                                ) :(
                                     <View>
 
                                         <FlatList
                                             data={paginatedData}
-                                            keyExtractor={item => item?._id}
+                                            keyExtractor={(item, index) => index.toString()}
                                             renderItem={renderItem}
                                             contentContainerStyle={styles.listContainer}
+                                            
                                         // refreshControl={
                                         //     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                                         //   }
+                                        showsVerticalScrollIndicator={false}
                                         />
 
                                     </View>
+                                )
                                 }
                             </ScrollView>
 

@@ -47,10 +47,10 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
             const userD=(JSON.parse(storedValue));
             let response = await http_request.get("/getAllProduct");
             let { data } = response;
-            const filProduct=data?.filter((f)=>f?.userId===userD?.user?._id)
+            // const filProduct=data?.filter((f)=>f?.userId===userD?.user?._id)
             // console.log(filProduct);r
             
-            setProducts(filProduct);
+            setProducts(data);
         } catch (err) {
             console.error("Error fetching products:", err);
         }
@@ -67,7 +67,7 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
     };
     const registerComplaint = async (reqData) => {
         try {
-            if (location) {
+           
                 // console.log(location,"dhghg");
                 
             setLoading(true);
@@ -123,12 +123,8 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
             onClose();
             reset();
         }
-            else {
-                // setError('Please enter a valid pincode.');
-                return;
-        
-              }
-        } catch (error) {
+             
+        catch (error) {
             setLoading(false);
             Toast.show({ type: 'success', text1:  "Internal Server Error." });
             if (error.response) {
@@ -146,7 +142,7 @@ const CreateComplaint = ({ isVisible, onClose, RefreshData }) => {
 
     const onSubmit = async (data) => {
         try {
-        //    console.log(pincode);
+           console.log(pincode);
            
           if (pincode) {
             const locationResponse = await fetchLocation();  

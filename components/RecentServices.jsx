@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import ServiceDetails from './ServiceDetails';
@@ -173,17 +173,17 @@ const RecentServicesList = (props) => {
                    
                        {/* Action Buttons */}
                   <View style={styles.actions}>
-                      {userData?.role !==  "USER" && userData?.role !==  "DEALER"  && item?.status !== "COMPLETED" && item?.status !== "CANCELED" && item?.status !== "FINAL VERIFICATION" && (
+                      {/* {userData?.role !==  "USER" && userData?.role !==  "DEALER"  && item?.status !== "COMPLETED" && item?.status !== "CANCELED" && item?.status !== "FINAL VERIFICATION" && (
                           <TouchableOpacity onPress={() => handleUpdate(item)} style={styles.iconButton}>
                               <MaterialIcons name="system-update-alt" size={24} color="green" />
                           </TouchableOpacity>
                       )}
-  
-                      {(userData?.role === "USER" || userData?.role === "DEALER") && item?.status === "COMPLETED" && (
+   */}
+                      {/* {(userData?.role === "USER" || userData?.role === "DEALER") && item?.status === "COMPLETED" && (
                           <TouchableOpacity onPress={() => handleFeedback(item)} style={styles.feedbackButton}>
                               <Text style={styles.feedbackButtonText}>Give Feedback</Text>
                           </TouchableOpacity>
-                      )}
+                      )} */}
   
                       <TouchableOpacity onPress={() => handleDetails(item)} style={styles.iconButton}>
                           <Ionicons name="eye" size={24} color="green" />
