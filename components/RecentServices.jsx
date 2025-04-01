@@ -213,7 +213,7 @@ const RecentServicesList = (props) => {
         </View>
       ) : (
         <>
-          <ScrollView horizontal contentContainerStyle={styles.scrollContainer}>
+          <ScrollView >
             <View>
               {/* <View style={styles.header}>
                 <Text style={[styles.headerCell, { width: 60 }]}>Sr. No.</Text>
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#e2dede",
     elevation: 3,
-    width:"89%"
+    // width:"89%"
 },
 cardUser: {
     marginVertical: 8,
@@ -297,7 +297,7 @@ cardUser: {
     borderRadius: 10,
     backgroundColor: "#e2dede",
     elevation: 3,
-    width:"57%"
+    // width:"57%"
 },
 header: {
     flexDirection: "row",

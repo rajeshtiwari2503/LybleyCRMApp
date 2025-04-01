@@ -28,8 +28,7 @@ const BankTransactions = () => {
         const fetchData = async () => {
             await getStoredValue();
             getTransactions();
-            getWalletById();
-            getWalletDetails();
+            
         };
 
         fetchData();
@@ -49,49 +48,49 @@ const BankTransactions = () => {
     //         setLoading(false);
     //     }
     // };
-    const getWalletById = async () => {
-        try {
-            setLoading(true);
-            const storedValue = await AsyncStorage.getItem("user");
-            const userD = JSON.parse(storedValue);
-            let response = await http_request.get(`/getWalletByCenterId/${userD?.user?._id}`);
+    // const getWalletById = async () => {
+    //     try {
+    //         setLoading(true);
+    //         const storedValue = await AsyncStorage.getItem("user");
+    //         const userD = JSON.parse(storedValue);
+    //         let response = await http_request.get(`/getWalletByCenterId/${userD?.user?._id}`);
             
-            if (response?.status === 404) {
-                console.error('Wallet not found');
-                // Provide user feedback or handle the case where the wallet is not found
-            } else {
-                let { data } = response;
-                setWallet(data);
-            }
-        } catch (err) {
-            console.error('Error fetching wallet by ID:', err);
+    //         if (response?.status === 404) {
+    //             console.error('Wallet not found');
+    //             // Provide user feedback or handle the case where the wallet is not found
+    //         } else {
+    //             let { data } = response;
+    //             setWallet(data);
+    //         }
+    //     } catch (err) {
+    //         console.error('Error fetching wallet by ID:', err);
             
-        } finally {
-            setLoading(false);
-        }
-    };
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
     
-    const getWalletDetails = async () => {
-        try {
-            setLoading(true);
-            const storedValue = await AsyncStorage.getItem("user");
-            const value1 = JSON.parse(storedValue);
-            const response = await http_request.get(`/bankDetailByUser/${value1?.user?._id}`);
-            const { data } = response;
-            setBankDetails(data);
-        } catch (err) {
-            console.error('Error fetching wallet details:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    // const getWalletDetails = async () => {
+    //     try {
+    //         setLoading(true);
+    //         const storedValue = await AsyncStorage.getItem("user");
+    //         const value1 = JSON.parse(storedValue);
+    //         const response = await http_request.get(`/bankDetailByUser/${value1?.user?._id}`);
+    //         const { data } = response;
+    //         setBankDetails(data);
+    //     } catch (err) {
+    //         console.error('Error fetching wallet details:', err);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     const getTransactions = async () => {
         try {
             setLoading(true);
             const storedValue = await AsyncStorage.getItem("user");
             const value1 = JSON.parse(storedValue);
-            const endPoint = `/getTransactionByCenterId/${value1?.user?._id}`;
+            const endPoint = `/getAllServicePaymentByCenterId/${value1?.user?._id}`;
             const response = await http_request.get(endPoint);
             let { data } = response;
             setTransactions(data);
@@ -156,7 +155,7 @@ const BankTransactions = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
+        // padding: 16,
     },
 });
 

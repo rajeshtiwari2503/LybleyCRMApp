@@ -133,10 +133,10 @@ const styles = StyleSheet.create({
     profileCard2: {
         backgroundColor: '#fff',
 
+        width: "65%",
         borderRadius: 20,
         alignItems: 'center',
-        padding: 10,
-
+        padding: 5,
         // marginBottom: 15,
         elevation: 3,
     },

@@ -424,61 +424,112 @@ const UserDashboard = (props) => {
   };
 
   // console.log("props?.userData",props?.dashData);
-  
+
 
   return (
     <ScrollView>
       <View style={styles.container}>
 
         <View style={styles.header}>
-               <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-                 <MaterialIcons name="person" size={28} color="white" />
-               </TouchableOpacity>
-               <Text style={styles.title}>Dashboard</Text>
-               <TouchableOpacity onPress={() => setModalVisible(true)}>
-                 <FontAwesome name="bell" size={24} color="white" />
-                 {notificationCount > 0 && (
-                   <View style={styles.badge}>
-                     <Text style={styles.badgeText}>{notificationCount}</Text>
-                   </View>
-                 )}
-               </TouchableOpacity>
-             </View>
-         {/* Service Summary Cards */}
-             <View style={styles.cardContainer}>
-         {[
-          
-           { label: "Pending", value: dashData?.complaints?.pending, color: "#ea4335" },
-           { label: "In Progress", value: dashData?.complaints?.inProgress, color: "#4285f4" },
-           { label: "Assigned", value: dashData?.complaints?.assign, color: "#a142f4" },
-           { label: "Part Pending", value: dashData?.complaints?.partPending, color: "#ff9800" },
-          
-           { label: "Final Verification", value: dashData?.complaints?.finalVerification, color: "#00bcd4" }, 
-           { label: "Cancel", value: dashData?.complaints?.cancel, color: "#616161" }, // Gray for cancel
-           { label: "Completed", value: dashData?.complaints?.complete, color: "#34a853" },
-           
-           { label: "Total Service", value: dashData?.complaints?.allComplaints, color: "#f4b400" },
-          
-           { label: "Schedule", value: dashData?.complaints?.schedule, color: "#2c3e50" }, // Dark blue for schedule
-           { label: "Schedule Upcoming", value: dashData?.complaints?.scheduleUpcomming, color: "#34495e" }, // Slightly darker blue
-           { label: "Zero to One Days", value: dashData?.complaints?.zeroToOneDays, color: "#8e44ad" }, // Purple
-           { label: "Two to Five Days", value: dashData?.complaints?.twoToFiveDays, color: "#3498db" }, // Blue
-           { label: "More than Five Days", value: dashData?.complaints?.moreThanFiveDays, color: "#e67e22" }, // Orange
-        
-         ]
-           // .filter((item) => item.value > 0) // Hide zero-value cards
-           .map((item, index) => (
-             <TouchableOpacity
-               key={index}
-               style={[styles.card, { backgroundColor: item.color }]}
-               onPress={() => navigation?.navigate("Services")}
-             >
-               <Text style={styles.cardValue}>{item.value}</Text>
-               <Text style={styles.cardLabel}>{item.label}</Text>
-             </TouchableOpacity>
-           ))}
-       </View>
-       
+          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+            <MaterialIcons name="person" size={28} color="white" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Dashboard</Text>
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <FontAwesome name="bell" size={24} color="white" />
+            {notificationCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{notificationCount}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+        <View style={styles.cardContainer}>
+        <TouchableOpacity onPress={() => navigation.navigate('Services')} style={[styles.addButton, { backgroundColor: '#007BFF' }]}>
+          <Text style={styles.buttonText}>Add Service Request</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Products')} style={[styles.addButton, { backgroundColor: '#28A745' }]}>
+          <Text style={styles.buttonText}>Add Product</Text>
+        </TouchableOpacity>
+        </View>
+        {/* Service Summary Cards */}
+        <View style={styles.cardContainer}>
+          {[
+
+            { label: "Pending", value: dashData?.complaints?.pending, color: "#ea4335" },
+            { label: "In Progress", value: dashData?.complaints?.inProgress, color: "#4285f4" },
+            { label: "Assigned", value: dashData?.complaints?.assign, color: "#a142f4" },
+            { label: "Part Pending", value: dashData?.complaints?.partPending, color: "#ff9800" },
+
+            { label: "Final Verification", value: dashData?.complaints?.finalVerification, color: "#00bcd4" },
+            { label: "Cancel", value: dashData?.complaints?.cancel, color: "#616161" }, // Gray for cancel
+            { label: "Completed", value: dashData?.complaints?.complete, color: "#34a853" },
+
+            { label: "Total Service", value: dashData?.complaints?.allComplaints, color: "#f4b400" },
+
+            { label: "Schedule", value: dashData?.complaints?.schedule, color: "#2c3e50" }, // Dark blue for schedule
+            { label: "Schedule Upcoming", value: dashData?.complaints?.scheduleUpcomming, color: "#34495e" }, // Slightly darker blue
+
+          ]
+            // .filter((item) => item.value > 0) // Hide zero-value cards
+            .map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.card, { backgroundColor: item.color }]}
+                onPress={() => navigation?.navigate("Services")}
+              >
+                <Text style={styles.cardValue}>{item.value}</Text>
+                <Text style={styles.cardLabel}>{item.label}</Text>
+              </TouchableOpacity>
+            ))}
+        </View>
+        <View style={styles.metricsContainerDaywie}>
+          <Text style={styles.sectionTitle}>Daywise Pending Complaints</Text>
+        </View>
+        <View style={styles.cardContainer}>
+
+          {[
+
+            { label: "Zero to One Days", value: dashData?.complaints?.zeroToOneDays, color: "#8e44ad" }, // Purple
+            { label: "Two to Five Days", value: dashData?.complaints?.twoToFiveDays, color: "#3498db" }, // Blue
+            { label: "More than Five Days", value: dashData?.complaints?.moreThanFiveDays, color: "#e67e22" }, // Orange
+
+          ]
+            // .filter((item) => item.value > 0) // Hide zero-value cards
+            .map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.card, { backgroundColor: item.color }]}
+                onPress={() => navigation?.navigate("Services")}
+              >
+                <Text style={styles.cardValue}>{item.value}</Text>
+                <Text style={styles.cardLabel}>{item.label}</Text>
+              </TouchableOpacity>
+            ))}
+        </View>
+        <View style={styles.metricsContainerDaywie}>
+          <Text style={styles.sectionTitle}>Daywise Pending Complaints</Text>
+        </View>
+        <View style={styles.cardContainer}>
+          {[
+
+            { label: "Zero to One Days (Part Pending)", value: dashData?.complaints?.zeroToOneDaysPartPending, color: "#9b59b6" }, // Light Purple
+            { label: "Two to Five Days (Part Pending)", value: dashData?.complaints?.twoToFiveDaysPartPending, color: "#2980b9" }, // Darker Blue
+            { label: "More than Five Days (Part Pending)", value: dashData?.complaints?.moreThanFiveDaysPartPending, color: "#d35400" }, // Dark Orange
+          ]
+            // .filter((item) => item.value > 0) // Hide zero-value cards
+            .map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.card, { backgroundColor: item.color }]}
+                onPress={() => navigation?.navigate("Services")}
+              >
+                <Text style={styles.cardValue}>{item.value || 0}</Text>
+                <Text style={styles.cardLabel}>{item.label}</Text>
+              </TouchableOpacity>
+            ))}
+        </View>
+
         <View>
           {userProduct?.map((item, index) => (
             <View key={item?._id} style={styles.containerP}>
@@ -495,7 +546,7 @@ const UserDashboard = (props) => {
                     <Text style={styles.productName}>Product Name: {item?.productName}</Text>
                     <View style={[styles.warrantyStatus, { flexDirection: 'row', alignItems: 'center' }]}>
                       <Ionicons name="shield-checkmark" size={16} color="white" />
-                      <Text style={{ marginLeft: 4,color:"white" }}>Under Warranty: {item?.warrantyStatus ? "Yes" : "No"}</Text>
+                      <Text style={{ marginLeft: 4, color: "white" }}>Under Warranty: {item?.warrantyStatus ? "Yes" : "No"}</Text>
                     </View>
 
                   </View>
@@ -504,7 +555,31 @@ const UserDashboard = (props) => {
             </View>
           ))}
         </View>
+        <View>
+          {userProduct?.map((item, index) => (
+            <View key={item?._id} style={styles.containerP}>
+              <View style={styles.itemContainerP}>
+                <TouchableOpacity
+                  onPress={() => handleDetails(item)}
+                  style={styles.button}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.iconContainerP}>
+                    <Ionicons name="pricetag" size={24} color="white" />
+                  </View>
+                  <View style={styles.textContainerP}>
+                    <Text style={styles.productName}>Product Name: {item?.productName}</Text>
+                    <View style={[styles.warrantyStatus, { flexDirection: 'row', alignItems: 'center' }]}>
+                      <Ionicons name="shield-checkmark" size={16} color="white" />
+                      <Text style={{ marginLeft: 4, color: "white" }}>Under Warranty: {item?.warrantyStatus ? "Yes" : "No"}</Text>
+                    </View>
 
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+        </View>
 
 
 
@@ -593,13 +668,36 @@ const UserDashboard = (props) => {
 };
 
 const styles = StyleSheet.create({
- 
+
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 15,
   },
+  metricsContainerDaywie: {
+    paddingLeft: 16,
+  },
+  button: {
+            width: 50,
+            height: 50,
+            
+            justifyContent: 'center',
+            alignItems: 'center',
+            elevation: 3,
+        },
+        addButton: {
+            width: 140,
+            height: 50,
+            borderRadius: 8,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        buttonText: {
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: 16,
+        },
   title: {
     fontSize: 25,
     fontFamily: 'outfit-medium',
