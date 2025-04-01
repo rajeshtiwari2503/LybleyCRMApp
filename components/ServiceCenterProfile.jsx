@@ -8,6 +8,7 @@ import { Colors } from '@/constants/Colors';
 import { MaterialIcons } from '@expo/vector-icons';
 import Wallet from './Wallet';
 import EditServiceCenterProfile from './EditServiceCenterProfile';
+import WalletDashboard from './walletDashSection';
 
 export default function ServiceCenterProfile(props) {
     const [isModalVisible, setModalVisible] = useState(false);
@@ -28,7 +29,7 @@ export default function ServiceCenterProfile(props) {
             setRefreshing(false);
         }, 2000);
     }, [RefreshData]);
-// console.log("props",user);
+    // console.log("props",user);
 
     return (
         <ScrollView
@@ -38,14 +39,14 @@ export default function ServiceCenterProfile(props) {
             {/* Header */}
             <View style={styles.header}>
                 <View>
-                <Text style={styles.headerText}>Service Center Profile</Text>
+                    <Text style={styles.headerText}>Service Center Profile</Text>
                 </View>
                 <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                            {/* <Text style={styles.logoutButtonText}>Logout</Text> */}
-                            <MaterialIcons name="logout" size={20} color="#fff" style={styles.logoutIcon} />
-                        </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                        {/* <Text style={styles.logoutButtonText}>Logout</Text> */}
+                        <MaterialIcons name="logout" size={20} color="#fff" style={styles.logoutIcon} />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             {/* Profile Section */}
@@ -59,56 +60,56 @@ export default function ServiceCenterProfile(props) {
                     <TouchableOpacity style={styles.editButton} onPress={() => setModalVisible(true)}>
                         <Text style={styles.editButtonText}>Edit Profile</Text>
                     </TouchableOpacity>
-                   
+
                 </View>
 
             </View>
-
+            <WalletDashboard />
             {/* Information Section */}
             <View style={styles.infoContainer}>
-    {[
-         { icon: "money", color: "#3F51B5", text: `Total Amount: ₹${user?.totalAmount}` },
-         { icon: "account-balance-wallet", color: "#4CAF50", text: `Wallet: ₹${user?.walletAmount}` },
-        { icon: "business", color: "#3F51B5", text: user?.serviceCenterName },
-        { icon: "category", color: "#3F51B5", text: user?.serviceCenterType },
-        { icon: "badge", color: "#FF9800", text: user?.registrationNumber },
-        { icon: "confirmation-number", color: "#3F51B5", text: user?.tin },
-        { icon: "person", color: "#4CAF50", text: user?.contactPersonName },
-        { icon: "work", color: "#4CAF50", text: user?.contactPersonPosition },
-        { icon: "email", color: "#3F51B5", text: user?.email },
-        { icon: "phone", color: "#4CAF50", text: user?.contact },
-        { icon: "location-on", color: "#4CAF50", text: `${user?.streetAddress}, ${user?.city}, ${user?.state}, ${user?.country}` },
-        { icon: "map", color: "#3F51B5", text: `Pincode: ${user?.postalCode}` },
-        {
-            icon: "build",
-            color: "#FF9800",
-            text: `Categories: ${user?.serviceCategories?.map(cat => cat.label).join(", ") || "N/A"}`
-          },
-          {
-            icon: "branding-watermark",
-            color: "#3F51B5",
-            text: `Brands: ${user?.brandsSupported?.map(brand => brand.label).join(", ") || "N/A"}`
-          }
-          
-,          
-        { icon: "location-searching", color: "#4CAF50", text: `Pincode Coverage: ${user?.pincodeSupported?.join(", ")}` },
-        { icon: "verified", color: "#FF9800", text: user?.technicianCertifications },
-        { icon: "schedule", color: "#3F51B5", text: `Operating Hours: ${user?.operatingHours}` },
-        { icon: "calendar-today", color: "#4CAF50", text: `Years in Operation: ${user?.yearsInOperation}` },
-        { icon: "engineering", color: "#FF9800", text: `${user?.numberOfTechnicians} Technicians` },
-        { icon: "access-time", color: "#3F51B5", text: `Turnaround Time: ${user?.averageTurnaroundTime}` },
-        { icon: "verified-user", color: "#FF9800", text: user?.verification },
-        
-       
-        { icon: "policy", color: "#FF9800", text: `Agreement: ${user?.agreement ? "Accepted" : "Not Accepted"}` },
-        { icon: "lock", color: "#3F51B5", text: `Status: ${user?.status}` }
-    ].map((item, index) => (
-        <View key={index} style={styles.infoBox}>
-            <Icon name={item.icon} size={24} color={item.color} />
-            <Text style={styles.infoText}>{item.text}</Text>
-        </View>
-    ))}
-</View>
+                {[
+                    //  { icon: "money", color: "#3F51B5", text: `Total Amount: ₹${user?.totalAmount}` },
+                    //  { icon: "account-balance-wallet", color: "#4CAF50", text: `Wallet: ₹${user?.walletAmount}` },
+                    { icon: "business", color: "#3F51B5", text: user?.serviceCenterName },
+                    { icon: "category", color: "#3F51B5", text: user?.serviceCenterType },
+                    { icon: "badge", color: "#FF9800", text: user?.registrationNumber },
+                    { icon: "confirmation-number", color: "#3F51B5", text: user?.tin },
+                    { icon: "person", color: "#4CAF50", text: user?.contactPersonName },
+                    { icon: "work", color: "#4CAF50", text: user?.contactPersonPosition },
+                    { icon: "email", color: "#3F51B5", text: user?.email },
+                    { icon: "phone", color: "#4CAF50", text: user?.contact },
+                    { icon: "location-on", color: "#4CAF50", text: `${user?.streetAddress}, ${user?.city}, ${user?.state}, ${user?.country}` },
+                    { icon: "map", color: "#3F51B5", text: `Pincode: ${user?.postalCode}` },
+                    {
+                        icon: "build",
+                        color: "#FF9800",
+                        text: `Categories: ${user?.serviceCategories?.map(cat => cat.label).join(", ") || "N/A"}`
+                    },
+                    {
+                        icon: "branding-watermark",
+                        color: "#3F51B5",
+                        text: `Brands: ${user?.brandsSupported?.map(brand => brand.label).join(", ") || "N/A"}`
+                    }
+
+                    ,
+                    { icon: "location-searching", color: "#4CAF50", text: `Pincode Coverage: ${user?.pincodeSupported?.join(", ")}` },
+                    { icon: "verified", color: "#FF9800", text: user?.technicianCertifications },
+                    { icon: "schedule", color: "#3F51B5", text: `Operating Hours: ${user?.operatingHours}` },
+                    { icon: "calendar-today", color: "#4CAF50", text: `Years in Operation: ${user?.yearsInOperation}` },
+                    { icon: "engineering", color: "#FF9800", text: `${user?.numberOfTechnicians} Technicians` },
+                    { icon: "access-time", color: "#3F51B5", text: `Turnaround Time: ${user?.averageTurnaroundTime}` },
+                    { icon: "verified-user", color: "#FF9800", text: user?.verification },
+
+
+                    { icon: "policy", color: "#FF9800", text: `Agreement: ${user?.agreement ? "Accepted" : "Not Accepted"}` },
+                    { icon: "lock", color: "#3F51B5", text: `Status: ${user?.status}` }
+                ].map((item, index) => (
+                    <View key={index} style={styles.infoBox}>
+                        <Icon name={item.icon} size={24} color={item.color} />
+                        <Text style={styles.infoText}>{item.text}</Text>
+                    </View>
+                ))}
+            </View>
 
 
 
@@ -143,8 +144,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         borderRadius: 15,
         marginBottom: 15,
-    paddingLeft:20,
-    paddingRight:20,
+        paddingLeft: 20,
+        paddingRight: 20,
         elevation: 5,
     },
     headerText: {
@@ -160,16 +161,16 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: 'center',
         padding: 10,
-
+        
         marginBottom: 15,
         elevation: 3,
     },
     profileCard2: {
         backgroundColor: '#fff',
-
+        width: "65%",
         borderRadius: 20,
         alignItems: 'center',
-        padding: 10,
+        padding: 5,
 
         // marginBottom: 15,
         elevation: 3,

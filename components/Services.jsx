@@ -476,7 +476,7 @@ export default function ViewComplaints() {
                                     refreshing={refreshing}
                                     onRefresh={onRefresh}
                                 />
-                            } horizontal contentContainerStyle={styles.scrollContainer}>
+                            }  >
                                 {paginatedData?.length === 0 ? (
                                     <View style={styles.noDataContainer}>
                                         <MaterialIcons name="info-outline" style={styles.noDataIcon} />
@@ -635,7 +635,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: "#e2dede",
         elevation: 3,
-        width:"89%"
+        // width:"89%"
     },
     cardUser: {
         marginVertical: 8,
@@ -643,7 +643,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: "#e2dede",
         elevation: 3,
-        width:"57%"
+        // width:"57%"
     },
     header: {
         flexDirection: "row",
@@ -855,7 +855,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",  // Centers content vertically
         alignItems: "center",      // Centers content horizontally
         padding: 20,
-        marginLeft: 65
+        // marginLeft: 65
     },
 
     noDataText: {

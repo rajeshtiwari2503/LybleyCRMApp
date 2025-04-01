@@ -1,8 +1,45 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import React from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import http_request from '../http_request';
 
 const WalletDashboard = () => {
+
+
+const [transactions, setTransactions] = useState([])
+
+  useEffect(() => {
+   
+    getAllServicePaymentByCenterId()
+  }, []);
+
+  const getAllServicePaymentByCenterId = async () => {
+    try {
+      const storedValue = await AsyncStorage.getItem("user");
+      const value1 = JSON.parse(storedValue);
+      const response = await http_request.get(
+        `/getAllServicePaymentByCenterId/${value1?.user?._id}`
+          
+      );
+      const { data } = response;
+      // console.log("data",data);
+      
+      setTransactions(data);
+    } catch (err) {
+      console.error("Error fetching complaints:", err);
+    }
+  };
+
+  const totals = transactions.reduce((acc, item) => {
+      const amount = parseFloat(item.payment); // Convert string to number
+      if (item.status === "PAID") {
+          acc.totalPaid += amount;
+      } else if (item.status === "UNPAID") {
+          acc.totalUnpaid += amount;
+      }
+      return acc;
+  }, { totalPaid: 0, totalUnpaid: 0 });
   return (
     <ScrollView style={styles.container}>
       {/* Header */}
@@ -14,13 +51,13 @@ const WalletDashboard = () => {
       <View style={styles.cardContainer}>
         <View style={styles.card}>
         <MaterialIcons name="account-balance-wallet" size={30} color="#4CAF50" />
-          <Text style={styles.cardValue}>0</Text>
-          <Text style={styles.cardLabel}>Total Balance</Text>
+          <Text style={styles.cardValue}>{totals?.totalPaid}</Text>
+          <Text style={styles.cardLabel}>Paid Amount</Text>
         </View>
         <View style={styles.card}>
         <MaterialIcons name="account-balance-wallet" size={30} color="#2196F3" />
-          <Text style={styles.cardValue}>0</Text>
-          <Text style={styles.cardLabel}>Available Balance</Text>
+          <Text style={styles.cardValue}>{totals?.totalUnpaid}</Text>
+          <Text style={styles.cardLabel}>Unaid Amount</Text>
         </View>
       </View>
 

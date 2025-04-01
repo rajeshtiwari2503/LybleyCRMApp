@@ -8,13 +8,13 @@ import TechnicianNavigator from './TechnicianNavigation';
 import Login from "../components/Login";
 import { useFonts } from 'expo-font';
 import { requestUserPermission } from '../utils/notificationService';
-import useDeepLinking from './deepLinking';
+// import useDeepLinking from './deepLinking';
 
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
   const [user, setUser] = useState(null);
-  useDeepLinking();
+  // useDeepLinking();
   const [fontsLoaded] = useFonts({
     'outfit': require('../assets/fonts/Outfit-Regular.ttf'),
     'outfit-medium': require('../assets/fonts/Outfit-Medium.ttf'),

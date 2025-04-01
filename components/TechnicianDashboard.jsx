@@ -23,7 +23,7 @@
 //     const [tatPercentage, setTatPercentage] = useState(0); // State for TAT percentage
 //     const [ctPercentage, setCtPercentage] = useState(0); // State for CT percentage
 //     const [rtPercentage, setRtPercentage] = useState(0); // State for RT percentage
-  
+
 //     const actualTAT = 12;
 //     const actualCT = 6;
 //     const actualRT = 3;
@@ -34,9 +34,9 @@
 //     useEffect(() => {
 //       getAllComplaint();
 //     }, [refresh]);
-  
 
-   
+
+
 
 //     // Function to calculate TAT in hours from created and updated timestamps
 //     const calculateTAT = (createdAt, updatedAt) => {
@@ -44,33 +44,33 @@
 //       const updated = new Date(updatedAt);
 //       return (updated - created) / (1000 * 60 * 60); // Convert milliseconds to hours
 //     };
- 
+
 //     // Function to calculate CT in hours from assign and update timestamps
 //     const calculateCT = (assignTime, updateTime) => {
 //       const assignDate = new Date(assignTime);
 //       const updateDate = new Date(updateTime);
 //       return (updateDate - assignDate) / (1000 * 60 * 60); // Convert milliseconds to hours
 //     };
-  
+
 //     // Function to fetch all complaints for the technician
 //     const getAllComplaint = async () => {
 //       try {
 //         let response = await http_request.get("/getAllComplaint"); // Assuming endpoint to fetch complaints
 //         let { data } = response;
-  
+
 //         // Filter complaints assigned to this technician
 //         const techComp = data.filter((item) => item?.technicianId === userData._id);
-  
+
 //         // Filter completed complaints for TAT calculation
 //         const completedComplaints1 = techComp.filter(c => c.status === 'COMPLETED');
 //         const tatData = completedComplaints1.map(c => calculateTAT(c.createdAt, c.updatedAt));
 //         const totalTAT = tatData.reduce((sum, tat) => sum + tat, 0);
 //         const avgTAT = tatData.length ? (totalTAT / tatData.length).toFixed(2) : 0;
-  
+
 //         const tat = avgTAT <= 24 ? "100" : avgTAT <= 32 ? "80" : avgTAT <= 48 ? "60" : avgTAT <= 64 ? "40" : avgTAT <= 72 ? "30" : avgTAT <= 100 ? "10" : "5"
-  
+
 //         setAverageTAT(tat);
-  
+
 //         // Filter completed complaints with valid assign and update times for CT calculation
 //         const completedComplaints = techComp.filter(c =>
 //           c.status === 'COMPLETED' &&
@@ -79,7 +79,7 @@
 //           !isNaN(new Date(c.assignTechnicianTime)) &&
 //           !isNaN(new Date(c.updatedAt))
 //         );
-  
+
 //         const ctData = completedComplaints.map(c => calculateCT(c.assignTechnicianTime, c.updatedAt));
 //         const totalCT = ctData.reduce((sum, tat) => sum + tat, 0);
 //         const avgCT = ctData.length ? (totalCT / ctData.length).toFixed(2) : 0;
@@ -87,25 +87,25 @@
 //         const rt = avgCT <= 3 ? "100" : avgCT <= 6 ? "80" : avgCT <= 8 ? "60" : avgCT <= 12 ? "40" : avgCT <= 17 ? "30" : avgCT <= 24 ? "10" : "5"
 //         setAverageClosingTime(ct);
 //         setAverageResponseTime(rt);
-  
+
 //         // Calculate TAT percentage
 //         const tatPercent = completedComplaints1.length ? (avgTAT / targetTAT) * 100 : 0;
 //         setTatPercentage(tatPercent.toFixed(2));
-  
+
 //         // Calculate CT percentage
 //         const ctPercent = completedComplaints?.length ? (avgCT / targetCT) * 100 : 0;
 //         setCtPercentage(ctPercent.toFixed(2));
-  
+
 //         // Calculate RT percentage
 //         const rtPercent = completedComplaints.length ? (avgCT / targetRT) * 100 : 0;
 //         setRtPercentage(rtPercent.toFixed(2));
-  
+
 //         setComplaint(data); // Store all fetched complaints
 //       } catch (err) {
 //         console.log(err); // Handle errors if any
 //       }
 //     };
-  
+
 //     const notifications = props?.notifications;z
 //     const RefreshData = props?.RefreshData
 //     const [modalVisible, setModalVisible] = useState(false);
@@ -135,10 +135,10 @@
 //             : userData?.role === "TECHNICIAN" ? complaint.filter((item) => item?.technicianId === userData._id)
 //               : userData?.role === "DEALER" ? complaint.filter((item) => item?.dealerId === userData._id)
 //                 : complaint;
-  
+
 //     // Add index to filtered data for rendering purposes
 //     const data = filterData?.map((item, index) => ({ ...item, i: index + 1 }));
-  
+
 //     // Function to trigger data refresh
 //     // const RefreshData = (data) => {
 //     //   setRefresh(data);
@@ -282,7 +282,7 @@
 //                         <Text>Wallet</Text>
 //                     </View>
 
-                   
+
 //                 </View>
 
 // {/* 
@@ -442,23 +442,25 @@ import NotificationModal from "./Notification";
 import RecentServicesList from "./RecentServices";
 import WalletDashboard from "./walletDashSection";
 
-const TechnicianDashboard = ({ userData, dashData, notifications,RefreshData }) => {
+const TechnicianDashboard = ({ userData, dashData, notifications, RefreshData }) => {
   const navigation = useNavigation();
   const [averageTAT, setAverageTAT] = useState(0);
   const [averageRT, setAverageRT] = useState(0);
   const [averageCT, setAverageCT] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+ 
 
   useEffect(() => {
     getAllComplaint();
+   
   }, []);
-// console.log(dashData);
+  // console.log(dashData);
 
   const getAllComplaint = async () => {
     try {
       const response = await http_request.get(
-        userData?.user?.role==="SERVICE" ? `/getAllTatByServiceCenter?assignServiceCenterId=${userData?._id}`
-        :`/getAllTatByServiceCenter?assignServiceCenterId=${userData?._id}`
+        userData?.user?.role === "SERVICE" ? `/getAllTatByServiceCenter?assignServiceCenterId=${userData?._id}`
+          : `/getAllTatByServiceCenter?assignServiceCenterId=${userData?._id}`
       );
       const { data } = response;
       setAverageTAT(data?.overallTATPercentage || 0);
@@ -468,29 +470,30 @@ const TechnicianDashboard = ({ userData, dashData, notifications,RefreshData }) 
       console.error("Error fetching complaints:", err);
     }
   };
+ 
 
-  const unreadNoti = userData?.user?.role==="SERVICE" ?notifications?.filter(
+  const unreadNoti = userData?.user?.role === "SERVICE" ? notifications?.filter(
     (item) => item?.serviceCenterStatus === "UNREAD"
-  ):notifications?.filter(
+  ) : notifications?.filter(
     (item) => item?.technicianStatus === "UNREAD"
   );
   const notificationCount = unreadNoti?.length;
-  
-// console.log(notifications);
+
+  // console.log(notifications);
 
   const chartData = [
     { name: "Assigned", population: dashData?.complaints?.assign ?? 0, color: "#FF6347" },
     { name: "Pending", population: dashData?.complaints?.pending ?? 0, color: "#FFD700" },
     { name: "Completed", population: dashData?.complaints?.complete ?? 0, color: "#32CD32" },
   ];
+
+
   
- 
-  
- 
+
   return (
     <ScrollView style={styles.container}>
       {/* Header */}
-     
+
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
           <MaterialIcons name="person" size={28} color="white" />
@@ -505,9 +508,9 @@ const TechnicianDashboard = ({ userData, dashData, notifications,RefreshData }) 
           )}
         </TouchableOpacity>
       </View>
-      <WalletDashboard />
-  {/* Performance Metrics */}
-  <View style={styles.metricsContainer}>
+      <WalletDashboard  />
+      {/* Performance Metrics */}
+      <View style={styles.metricsContainer}>
         <Text style={styles.sectionTitle}>Performance Metrics</Text>
         <View style={styles.metricsRow}>
           {[
@@ -525,43 +528,83 @@ const TechnicianDashboard = ({ userData, dashData, notifications,RefreshData }) 
 
       {/* Service Summary Cards */}
       <View style={styles.cardContainer}>
-  {[
-   
-    { label: "Pending", value: dashData?.complaints?.pending, color: "#ea4335" },
-    { label: "In Progress", value: dashData?.complaints?.inProgress, color: "#4285f4" },
-    { label: "Assigned", value: dashData?.complaints?.assign, color: "#a142f4" },
-    { label: "Part Pending", value: dashData?.complaints?.partPending, color: "#ff9800" },
-   
-    { label: "Final Verification", value: dashData?.complaints?.finalVerification, color: "#00bcd4" }, 
-    { label: "Cancel", value: dashData?.complaints?.cancel, color: "#616161" }, // Gray for cancel
-    { label: "Completed", value: dashData?.complaints?.complete, color: "#34a853" },
-    
-    { label: "Total Service", value: dashData?.complaints?.allComplaints, color: "#f4b400" },
-   
-    { label: "Schedule", value: dashData?.complaints?.schedule, color: "#2c3e50" }, // Dark blue for schedule
-    { label: "Schedule Upcoming", value: dashData?.complaints?.scheduleUpcomming, color: "#34495e" }, // Slightly darker blue
-    { label: "Zero to One Days", value: dashData?.complaints?.zeroToOneDays, color: "#8e44ad" }, // Purple
-    { label: "Two to Five Days", value: dashData?.complaints?.twoToFiveDays, color: "#3498db" }, // Blue
-    { label: "More than Five Days", value: dashData?.complaints?.moreThanFiveDays, color: "#e67e22" }, // Orange
-    { label: "Zero to One Days (Part Pending)", value: dashData?.complaints?.zeroToOneDaysPartPending, color: "#9b59b6" }, // Light Purple
-    { label: "Two to Five Days (Part Pending)", value: dashData?.complaints?.twoToFiveDaysPartPending, color: "#2980b9" }, // Darker Blue
-    { label: "More than Five Days (Part Pending)", value: dashData?.complaints?.moreThanFiveDaysPartPending, color: "#d35400" }, // Dark Orange
-  ]
-    // .filter((item) => item.value > 0) // Hide zero-value cards
-    .map((item, index) => (
-      <TouchableOpacity
-        key={index}
-        style={[styles.card, { backgroundColor: item.color }]}
-        onPress={() => navigation?.navigate("Services")}
-      >
-        <Text style={styles.cardValue}>{item.value}</Text>
-        <Text style={styles.cardLabel}>{item.label}</Text>
-      </TouchableOpacity>
-    ))}
-</View>
+        {[
+
+          { label: "Pending", value: dashData?.complaints?.pending, color: "#ea4335" },
+          { label: "In Progress", value: dashData?.complaints?.inProgress, color: "#4285f4" },
+          { label: "Assigned", value: dashData?.complaints?.assign, color: "#a142f4" },
+          { label: "Part Pending", value: dashData?.complaints?.partPending, color: "#ff9800" },
+
+          { label: "Final Verification", value: dashData?.complaints?.finalVerification, color: "#00bcd4" },
+          { label: "Cancel", value: dashData?.complaints?.cancel, color: "#616161" }, // Gray for cancel
+          { label: "Completed", value: dashData?.complaints?.complete, color: "#34a853" },
+
+          { label: "Total Service", value: dashData?.complaints?.allComplaints, color: "#f4b400" },
+
+          { label: "Schedule", value: dashData?.complaints?.schedule, color: "#2c3e50" }, // Dark blue for schedule
+          { label: "Schedule Upcoming", value: dashData?.complaints?.scheduleUpcomming, color: "#34495e" }, // Slightly darker blue
+
+        ]
+          // .filter((item) => item.value > 0) // Hide zero-value cards
+          .map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.card, { backgroundColor: item.color }]}
+              onPress={() => navigation?.navigate("Services")}
+            >
+              <Text style={styles.cardValue}>{item.value}</Text>
+              <Text style={styles.cardLabel}>{item.label}</Text>
+            </TouchableOpacity>
+          ))}
+      </View>
+      <View style={styles.metricsContainerDaywie}>
+        <Text style={styles.sectionTitle}>Daywise Pending Complaints</Text>
+      </View>
+      <View style={styles.cardContainer}>
+
+        {[
+
+          { label: "Zero to One Days", value: dashData?.complaints?.zeroToOneDays, color: "#8e44ad" }, // Purple
+          { label: "Two to Five Days", value: dashData?.complaints?.twoToFiveDays, color: "#3498db" }, // Blue
+          { label: "More than Five Days", value: dashData?.complaints?.moreThanFiveDays, color: "#e67e22" }, // Orange
+
+        ]
+          // .filter((item) => item.value > 0) // Hide zero-value cards
+          .map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.card, { backgroundColor: item.color }]}
+              onPress={() => navigation?.navigate("Services")}
+            >
+              <Text style={styles.cardValue}>{item.value}</Text>
+              <Text style={styles.cardLabel}>{item.label}</Text>
+            </TouchableOpacity>
+          ))}
+      </View>
+      <View style={styles.metricsContainerDaywie}>
+        <Text style={styles.sectionTitle}>Daywise Pending Complaints</Text>
+      </View>
+      <View style={styles.cardContainer}>
+        {[
+
+          { label: "Zero to One Days (Part Pending)", value: dashData?.complaints?.zeroToOneDaysPartPending, color: "#9b59b6" }, // Light Purple
+          { label: "Two to Five Days (Part Pending)", value: dashData?.complaints?.twoToFiveDaysPartPending, color: "#2980b9" }, // Darker Blue
+          { label: "More than Five Days (Part Pending)", value: dashData?.complaints?.moreThanFiveDaysPartPending, color: "#d35400" }, // Dark Orange
+        ]
+          // .filter((item) => item.value > 0) // Hide zero-value cards
+          .map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.card, { backgroundColor: item.color }]}
+              onPress={() => navigation?.navigate("Services")}
+            >
+              <Text style={styles.cardValue}>{item.value}</Text>
+              <Text style={styles.cardLabel}>{item.label}</Text>
+            </TouchableOpacity>
+          ))}
+      </View>
 
 
-    
 
       {/* Pie Chart */}
       {/* <View style={styles.chartContainer}>
@@ -587,7 +630,7 @@ const TechnicianDashboard = ({ userData, dashData, notifications,RefreshData }) 
       <RecentServicesList services={dashData?.recentServices} />
 
       {/* Notification Modal */}
-      {modalVisible && <NotificationModal notifications={notifications} RefreshData={RefreshData} value={userData}   visible={modalVisible} onClose={() => setModalVisible(false)} />}
+      {modalVisible && <NotificationModal notifications={notifications} RefreshData={RefreshData} value={userData} visible={modalVisible} onClose={() => setModalVisible(false)} />}
     </ScrollView>
   );
 };
@@ -606,8 +649,8 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
     borderRadius: 10,
-    backgroundColor:  "#09090b", // Black background
-    
+    backgroundColor: "#09090b", // Black background
+
   },
   title: {
     fontSize: 20,
@@ -659,6 +702,9 @@ const styles = StyleSheet.create({
   },
   metricsContainer: {
     padding: 16,
+  },
+  metricsContainerDaywie:{
+    paddingLeft: 16,
   },
   sectionTitle: {
     fontSize: 18,

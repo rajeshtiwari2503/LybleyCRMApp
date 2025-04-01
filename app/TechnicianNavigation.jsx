@@ -17,20 +17,20 @@ const Tab = createBottomTabNavigator();
 
 const TechnicianNavigator = () => {
   const [user, setUser] = useState(null);
-  const linking = {
-    prefixes: ['myapp://', 'https://myapp.com'], // Add both custom scheme and web URL (if applicable)
-    config: {
-      screens: {
-        Dashboard: 'dashboard',
-        Wallet: 'wallet',
-        Inventory: 'inventory',
-        Services: 'services',
-        Feedback: 'feedback',
-        Support: 'support',
-        Profile: 'profile',
-      },
-    },
-  };
+  // const linking = {
+  //   prefixes: ['myapp://', 'https://myapp.com'], // Add both custom scheme and web URL (if applicable)
+  //   config: {
+  //     screens: {
+  //       Dashboard: 'dashboard',
+  //       Wallet: 'wallet',
+  //       Inventory: 'inventory',
+  //       Services: 'services',
+  //       Feedback: 'feedback',
+  //       Support: 'support',
+  //       Profile: 'profile',
+  //     },
+  //   },
+  // };
   
   
   useEffect(() => {
@@ -49,7 +49,7 @@ const TechnicianNavigator = () => {
   }, []);
   return (
     <Tab.Navigator
-     linking={linking}
+    //  linking={linking}
       screenOptions={{
         tabBarStyle: {
           backgroundColor: '#FFF', // Tab bar background color
