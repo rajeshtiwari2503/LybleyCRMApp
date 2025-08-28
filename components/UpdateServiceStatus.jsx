@@ -121,10 +121,282 @@
 //   },
 // });
 
+// import React, { useEffect, useState } from 'react';
+// import {
+//   View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, Image, ActivityIndicator,
+//   Alert
+// } from 'react-native';
+// import { useForm, Controller } from 'react-hook-form';
+// import { Colors } from '@/constants/Colors';
+// import { MaterialIcons } from '@expo/vector-icons';
+// import { Picker } from '@react-native-picker/picker';
+// import * as ImagePicker from 'expo-image-picker';
+// import Toast from 'react-native-toast-message';
+
+// export default function UpdateServiceStatus({ isVisible,userData, onClose, RefreshData, service }) {
+//   const { control, handleSubmit, setValue, watch, reset } = useForm();
+//   const [selectedImage, setSelectedImage] = useState(null);
+//   const [loading, setLoading] = useState(false);
+
+//   useEffect(() => {
+//     if (service) {
+//       setValue("status", service?.status);
+//       // setValue("comments", service?.comments || "");
+//     }
+//   }, [service]);
+
+//   // Function to pick an image from the gallery
+//   const pickImage = async () => {
+//     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+//   if (status !== 'granted') {
+//     Alert.alert('Permission Denied', 'You need to allow access to the gallery.');
+//     return;
+//   }
+//     let result = await ImagePicker.launchImageLibraryAsync({
+//       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+//       allowsEditing: true,
+//       aspect: [4, 3],
+//       quality: 1,
+//     });
+
+//     if (!result.canceled) {
+//       setSelectedImage(result.assets[0]); // Store the selected image
+//     }
+//   };
+// // console.log("userData",userData);
+
+//   // Handle Form Submission
+//   const onSubmit = async (formData) => {
+//     try {
+//       setLoading(true);
+
+//       const data = new FormData();
+//       data.append('status', formData.status);
+//       data.append('comments', formData.comments);
+//       data.append('serviceCenterName', userData?.serviceCenterName || userData?.name);
+//       data.append('Id', userData?._id);
+//       // data.append('id', service?._id);
+
+//       // Append Image if selected
+//       if (selectedImage) {
+//         data.append('partPendingImage', {
+//           uri: selectedImage.uri,
+//           name: selectedImage.fileName || `image_${Date.now()}.jpg`,
+//           type: 'image/jpeg',
+//         });
+//       }
+
+//       // console.log("Submitting Data:", data);`/updateComplaintWithImage/${id}`
+
+//       const response = await fetch(`https://crm-backend-weld-pi.vercel.app/updateComplaintWithImage/${service?._id}`, {
+//         method: 'PATCH',
+//         body: data, // FormData automatically sets correct headers
+//       });
+
+//       const result = await response.json();
+//       console.log('Success:', result);
+
+//       if (result.status===true) {
+//         Toast.show({
+//           type: 'success',
+//           text1: 'Success!',
+//           text2: 'Service status updated successfully.',
+//           position: 'top',
+//           visibilityTime: 4000,
+//         });
+//         Alert.alert('Success', 'Service status has been updated!', [
+//           { text: 'OK', onPress: () => onClose() }
+//         ]);
+//         reset()
+//         setSelectedImage(null)
+//         RefreshData(result); // Refresh Data After Successful Update
+//         onClose(); // Close Modal
+//       }
+//     } catch (error) {
+//       console.error('Error in submission:', error);
+//       onClose();
+//     } finally {
+//       onClose();
+//       reset()
+//       setSelectedImage(null)
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <Modal visible={isVisible} transparent={true} animationType="slide">
+
+//       <View style={styles.modalOverlay}>
+//         <View style={styles.modalContent}>
+//           <View style={styles.headerContainer}>
+//             <Text style={styles.header}>Update Status</Text>
+//             <TouchableOpacity onPress={onClose}>
+//               <MaterialIcons name="close" size={24} color={Colors.GRAY} />
+//             </TouchableOpacity>
+//           </View>
+
+//           <View style={styles.form}>
+//             {/* Status Picker */}
+//             <Controller
+//               control={control}
+//               name="status"
+//               render={({ field: { onChange, value } }) => (
+//                 <View style={styles.inputContainer}>
+//                   <Text style={styles.label}>Status</Text>
+//                   <Picker selectedValue={value} style={styles.picker} onValueChange={onChange}>
+//                     {/* <Picker.Item label="In Progress" value="IN PROGRESS" /> */}
+//                     <Picker.Item label="Awaiting Parts" value="PART PENDING" />
+//                     {/* <Picker.Item label="Assign" value="ASSIGN" /> */}
+//                     <Picker.Item label="Completed" value="FINAL VERIFICATION" />
+//                     {/* <Picker.Item label="Canceled" value="CANCELED" /> */}
+//                   </Picker>
+//                 </View>
+//               )}
+//             />
+
+//             {/* Comments Field */}
+//             <Controller
+//               control={control}
+//               name="comments"
+//               rules={{
+//                 required: 'Comments are required',
+//                 minLength: { value: 10, message: 'Must be at least 10 characters' },
+//                 maxLength: { value: 500, message: 'Cannot exceed 500 characters' },
+//               }}
+//               render={({ field: { onChange, value }, fieldState: { error } }) => (
+//                 <View style={styles.inputContainer}>
+//                   <Text style={styles.label}>Comments/Notes</Text>
+//                   <TextInput
+//                     style={styles.textArea}
+//                     onChangeText={onChange}
+//                     value={value}
+//                     multiline
+//                     numberOfLines={4}
+//                     placeholder="Enter comments..."
+//                   />
+//                   {error && <Text style={styles.errorText}>{error.message}</Text>}
+//                 </View>
+//               )}
+//             />
+
+//             {/* Image Upload */}
+//             <View style={styles.inputContainer}>
+//               <Text style={styles.label}>Upload Image</Text>
+//               <TouchableOpacity style={styles.imageUploadButton} onPress={pickImage}>
+//                 <Text style={styles.imageUploadText}>Select Image</Text>
+//               </TouchableOpacity>
+//               {selectedImage && <Image source={{ uri: selectedImage.uri }} style={styles.imagePreview} />}
+//             </View>
+
+//             {/* Submit Button */}
+//             <TouchableOpacity
+//               style={[styles.submitButton, loading && styles.disabledButton]}
+//               onPress={handleSubmit(onSubmit)}
+//               disabled={loading}
+//             >
+//               {loading ? (
+//                 <ActivityIndicator size="small" color="#ffffff" />
+//               ) : (
+//                 <Text style={styles.submitButtonText}>Submit</Text>
+//               )}
+//             </TouchableOpacity>
+//           </View>
+//         </View>
+//       </View>
+//     </Modal>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   modalOverlay: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+//   },
+//   modalContent: {
+//     width: '90%',
+//     backgroundColor: 'white',
+//     borderRadius: 10,
+//     padding: 20,
+//   },
+//   headerContainer: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   header: {
+//     fontSize: 20,
+//     fontWeight: 'bold',
+//   },
+//   form: {
+//     width: '100%',
+//   },
+//   inputContainer: {
+//     marginBottom: 20,
+//   },
+//   label: {
+//     fontSize: 16,
+//     marginBottom: 5,
+//   },
+//   picker: {
+//     height: 50,
+//     borderColor: '#ddd',
+//     borderWidth: 1,
+//     borderRadius: 4,
+//   },
+//   textArea: {
+//     height: 100,
+//     borderWidth: 1,
+//     borderColor: '#ddd',
+//     borderRadius: 5,
+//     paddingHorizontal: 10,
+//     paddingVertical: 5,
+//     textAlignVertical: 'top',
+//   },
+//   errorText: {
+//     color: 'red',
+//     fontSize: 12,
+//     marginTop: 5,
+//   },
+//   imageUploadButton: {
+//     backgroundColor: Colors.PRIMARY,
+//     paddingVertical: 10,
+//     borderRadius: 5,
+//     alignItems: 'center',
+//   },
+//   imageUploadText: {
+//     color: 'white',
+//     fontSize: 16,
+//   },
+//   imagePreview: {
+//     width: '100%',
+//     height: 150,
+//     resizeMode: 'cover',
+//     borderRadius: 5,
+//     marginTop: 10,
+//   },
+//   submitButton: {
+//     backgroundColor: Colors.PRIMARY,
+//     paddingVertical: 12,
+//     borderRadius: 5,
+//     alignItems: 'center',
+//   },
+//   submitButtonText: {
+//     color: 'white',
+//     fontSize: 16,
+//   },
+//   disabledButton: {
+//     backgroundColor: '#aaa',
+//   },
+// });
+
+
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, Modal, TouchableOpacity, TextInput, Image, ActivityIndicator,
-  Alert
+  Alert, ScrollView, KeyboardAvoidingView, Platform
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { Colors } from '@/constants/Colors';
@@ -132,175 +404,461 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-toast-message';
+import { useFieldArray } from 'react-hook-form';
+import { RadioButton } from 'react-native-paper';
+import http_request from "../http_request";
 
-export default function UpdateServiceStatus({ isVisible,userData, onClose, RefreshData, service }) {
-  const { control, handleSubmit, setValue, watch, reset } = useForm();
+export default function UpdateServiceStatus({ isVisible, userData, onClose, RefreshData, service }) {
+  // const { control, handleSubmit, setValue, watch, reset } = useForm();
+  const { control, handleSubmit, setValue, watch, reset, register, formState: { errors } } = useForm({
+    defaultValues: {
+      useSpareParts: "",
+      spareParts: [{ sparePartId: "", sparePartName: "", quantity: "" }]
+    }
+  });
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const complaintId = service?._id
+  // OTP states
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [enteredOtp, setEnteredOtp] = useState("");
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [matchedSpareParts, setMatchedSpareParts] = useState([]);
+  const status = watch("status");
+  const useSpareParts = watch("useSpareParts");
 
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "spareParts",
+  });
   useEffect(() => {
     if (service) {
       setValue("status", service?.status);
-      // setValue("comments", service?.comments || "");
     }
   }, [service]);
 
-  // Function to pick an image from the gallery
+  useEffect(() => {
+    if (complaintId) {
+      fetchComplaintAndParts(complaintId);
+    }
+  }, [complaintId]);
+
+
+
+
+
+  const fetchComplaintAndParts = async (complaintId) => {
+
+    try {
+      setLoading(true);
+      const complaintRes = await http_request.get(`/getComplaintById/${complaintId}`);
+      const complaintData = complaintRes.data;
+      setGeneratedOtp(complaintData?.otp);
+      setValue("brandId", complaintData.brandId || "");
+      setValue("brandName", complaintData.productBrand || "");
+      setValue("serviceCenterId", complaintData.assignServiceCenterId || "");
+      setValue("serviceCenter", complaintData.assignServiceCenter || "");
+      const partsRes = await http_request.get("/getAllSparepart");
+      const parts = partsRes.data || [];
+
+      const matched = parts.filter(part =>
+        part.products?.some(product => product.productId === complaintData?.productId)
+      );
+
+      const filteredSpareParts = matched?.filter(part => part.brandId === complaintData?.brandId);
+      // console.log("dgghghgd");
+
+      setMatchedSpareParts(filteredSpareParts);
+    } catch (error) {
+      console.error("Error fetching data", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredSpareParts = matchedSpareParts;
+
+  // console.log("filteredSpareParts", filteredSpareParts);
+  const selectedSpareParts = watch("spareParts").map(sp => sp.sparePartId);
+
+  // Pick image from gallery
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  if (status !== 'granted') {
-    Alert.alert('Permission Denied', 'You need to allow access to the gallery.');
-    return;
-  }
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'You need to allow access to the gallery.');
+      return;
+    }
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
-
     if (!result.canceled) {
-      setSelectedImage(result.assets[0]); // Store the selected image
+      setSelectedImage(result.assets[0]);
     }
   };
-// console.log("userData",userData);
 
-  // Handle Form Submission
-  const onSubmit = async (formData) => {
+  // Send OTP (simulate API call)
+  const sendOTP = async () => {
     try {
       setLoading(true);
 
-      const data = new FormData();
-      data.append('status', formData.status);
-      data.append('comments', formData.comments);
-      data.append('serviceCenterName', userData?.serviceCenterName || userData?.name);
-      data.append('Id', userData?._id);
-      // data.append('id', service?._id);
-
-      // Append Image if selected
-      if (selectedImage) {
-        data.append('partPendingImage', {
-          uri: selectedImage.uri,
-          name: selectedImage.fileName || `image_${Date.now()}.jpg`,
-          type: 'image/jpeg',
-        });
-      }
-
-      // console.log("Submitting Data:", data);`/updateComplaintWithImage/${id}`
-
-      const response = await fetch(`https://crm-backend-weld-pi.vercel.app/updateComplaintWithImage/${service?._id}`, {
-        method: 'PATCH',
-        body: data, // FormData automatically sets correct headers
+      const response = await http_request.post(`/send-otp`, {
+        complaintId: service?._id, // just pass the data object
       });
 
-      const result = await response.json();
-      console.log('Success:', result);
+      if (response.data.success) {
+        setGeneratedOtp(response.data.otp);
+        Toast.show({ type: "success", text1: "OTP sent successfully!" });
+      } else {
+        Toast.show({ type: "error", text1: "Failed to send OTP" });
+      }
+    } catch (err) {
+      console.error("OTP Error:", err);
+      Toast.show({ type: "error", text1: "Error sending OTP" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      if (result.status===true) {
-        Toast.show({
-          type: 'success',
-          text1: 'Success!',
-          text2: 'Service status updated successfully.',
-          position: 'top',
-          visibilityTime: 4000,
-        });
-        Alert.alert('Success', 'Service status has been updated!', [
-          { text: 'OK', onPress: () => onClose() }
-        ]);
-        reset()
-        setSelectedImage(null)
-        RefreshData(result); // Refresh Data After Successful Update
-        onClose(); // Close Modal
+
+  const verifyOTP = () => {
+    if (enteredOtp === generatedOtp) {
+      setOtpVerified(true);
+      Toast.show({ type: "success", text1: "OTP Verified ✅" });
+    } else {
+      Toast.show({ type: "error", text1: "Invalid OTP" });
+    }
+  };
+
+  // Submit form
+  // const onSubmit = async (formData) => {
+  // if (formData.status === "FINAL VERIFICATION" && !otpVerified) {
+  //   Alert.alert("OTP Required", "Please verify OTP before submitting.");
+  //   return;
+  // }
+
+  // try {
+  //   setLoading(true);
+  //   const data = new FormData();
+  //   data.append('status', formData.status);
+  //   data.append('comments', formData.comments);
+  //   data.append('serviceCenterName', userData?.serviceCenterName || userData?.name);
+  //   data.append('Id', userData?._id);
+
+
+  const onSubmit = async (data) => {
+    setLoading(true);
+    if (data?.status === "FINAL VERIFICATION" && !otpVerified) {
+      alert("Please verify OTP before submitting.");
+      setLoading(false);
+      return;
+    }
+    // console.log("data22222222222222", data);
+
+    try {
+      const formData = new FormData();
+
+      const reqdata = {
+        status: data?.status,
+        comments: data?.comments,
+        ...(userData?.role === "SERVICE"
+          ? {
+            serviceCenterId: userData._id,
+            serviceCenterName: userData.serviceCenterName,
+            serviceCenter: userData.serviceCenterName,
+            useSpareParts: data?.useSpareParts,
+          }
+          : data?.status === "FINAL VERIFICATION" &&
+            data?.useSpareParts === "yes"
+            ? {
+              empId: userData._id,
+              empName: userData.name,
+              serviceCenterId: data.serviceCenterId,
+              serviceCenterName: data.serviceCenter,
+              serviceCenter: data.serviceCenter,
+              useSpareParts: data?.useSpareParts,
+            }
+            : {
+              empId: userData._id,
+              empName: userData.name,
+              useSpareParts: data?.useSpareParts,
+              ...(data.status === "CUSTOMER SIDE PENDING" && {
+                cspStatus: "YES",
+              }),
+            }),
+      };
+
+      if (data?.useSpareParts === "yes" && data?.status === "FINAL VERIFICATION") {
+        reqdata.spareParts = JSON.stringify(data.spareParts || []);
+        reqdata.brandId = data.brandId;
+        reqdata.brandName = data.brandName;
+      }
+
+      // Object.entries(reqdata).forEach(([key, value]) => {
+      //   if (value !== undefined && value !== null) {
+      //     if (key === "spareParts") {
+      //       formData.append("spareParts", value);
+      //     } else {
+      //       formData.set(key, value);
+      //     }
+      //   }
+      // });
+
+      Object.entries(reqdata).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        if (key === "spareParts") {
+          formData.append("spareParts", value);
+        } else {
+          formData.append(key, value); // append is correct in RN
+        }
+      }
+    });
+
+    // Append image
+    if (selectedImage) {
+      formData.append("partPendingImage", {
+        uri: selectedImage.uri,
+        name: selectedImage.fileName || `image_${Date.now()}.jpg`,
+        type: selectedImage.type || "image/jpeg",
+      });
+    }
+
+    // Debug log
+    for (let pair of formData._parts) {
+      console.log(pair[0], pair[1]);
+    }
+      const response = await fetch(
+        `https://crm-backend-weld-pi.vercel.app/updateComplaintWithImage/${service?._id}`,
+        { method: 'PATCH', body: formData }
+      );
+      const result = await response.json();
+
+      if (result.status === true) {
+        Toast.show({ type: 'success', text1: 'Service status updated!' });
+        reset();
+        setSelectedImage(null);
+        RefreshData(result);
+        onClose();
       }
     } catch (error) {
       console.error('Error in submission:', error);
       onClose();
     } finally {
-      onClose();
-      reset()
-      setSelectedImage(null)
       setLoading(false);
     }
   };
 
+
+
   return (
     <Modal visible={isVisible} transparent={true} animationType="slide">
-      
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <View style={styles.headerContainer}>
-            <Text style={styles.header}>Update Status</Text>
-            <TouchableOpacity onPress={onClose}>
-              <MaterialIcons name="close" size={24} color={Colors.GRAY} />
-            </TouchableOpacity>
-          </View>
 
-          <View style={styles.form}>
-            {/* Status Picker */}
-            <Controller
-              control={control}
-              name="status"
-              render={({ field: { onChange, value } }) => (
-                <View style={styles.inputContainer}>
-                  <Text style={styles.label}>Status</Text>
-                  <Picker selectedValue={value} style={styles.picker} onValueChange={onChange}>
-                    {/* <Picker.Item label="In Progress" value="IN PROGRESS" /> */}
-                    <Picker.Item label="Awaiting Parts" value="PART PENDING" />
-                    {/* <Picker.Item label="Assign" value="ASSIGN" /> */}
-                    <Picker.Item label="Completed" value="FINAL VERIFICATION" />
-                    {/* <Picker.Item label="Canceled" value="CANCELED" /> */}
-                  </Picker>
-                </View>
-              )}
-            />
-
-            {/* Comments Field */}
-            <Controller
-              control={control}
-              name="comments"
-              rules={{
-                required: 'Comments are required',
-                minLength: { value: 10, message: 'Must be at least 10 characters' },
-                maxLength: { value: 500, message: 'Cannot exceed 500 characters' },
-              }}
-              render={({ field: { onChange, value }, fieldState: { error } }) => (
-                <View style={styles.inputContainer}>
-                  <Text style={styles.label}>Comments/Notes</Text>
-                  <TextInput
-                    style={styles.textArea}
-                    onChangeText={onChange}
-                    value={value}
-                    multiline
-                    numberOfLines={4}
-                    placeholder="Enter comments..."
-                  />
-                  {error && <Text style={styles.errorText}>{error.message}</Text>}
-                </View>
-              )}
-            />
-
-            {/* Image Upload */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Upload Image</Text>
-              <TouchableOpacity style={styles.imageUploadButton} onPress={pickImage}>
-                <Text style={styles.imageUploadText}>Select Image</Text>
-              </TouchableOpacity>
-              {selectedImage && <Image source={{ uri: selectedImage.uri }} style={styles.imagePreview} />}
-            </View>
-
-            {/* Submit Button */}
-            <TouchableOpacity
-              style={[styles.submitButton, loading && styles.disabledButton]}
-              onPress={handleSubmit(onSubmit)}
-              disabled={loading}
+          {loading === true ? <ActivityIndicator size="large" color="#000" />
+            : <ScrollView
+              contentContainerStyle={{ paddingBottom: 50 }}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+              nestedScrollEnabled={true}
             >
-              {loading ? (
-                <ActivityIndicator size="small" color="#ffffff" />
-              ) : (
-                <Text style={styles.submitButtonText}>Submit</Text>
-              )}
-            </TouchableOpacity>
-          </View>
+              <View style={styles.headerContainer}>
+                <Text style={styles.header}>Update Status</Text>
+                <TouchableOpacity onPress={onClose}>
+                  <MaterialIcons name="close" size={24} color={Colors.GRAY} />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.form}>
+                {/* Status Picker */}
+                <Controller
+                  control={control}
+                  name="status"
+                  render={({ field: { onChange, value } }) => (
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.label}>Status</Text>
+                      <Picker selectedValue={value} style={styles.picker} onValueChange={onChange}>
+                        <Picker.Item label="Awaiting Parts" value="PART PENDING" />
+                        <Picker.Item label="Completed" value="FINAL VERIFICATION" />
+                      </Picker>
+                    </View>
+                  )}
+                />
+
+                {/* Comments */}
+                <Controller
+                  control={control}
+                  name="comments"
+                  rules={{
+                    required: 'Comments are required',
+                    minLength: { value: 10, message: 'Must be at least 10 characters' },
+                  }}
+                  render={({ field: { onChange, value }, fieldState: { error } }) => (
+                    <View style={styles.inputContainer}>
+                      <Text style={styles.label}>Comments/Notes</Text>
+                      <TextInput
+                        style={styles.textArea}
+                        onChangeText={onChange}
+                        value={value}
+                        multiline
+                        numberOfLines={4}
+                        placeholder="Enter comments..."
+                      />
+                      {error && <Text style={styles.errorText}>{error.message}</Text>}
+                    </View>
+                  )}
+                />
+
+                {/* OTP Section */}
+                {status === "FINAL VERIFICATION" && (
+                  <View style={styles.inputContainer}>
+
+                    <Text style={styles.label}>Do you want to add spare parts?</Text>
+
+                    {/* Radio buttons */}
+                    <Controller
+                      control={control}
+                      name="useSpareParts"
+                      rules={{ required: "Please select an option" }}
+                      render={({ field: { onChange, value }, fieldState: { error } }) => (
+                        <View style={{ marginVertical: 10 }}>
+                          <View style={{ flexDirection: "row", marginBottom: 5 }}>
+                            <TouchableOpacity
+                              style={{ flexDirection: "row", marginRight: 20, alignItems: "center" }}
+                              onPress={() => onChange("yes")}
+                            >
+                              <RadioButton status={value === "yes" ? "checked" : "unchecked"} />
+                              <Text>Yes</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                              style={{ flexDirection: "row", alignItems: "center" }}
+                              onPress={() => onChange("no")}
+                            >
+                              <RadioButton status={value === "no" ? "checked" : "unchecked"} />
+                              <Text>No</Text>
+                            </TouchableOpacity>
+                          </View>
+
+                          {error && (
+                            <Text style={{ color: "red", fontSize: 12 }}>{error.message}</Text>
+                          )}
+                        </View>
+                      )}
+                    />
+                    {errors.useSpareParts && <Text style={styles.errorText}>{errors.useSpareParts.message}</Text>}
+
+                    {/* Spare Parts List */}
+                    {useSpareParts === "yes" && (
+                      <>
+                        {fields.map((item, index) => (
+                          <View key={item.id} style={{ flexDirection: "row", marginBottom: 10, alignItems: "center" }}>
+
+                            {/* Spare Part Dropdown */}
+                            <Controller
+                              control={control}
+                              name={`spareParts.${index}.sparePartId`}
+                              rules={{ required: "Select a spare part" }}
+                              render={({ field: { onChange, value } }) => (
+                                <Picker
+                                  selectedValue={value}
+                                  style={{ flex: 1 }}
+                                  onValueChange={(val) => {
+                                    const selectedPart = filteredSpareParts.find(p => p._id === val);
+                                    setValue(`spareParts.${index}.sparePartId`, selectedPart?._id || "");
+                                    setValue(`spareParts.${index}.sparePartName`, selectedPart?.partName || "");
+                                    onChange(val);
+                                  }}
+                                >
+                                  <Picker.Item label="Select Spare Part" value="" />
+                                  {filteredSpareParts
+                                    .filter(part => !selectedSpareParts.includes(part._id) || part._id === value)
+                                    .map((part) => (
+                                      <Picker.Item key={part._id} label={part.partName} value={part._id} />
+                                    ))}
+                                </Picker>
+                              )}
+                            />
+
+                            {/* Quantity */}
+                            <Controller
+                              control={control}
+                              name={`spareParts.${index}.quantity`}
+                              rules={{ required: "Enter quantity", min: { value: 1, message: "Quantity must be at least 1" } }}
+                              render={({ field: { onChange, value } }) => (
+                                <TextInput
+                                  style={{ borderWidth: 1, borderColor: "#ddd", borderRadius: 5, padding: 5, width: 60, marginLeft: 5 }}
+                                  placeholder="Qty"
+                                  keyboardType="numeric"
+                                  value={value}
+                                  onChangeText={onChange}
+                                />
+                              )}
+                            />
+
+                            {/* Remove Button */}
+                            <TouchableOpacity onPress={() => remove(index)} style={{ marginLeft: 5 }}>
+                              <Text style={{ color: "red" }}>❌</Text>
+                            </TouchableOpacity>
+                          </View>
+                        ))}
+
+                        <TouchableOpacity
+                          onPress={() => append({ sparePartId: "", sparePartName: "", quantity: "" })}
+                          style={{ backgroundColor: Colors.PRIMARY, padding: 8, borderRadius: 5, alignSelf: "flex-start", marginBottom: 10 }}
+                        >
+                          <Text style={{ color: "white" }}>+ Add Spare Part</Text>
+                        </TouchableOpacity>
+                      </>
+                    )}
+                    {!otpVerified ? (
+                      <>
+                        <Text style={styles.label}>Enter OTP</Text>
+                        <TextInput
+                          style={styles.textArea}
+                          value={enteredOtp}
+                          onChangeText={setEnteredOtp}
+                          placeholder="Enter OTP"
+                          keyboardType="numeric"
+                        />
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
+                          <TouchableOpacity style={styles.otpButton} onPress={sendOTP}>
+                            <Text style={styles.otpButtonText}>Send OTP</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity style={styles.otpButton} onPress={verifyOTP}>
+                            <Text style={styles.otpButtonText}>Verify OTP</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </>
+                    ) : (
+                      <Text style={{ color: "green", marginTop: 10 }}>✅ OTP Verified</Text>
+                    )}
+                  </View>
+                )}
+
+                {/* Image Upload */}
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Upload Image</Text>
+                  <TouchableOpacity style={styles.imageUploadButton} onPress={pickImage}>
+                    <Text style={styles.imageUploadText}>Select Image</Text>
+                  </TouchableOpacity>
+                  {selectedImage && <Image source={{ uri: selectedImage.uri }} style={styles.imagePreview} />}
+                </View>
+
+                {/* Submit */}
+                <TouchableOpacity
+                  style={[styles.submitButton, loading && styles.disabledButton]}
+                  onPress={handleSubmit(onSubmit)}
+                  disabled={loading}
+                >
+                  {loading ? <ActivityIndicator size="small" color="#fff" /> : <Text style={styles.submitButtonText}>Submit</Text>}
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          }
         </View>
       </View>
     </Modal>
@@ -308,86 +866,22 @@ export default function UpdateServiceStatus({ isVisible,userData, onClose, Refre
 }
 
 const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    width: '90%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  form: {
-    width: '100%',
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  picker: {
-    height: 50,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 4,
-  },
-  textArea: {
-    height: 100,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    textAlignVertical: 'top',
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 12,
-    marginTop: 5,
-  },
-  imageUploadButton: {
-    backgroundColor: Colors.PRIMARY,
-    paddingVertical: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  imageUploadText: {
-    color: 'white',
-    fontSize: 16,
-  },
-  imagePreview: {
-    width: '100%',
-    height: 150,
-    resizeMode: 'cover',
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  submitButton: {
-    backgroundColor: Colors.PRIMARY,
-    paddingVertical: 12,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  submitButtonText: {
-    color: 'white',
-    fontSize: 16,
-  },
-  disabledButton: {
-    backgroundColor: '#aaa',
-  },
+  modalOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
+  modalContent: { width: '90%', backgroundColor: 'white', borderRadius: 10, padding: 20 },
+  headerContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  header: { fontSize: 20, fontWeight: 'bold' },
+  form: { width: '100%' },
+  inputContainer: { marginBottom: 20 },
+  label: { fontSize: 16, marginBottom: 5 },
+  picker: { height: 50, borderColor: '#ddd', borderWidth: 1, borderRadius: 4 },
+  textArea: { borderWidth: 1, borderColor: '#ddd', borderRadius: 5, padding: 10, textAlignVertical: 'top' },
+  errorText: { color: 'red', fontSize: 12 },
+  imageUploadButton: { backgroundColor: Colors.PRIMARY, paddingVertical: 10, borderRadius: 5, alignItems: 'center' },
+  imageUploadText: { color: 'white', fontSize: 16 },
+  imagePreview: { width: '100%', height: 150, resizeMode: 'cover', borderRadius: 5, marginTop: 10 },
+  submitButton: { backgroundColor: Colors.PRIMARY, paddingVertical: 12, borderRadius: 5, alignItems: 'center' },
+  submitButtonText: { color: 'white', fontSize: 16 },
+  disabledButton: { backgroundColor: '#aaa' },
+  otpButton: { backgroundColor: Colors.PRIMARY, padding: 8, borderRadius: 5, marginHorizontal: 5 },
+  otpButtonText: { color: "white", fontSize: 14 },
 });
