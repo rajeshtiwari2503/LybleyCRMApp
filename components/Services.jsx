@@ -59,7 +59,40 @@ export default function ViewComplaints() {
     const [page, setPage] = useState(1);
 
 
-    useEffect(() => {
+    // useEffect(() => {
+    //     const interval = setInterval(async () => {
+    //         try {
+    //             // Request foreground permissions
+    //             let { status } = await Location.requestForegroundPermissionsAsync();
+    //             if (status !== 'granted') {
+    //                 setErrorMsg('Permission to access location was denied');
+    //                 return;
+    //             }
+
+    //             // Force the location update by passing options
+    //             // let locationCurr = await Location.getCurrentPositionAsync({
+    //             //     accuracy: Location.Accuracy.High, // Adjust accuracy as needed
+    //             //     maximumAge: 0,                    // Ensure no cached result
+    //             //     timeInterval: 2000                // Optional: Set a time interval for getting location
+    //             // });
+
+    //             // console.log(locationCurr);
+
+    //             // Update the state with the new location
+    //             // setLocationCurrent(locationCurr);
+    //         } catch (error) {
+    //             console.error("Error fetching location:", error);
+    //         }
+    //     }, 20000);
+
+     
+
+    //     // Clean up the interval on component unmount
+    //     return () => clearInterval(interval);
+
+    // }, [ ]);
+
+     useEffect(() => {
         const interval = setInterval(async () => {
             try {
                 // Request foreground permissions
@@ -69,30 +102,28 @@ export default function ViewComplaints() {
                     return;
                 }
 
-                // Force the location update by passing options
-                // let locationCurr = await Location.getCurrentPositionAsync({
-                //     accuracy: Location.Accuracy.High, // Adjust accuracy as needed
-                //     maximumAge: 0,                    // Ensure no cached result
-                //     timeInterval: 2000                // Optional: Set a time interval for getting location
-                // });
-
-                // console.log(locationCurr);
-
-                // Update the state with the new location
-                // setLocationCurrent(locationCurr);
+               
             } catch (error) {
                 console.error("Error fetching location:", error);
             }
-        }, 2000);
+        }, 500000);
+//  console.log("dhghhhhhhhhhh");
+ 
+        return () => clearInterval(interval);
+
+    }, [ ]);
+
+ useEffect(() => {
+         
 
         getAllComplaint();
 
-        // Clean up the interval on component unmount
-        return () => clearInterval(interval);
+       
 
     }, [refreshing, refresh]);
 
-
+    // console.log("sampleComplaints",sampleComplaints);
+    
     const getLiveLocation = async () => {
         const locPermissionDenied = await locationPermission()
         if (locPermissionDenied) {
