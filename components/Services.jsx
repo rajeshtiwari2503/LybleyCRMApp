@@ -107,7 +107,7 @@ export default function ViewComplaints() {
                 console.error("Error fetching location:", error);
             }
         }, 500000);
- console.log("dhghhhhhhhhhh");
+//  console.log("dhghhhhhhhhhh");
  
         return () => clearInterval(interval);
 

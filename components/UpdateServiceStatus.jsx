@@ -557,6 +557,7 @@ export default function UpdateServiceStatus({ isVisible, userData, onClose, Refr
       return;
     }
     // console.log("data22222222222222", data);
+    // console.log("dataaa", data);
 
     try {
       const formData = new FormData();
@@ -608,33 +609,38 @@ export default function UpdateServiceStatus({ isVisible, userData, onClose, Refr
       // });
 
       Object.entries(reqdata).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        if (key === "spareParts") {
-          formData.append("spareParts", value);
-        } else {
-          formData.append(key, value); // append is correct in RN
+        if (value !== undefined && value !== null) {
+          if (key === "spareParts") {
+            formData.append("spareParts", value);
+          } else {
+            formData.append(key, value); // append is correct in RN
+          }
         }
-      }
-    });
-
-    // Append image
-    if (selectedImage) {
-      formData.append("partPendingImage", {
-        uri: selectedImage.uri,
-        name: selectedImage.fileName || `image_${Date.now()}.jpg`,
-        type: selectedImage.type || "image/jpeg",
       });
-    }
 
-    // Debug log
-    for (let pair of formData._parts) {
-      console.log(pair[0], pair[1]);
-    }
+      // Append image
+      if (selectedImage) {
+        formData.append("partPendingImage", {
+          uri: selectedImage.uri,
+          name: selectedImage.fileName || `image_${Date.now()}.jpg`,
+          type:   "image/jpeg",
+        });
+      }
+
+      // Debug log
+      for (let pair of formData._parts) {
+        console.log("hghggdhg", pair[0], pair[1]);
+      }
       const response = await fetch(
         `https://crm-backend-weld-pi.vercel.app/updateComplaintWithImage/${service?._id}`,
-        { method: 'PATCH', body: formData }
+        {
+          method: 'PATCH', body: formData, headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       const result = await response.json();
+      // console.log("response", result);
 
       if (result.status === true) {
         Toast.show({ type: 'success', text1: 'Service status updated!' });
@@ -647,6 +653,7 @@ export default function UpdateServiceStatus({ isVisible, userData, onClose, Refr
       console.error('Error in submission:', error);
       onClose();
     } finally {
+      reset();
       setLoading(false);
     }
   };
@@ -681,8 +688,11 @@ export default function UpdateServiceStatus({ isVisible, userData, onClose, Refr
                     <View style={styles.inputContainer}>
                       <Text style={styles.label}>Status</Text>
                       <Picker selectedValue={value} style={styles.picker} onValueChange={onChange}>
+                        {/* <Picker.Item label="In Progress" value="IN PROGRESS" /> */}
                         <Picker.Item label="Awaiting Parts" value="PART PENDING" />
+                        {/* <Picker.Item label="Assign" value="ASSIGN" /> */}
                         <Picker.Item label="Completed" value="FINAL VERIFICATION" />
+                        {/* <Picker.Item label="Canceled" value="CANCELED" /> */}
                       </Picker>
                     </View>
                   )}
