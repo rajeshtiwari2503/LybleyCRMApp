@@ -254,6 +254,26 @@ const ServiceDetails = ({ isVisible, onClose, complaint }) => {
               )}
             </Card.Content>
           </Card>
+            <Card style={[styles.card, styles.paymentInfo]}>
+            <Card.Title title="Goods Image" titleStyle={styles.cardTitle} />
+            <Card.Content>
+              {complaint.goodsImage && typeof complaint.goodsImage === 'string' && complaint.goodsImage.startsWith('http') ? (
+                <Image source={{ uri: complaint.goodsImage }} style={styles.partImage} />
+              ) : (
+                <Text style={{ color: 'red' }}>Image not available</Text>
+              )}
+            </Card.Content>
+          </Card>
+            <Card style={[styles.card, styles.paymentInfo]}>
+            <Card.Title title="Defective Part Image" titleStyle={styles.cardTitle} />
+            <Card.Content>
+              {complaint.defectivePartImage && typeof complaint.defectivePartImage === 'string' && complaint.defectivePartImage.startsWith('http') ? (
+                <Image source={{ uri: complaint.defectivePartImage }} style={styles.partImage} />
+              ) : (
+                <Text style={{ color: 'red' }}>Image not available</Text>
+              )}
+            </Card.Content>
+          </Card>
           <Card style={[styles.card, styles.historyInfo]}>
             <Card.Title title="Update Comment" titleStyle={styles.cardTitle} />
             <Card.Content>

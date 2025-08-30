@@ -417,6 +417,7 @@ export default function UpdateServiceStatus({ isVisible, userData, onClose, Refr
     }
   });
   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImageGoods, setSelectedImageGoods] = useState(null);
   const [loading, setLoading] = useState(false);
   const complaintId = service?._id
   // OTP states
@@ -481,8 +482,24 @@ export default function UpdateServiceStatus({ isVisible, userData, onClose, Refr
 
   // console.log("filteredSpareParts", filteredSpareParts);
   const selectedSpareParts = watch("spareParts").map(sp => sp.sparePartId);
-
+  pickGoodsImage
   // Pick image from gallery
+  const pickGoodsImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'You need to allow access to the gallery.');
+      return;
+    }
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setSelectedImageGoods(result.assets[0]);
+    }
+  };
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -499,7 +516,6 @@ export default function UpdateServiceStatus({ isVisible, userData, onClose, Refr
       setSelectedImage(result.assets[0]);
     }
   };
-
   // Send OTP (simulate API call)
   const sendOTP = async () => {
     try {
@@ -619,20 +635,27 @@ export default function UpdateServiceStatus({ isVisible, userData, onClose, Refr
       });
 
       // Append image
-      if (selectedImage) {
-        formData.append("partPendingImage", {
-          uri: selectedImage.uri,
-          name: selectedImage.fileName || `image_${Date.now()}.jpg`,
-          type:   "image/jpeg",
+      if (selectedImageGoods) {
+        formData.append("goodsImage", {
+          uri: selectedImageGoods.uri,
+          name: selectedImageGoods.fileName || `image_${Date.now()}.jpg`,
+          type: "image/jpeg",
         });
       }
-
+      if (selectedImage) {
+        formData.append("defectivePartImage", {
+          uri: selectedImage.uri,
+          name: selectedImage.fileName || `image_${Date.now()}.jpg`,
+          type: "image/jpeg",
+        });
+      }
       // Debug log
       for (let pair of formData._parts) {
         console.log("hghggdhg", pair[0], pair[1]);
       }
       const response = await fetch(
-        `https://crm-backend-weld-pi.vercel.app/updateComplaintWithImage/${service?._id}`,
+        // `https://crm-backend-weld-pi.vercel.app/updateComplaintWithImage/${service?._id}`,
+        `https://crm-backend-weld-pi.vercel.app/updateMultiImageImage/${service?._id}`,
         {
           method: 'PATCH', body: formData, headers: {
             "Content-Type": "multipart/form-data",
@@ -640,12 +663,13 @@ export default function UpdateServiceStatus({ isVisible, userData, onClose, Refr
         }
       );
       const result = await response.json();
-      // console.log("response", result);
+      console.log("response", result);
 
       if (result.status === true) {
         Toast.show({ type: 'success', text1: 'Service status updated!' });
         reset();
         setSelectedImage(null);
+        setSelectedImageGoods(null)
         RefreshData(result);
         onClose();
       }
@@ -851,13 +875,21 @@ export default function UpdateServiceStatus({ isVisible, userData, onClose, Refr
 
                 {/* Image Upload */}
                 <View style={styles.inputContainer}>
-                  <Text style={styles.label}>Upload Image</Text>
+                  <Text style={styles.label}>Upload Goods Image</Text>
+                  <TouchableOpacity style={styles.imageUploadButton} onPress={pickGoodsImage}>
+                    <Text style={styles.imageUploadText}>Select Image</Text>
+                  </TouchableOpacity>
+
+                  {selectedImageGoods && <Image source={{ uri: selectedImageGoods.uri }} style={styles.imagePreview} />}
+                </View>
+                {/* Image Upload */}
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Upload Defective  Image</Text>
                   <TouchableOpacity style={styles.imageUploadButton} onPress={pickImage}>
                     <Text style={styles.imageUploadText}>Select Image</Text>
                   </TouchableOpacity>
                   {selectedImage && <Image source={{ uri: selectedImage.uri }} style={styles.imagePreview} />}
                 </View>
-
                 {/* Submit */}
                 <TouchableOpacity
                   style={[styles.submitButton, loading && styles.disabledButton]}
